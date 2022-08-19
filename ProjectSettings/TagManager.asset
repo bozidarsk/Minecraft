@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - Chunk
+  - ChunkMesh
+  - DroppedItem
+  - Liquid
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - 
+  - Water
+  - UI
+  - 
+  - 
+  - Player
+  - Chunk
+  - With Collider
+  - Without Collider
+  - Liquid
+  - DroppedItem
+  - DroppedItemCollider
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: Inventory
+    uniqueID: 73079477
+    locked: 0
+  - name: ChatInput
+    uniqueID: 941294755
+    locked: 0
+  - name: Chat
+    uniqueID: 121799597
+    locked: 0
+  - name: Hotbar
+    uniqueID: 752059507
+    locked: 0

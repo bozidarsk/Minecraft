@@ -1,0 +1,11 @@
+{
+	"properties": 
+	[
+		{
+			"id": "unbreaking-enchantment",
+			"shader": "Custom/Enchantment",
+			"maxLevel": 3,
+			"incompatibleEnchantments": []
+		}
+	]
+}
