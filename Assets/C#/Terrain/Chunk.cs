@@ -9,14 +9,17 @@ public class Chunk
 {
 	public GameObject gameObject { get; }
 	public Vector3 position { get { return gameObject.transform.position; } }
+	public string name { get { return gameObject.name; } }
 
 	private GameManager gameManager;
 	private ChunkController controller;
 	private ushort[,,] voxelTypes;
 	private int[,,][] voxelTriangles;
 
-	private ChunkMesh withCollision;
-	private ChunkMesh withoutCollision;
+	private MeshFilter filter;
+	private MeshRenderer renderer;
+	private ObjectMesh objectMesh;
+
 	private List<ChunkMesh> liquidMeshes;
 
 	private void GenerateVoxels() 
@@ -43,12 +46,13 @@ public class Chunk
 						(GetVoxelType(x, y, z) == gameManager.GetVoxelTypeById("air-block"))
 					) { SetVoxelType(gameManager.GetVoxelTypeById("grass-block"), x, y - 1, z); }
 
-					// if (GetVoxelType(x, y - 1, z) == gameManager.GetVoxelTypeById("grass-block")) 
-					// { GetVoxelType(x, y, z) = gameManager.GetVoxelTypeById("grass-quads"); }
-
 					if (GetVoxelType(x, y - 1, z) == gameManager.GetVoxelTypeById("grass-block") && 
 						x > 5 && x < 10 && z > 5 && z < 10
 					) { SetVoxelType(gameManager.GetVoxelTypeById("water-liquid"), x, y - 1, z); }
+
+					// if (GetVoxelType(x, y - 1, z) == gameManager.GetVoxelTypeById("grass-block") && 
+					// 	(GetVoxelType(x, y, z) == gameManager.GetVoxelTypeById("air-block"))
+					// ) { SetVoxelType(gameManager.GetVoxelTypeById("grass-quads"), x, y, z); }
 				}
 			}
 		}
@@ -76,29 +80,32 @@ public class Chunk
 		{
 			if (!CanDrawFace((int)offset.x, (int)offset.y, (int)offset.z, (VoxelFace)face)) { continue; }
 
-			for (int v = 0; v < blockVertices.GetLength(1); v++) 
-			{ ((property.useCollision) ? withCollision : withoutCollision).Add(blockVertices[face, v] + offset); }
+			objectMesh.Add(
+				blockVertices[face, 0] + offset,
+				blockVertices[face, 1] + offset,
+				blockVertices[face, 2] + offset,
+				blockVertices[face, 3] + offset
+			);
 
 			Vector2byte coords = property.textureCoords[face];
-			float coordsy = ((float)gameManager.voxelTextures.height / 16f) - (float)coords.y - 1;
-			float uvx = (16f * (float)coords.x) / (float)gameManager.voxelTextures.width;
-			float uvy = (16f * coordsy) / (float)gameManager.voxelTextures.height;
-			float uvsizex = 16f / (float)gameManager.voxelTextures.width;
-			float uvsizey = 16f / (float)gameManager.voxelTextures.height;
+			float coordsy = ((float)gameManager.textures.voxel.height / 16f) - (float)coords.y - 1;
+			float uvx = (16f * (float)coords.x) / (float)gameManager.textures.voxel.width;
+			float uvy = (16f * coordsy) / (float)gameManager.textures.voxel.height;
+			float uvsizex = 16f / (float)gameManager.textures.voxel.width;
+			float uvsizey = 16f / (float)gameManager.textures.voxel.height;
 
-			((property.useCollision) ? withCollision : withoutCollision).Add(
+			objectMesh.Add(
 				new Vector2(uvx, uvy),
 				new Vector2(uvx + uvsizex, uvy),
 				new Vector2(uvx + uvsizex, uvy + uvsizey),
 				new Vector2(uvx, uvy + uvsizey)
 			);
 
-			int index = ((property.useCollision) ? withCollision : withoutCollision).vertexCount - 4;
-			((property.useCollision) ? withCollision : withoutCollision).Add(
-				index + 0, index + 3, index + 1, index + 1, index + 3, index + 2
-			);
-
-			triangles.AddRange(new int[] { index + 0, index + 3, index + 1, index + 1, index + 3, index + 2 });
+			int index = objectMesh.vertexCount - 4;
+			int[] tris = { index + 0, index + 3, index + 1, index + 1, index + 3, index + 2 };
+			CullTriangles(ref tris, property.cull);
+			objectMesh.Add(tris);
+			triangles.AddRange(tris);
 		}
 
 		voxelTriangles[(int)offset.x, (int)offset.y, (int)offset.z] = triangles.ToArray();
@@ -106,7 +113,7 @@ public class Chunk
 
 	private void DrawQuads(Vector3 offset, VoxelProperty property) 
 	{
-		((property.useCollision) ? withCollision : withoutCollision).Add(
+		objectMesh.Add(
 			quadsVertices[0] + offset,
 			quadsVertices[1] + offset,
 			quadsVertices[2] + offset,
@@ -118,13 +125,13 @@ public class Chunk
 		);
 
 		Vector2byte coords = property.textureCoords[0];
-		float coordsy = ((float)gameManager.voxelTextures.height / 16f) - (float)coords.y - 1;
-		float uvx = (16f * (float)coords.x) / (float)gameManager.voxelTextures.width;
-		float uvy = (16f * coordsy) / (float)gameManager.voxelTextures.height;
-		float uvsizex = 16f / (float)gameManager.voxelTextures.width;
-		float uvsizey = 16f / (float)gameManager.voxelTextures.height;
+		float coordsy = ((float)gameManager.textures.voxel.height / 16f) - (float)coords.y - 1;
+		float uvx = (16f * (float)coords.x) / (float)gameManager.textures.voxel.width;
+		float uvy = (16f * coordsy) / (float)gameManager.textures.voxel.height;
+		float uvsizex = 16f / (float)gameManager.textures.voxel.width;
+		float uvsizey = 16f / (float)gameManager.textures.voxel.height;
 
-		((property.useCollision) ? withCollision : withoutCollision).Add(
+		objectMesh.Add(
 			new Vector2(uvx, uvy),
 			new Vector2(uvx + uvsizex, uvy),
 			new Vector2(uvx + uvsizex, uvy + uvsizey),
@@ -135,16 +142,15 @@ public class Chunk
 			new Vector2(uvx, uvy)
 		);
 
-		((property.useCollision) ? withCollision : withoutCollision).Add(
-			0, 1, 2, 2, 3, 0,
-			4, 5, 6, 6, 7, 4
-		);
-
-		voxelTriangles[(int)offset.x, (int)offset.y, (int)offset.z] = new int[] 
+		int[] triangles = 
 		{
 			0, 1, 2, 2, 3, 0,
 			4, 5, 6, 6, 7, 4
 		};
+
+		CullTriangles(ref triangles, property.cull);
+		objectMesh.Add(triangles);
+		voxelTriangles[(int)offset.x, (int)offset.y, (int)offset.z] = triangles;
 	}
 
 	private void DrawModel(Vector3 offset, VoxelProperty property) 
@@ -152,12 +158,14 @@ public class Chunk
 		Mesh mesh = gameManager.modelMeshes[property.id];
 
 		for (int i = 0; i < mesh.vertices.Length; i++) 
-		{ ((property.useCollision) ? withCollision : withoutCollision).Add(mesh.vertices[i]); }
+		{ objectMesh.Add(mesh.vertices[i]); }
 
-		((property.useCollision) ? withCollision : withoutCollision).Add(mesh.triangles);
-		((property.useCollision) ? withCollision : withoutCollision).Add(mesh.uv);
+		int[] tris = mesh.triangles;
+		CullTriangles(ref tris, property.cull);
+		objectMesh.Add(tris);
+		objectMesh.Add(mesh.uv);
 
-		voxelTriangles[(int)offset.x, (int)offset.y, (int)offset.z] = mesh.triangles;
+		voxelTriangles[(int)offset.x, (int)offset.y, (int)offset.z] = tris;
 	}
 
 	private void DrawLiquid(Vector3 offset, VoxelProperty property) 
@@ -169,8 +177,8 @@ public class Chunk
 		{
 			liquidMeshes.Add(new ChunkMesh(gameObject.transform, property.id, 12));
 			i = liquidMeshes.Count - 1;
-			liquidMeshes[i].renderer.material = new Material(Shader.Find("Custom/Liquid"));
-			liquidMeshes[i].renderer.material.SetTexture("_MainTex", gameManager.liquidTextures);
+			liquidMeshes[i].renderer.material = gameManager.materials.cullBack;
+			liquidMeshes[i].renderer.material.SetTexture("_MainTex", gameManager.textures.liquid);
 			liquidMeshes[i].gameObject.tag = "Liquid";
 			liquidMeshes[i].collider.convex = true;
 			liquidMeshes[i].collider.isTrigger = true;
@@ -187,8 +195,8 @@ public class Chunk
 				blockVertices[(int)face, 3] + offset
 			});
 
-			float uvx = 32f / (float)gameManager.liquidTextures.width;
-			float uvy = 1f - (32f / (float)gameManager.liquidTextures.height);
+			float uvx = 32f / (float)gameManager.textures.liquid.width;
+			float uvy = 1f - (32f / (float)gameManager.textures.liquid.height);
 
 			liquidMeshes[i].Add(new Vector2[] {
 				new Vector2(0f, uvy),
@@ -198,11 +206,10 @@ public class Chunk
 			});
 
 			int index = liquidMeshes[i].vertexCount - 4;
-			liquidMeshes[i].Add(
-				index + 0, index + 3, index + 1, index + 1, index + 3, index + 2
-			);
-
-			triangles.AddRange(new int[] { index + 0, index + 3, index + 1, index + 1, index + 3, index + 2 });
+			int[] tris = { index + 0, index + 3, index + 1, index + 1, index + 3, index + 2 };
+			CullTriangles(ref tris, property.cull);
+			liquidMeshes[i].Add(tris);
+			triangles.AddRange(tris);
 		}
 
 		voxelTriangles[(int)offset.x, (int)offset.y, (int)offset.z] = triangles.ToArray();
@@ -210,8 +217,6 @@ public class Chunk
 
 	private void GenerateMesh() 
 	{
-		withCollision.Clear();
-		withoutCollision.Clear();
 		for (int i = 0; i < liquidMeshes.Count; i++) 
 		{ liquidMeshes[i].Clear(); }
 
@@ -275,15 +280,15 @@ public class Chunk
 		if (!saveType) { SetVoxelType(gameManager.GetVoxelTypeById("air-block"), x, y, z); }
 
 		int i = 0;
-		for (; i < ((property.useCollision) ? withCollision : withoutCollision).triangles.Count; i++) 
+		for (; i < objectMesh.triangles.Count; i++) 
 		{
-			if (((property.useCollision) ? withCollision : withoutCollision).triangles[i] != voxelTriangles[x, y, z][0]) 
+			if (objectMesh.triangles[i] != voxelTriangles[x, y, z][0]) 
 			{ continue; }
 
 			int t = 0;
 			while (t < voxelTriangles[x, y, z].Length) 
 			{
-				if (((property.useCollision) ? withCollision : withoutCollision).triangles[i + t] != voxelTriangles[x, y, z][t]) 
+				if (objectMesh.triangles[i + t] != voxelTriangles[x, y, z][t]) 
 				{ break; }
 				t++;
 			}
@@ -291,23 +296,22 @@ public class Chunk
 			if (t >= voxelTriangles[x, y, z].Length) { break; }
 		}
 
-		((property.useCollision) ? withCollision : withoutCollision).triangles.RemoveRange(i, voxelTriangles[x, y, z].Length);
+		objectMesh.triangles.RemoveRange(i, voxelTriangles[x, y, z].Length);
 
-		// for (; i < ((property.useCollision) ? withCollision : withoutCollision).triangles.Count; i++) 
-		// { ((property.useCollision) ? withCollision : withoutCollision).triangles[i] -= voxelTriangles[x, y, z].Length; }
+		// for (; i < objectMesh.triangles.Count; i++) 
+		// { objectMesh.triangles[i] -= voxelTriangles[x, y, z].Length; }
 
-		List<Vector3> vertices = new List<Vector3>(((property.useCollision) ? withCollision : withoutCollision).vertices.Count - voxelTriangles[x, y, z].Length);
-		List<Vector2> uvs = new List<Vector2>(((property.useCollision) ? withCollision : withoutCollision).uvs.Count - voxelTriangles[x, y, z].Length);
-		for (i = 0; i < ((property.useCollision) ? withCollision : withoutCollision).vertices.Count; i++) 
-		{
-			if (Array.IndexOf(voxelTriangles[x, y, z], i) >= 0) { continue; }
-			vertices.Add((((property.useCollision) ? withCollision : withoutCollision).vertices[i]));
-			uvs.Add((((property.useCollision) ? withCollision : withoutCollision).uvs[i]));
-		}
+		// List<Vector3> vertices = new List<Vector3>(objectMesh.vertices.Count - voxelTriangles[x, y, z].Length);
+		// List<Vector2> uvs = new List<Vector2>(objectMesh.uvs.Count - voxelTriangles[x, y, z].Length);
+		// for (i = 0; i < objectMesh.vertices.Count; i++) 
+		// {
+		// 	if (Array.IndexOf(voxelTriangles[x, y, z], i) >= 0) { continue; }
+		// 	vertices.Add((objectMesh.vertices[i]));
+		// 	uvs.Add((objectMesh.uvs[i]));
+		// }
 
-		// ((property.useCollision) ? withCollision : withoutCollision).vertices = vertices;
-		// ((property.useCollision) ? withCollision : withoutCollision).uvs = uvs;
-		((property.useCollision) ? withCollision : withoutCollision).Update();
+		// objectMesh.vertices = vertices;
+		// objectMesh.uvs = uvs;
 		voxelTriangles[x, y, z] = null;
 	}
 
@@ -387,21 +391,23 @@ public class Chunk
 
 	public void Update() 
 	{
-		withCollision.Update();
-		withoutCollision.Update();
+		filter.mesh = objectMesh.mesh;
 		for (int i = 0; i < liquidMeshes.Count; i++) { liquidMeshes[i].Update(); }
 	}
 
-	public ushort GetVoxelTypeFromPoint(Vector3 point, Vector3 normal) 
-	{ Vector3Int position = GetVoxelPositionFromPoint(point, normal); return GetVoxelType(position.x, position.y, position.z); }
-
-	public string GetVoxelIdFromPoint(Vector3 point, Vector3 normal) 
+	public ushort GetVoxelTypeFromPoint(Vector3 point) 
 	{
-		try { return gameManager.voxelProperties[GetVoxelTypeFromPoint(point, normal)].id; }
+		Vector3Int position = GetVoxelPositionFromPoint(point);
+		return GetVoxelType(position.x, position.y, position.z);
+	}
+
+	public string GetVoxelIdFromPoint(Vector3 point) 
+	{
+		try { return gameManager.voxelProperties[GetVoxelTypeFromPoint(point)].id; }
 		catch { return "undefined-block"; }
 	}
 
-	public Vector3Int GetVoxelPositionFromPoint(Vector3 point, Vector3 normal) 
+	public Vector3Int GetVoxelPositionFromPoint(Vector3 point) 
 	{
 		Vector3Int coords = new Vector3Int(
 			Mathf.FloorToInt(point.x),
@@ -410,9 +416,9 @@ public class Chunk
 		);
 
 		Vector3Int offset = new Vector3Int(
-			-(int)gameObject.transform.position.x + ((normal == Vector3.right) ? -1 : 0),
-			-(int)gameObject.transform.position.y + ((normal == Vector3.up) ? -1 : 0),
-			-(int)gameObject.transform.position.z + ((normal == Vector3.forward) ? -1 : 0)
+			-(int)gameObject.transform.position.x,
+			-(int)gameObject.transform.position.y,
+			-(int)gameObject.transform.position.z
 		);
 
 		return coords + offset;
@@ -436,28 +442,53 @@ public class Chunk
 		];
 
 		this.voxelTriangles = new int[voxelTypes.GetLength(0), voxelTypes.GetLength(1), voxelTypes.GetLength(2)][];
+		this.objectMesh = new ObjectMesh();
+
 		this.gameObject = new GameObject(position.ToString());
 		this.gameObject.transform.SetParent(parent);
 		this.gameObject.transform.position = position;
 		this.gameObject.transform.eulerAngles = Vector3.zero;
 		this.gameObject.transform.localScale = Vector3.one;
+		this.renderer = (MeshRenderer)this.gameObject.AddComponent(typeof(MeshRenderer));
+		this.filter = (MeshFilter)this.gameObject.AddComponent(typeof(MeshFilter));
 		this.gameObject.tag = "Chunk";
 
 		this.controller = (ChunkController)this.gameObject.AddComponent(typeof(ChunkController));
 		this.controller.gameManager = this.gameManager;
 		this.controller.chunk = this;
 
-		this.withCollision = new ChunkMesh(this.gameObject.transform, "With Collider", 10);
-		this.withCollision.renderer.material = new Material(Shader.Find("Custom/CullBack"));
-		this.withCollision.renderer.material.SetTexture("_MainTex", this.gameManager.voxelTextures);
-
-		this.withoutCollision = new ChunkMesh(this.gameObject.transform, "Without Collider", 11);
-		this.withoutCollision.renderer.material = new Material(Shader.Find("Custom/CullOff"));
-		this.withoutCollision.renderer.material.SetTexture("_MainTex", this.gameManager.voxelTextures);
+		this.renderer.material = gameManager.materials.cullBack;
+		this.renderer.material.SetTexture("_MainTex", this.gameManager.textures.voxel);
 
 		this.GenerateVoxels();
 		this.GenerateMesh();
 		this.Update();
+	}
+
+	public static int[] CullTriangles(int[] triangles, Cull mode) { CullTriangles(ref triangles, mode); return triangles; }
+	public static void CullTriangles(ref int[] triangles, Cull mode) 
+	{
+		if (triangles.Length % 3 != 0) { throw new ArgumentException("Triangle array must be multiple of 3."); }
+
+		switch (mode) 
+		{
+			case Cull.Back:
+				return;
+			case Cull.Front:
+				for (int i = 0; i < triangles.Length; i += 3) 
+				{
+					int tmp = triangles[i + 1];
+					triangles[i + 1] = triangles[i + 2];
+					triangles[i + 2] = tmp;
+				}
+
+				return;
+			case Cull.Off:
+				List<int> list = triangles.ToList();
+				for (int i = 0; i < list.Count; i += 6) { list.InsertRange(i, new int[] { list[i + 0], list[i + 2], list[i + 1] }); }
+				triangles = list.ToArray();
+				return;
+		}
 	}
 
 	public static readonly Vector3[,] blockVertices = 

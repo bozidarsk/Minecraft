@@ -62,6 +62,8 @@
             {
                 float4 color = tex2D(_MainTex, IN.uv);
 
+                if (color.a <= 0) { clip(-1); }
+
                 float4 light = saturate((dot(_WorldSpaceLightPos0.xyz, IN.normal).xxxx * 0.3) + (_LightColor0 * 0.6));
 
                 return color;

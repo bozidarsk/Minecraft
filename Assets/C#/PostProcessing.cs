@@ -11,7 +11,7 @@ public class PostProcessing : MonoBehaviour
     void Start() 
     {
     	gameManager = (GameManager)GameObject.FindObjectOfType(typeof(GameManager));
-    	material = new Material(Shader.Find("Custom/PostProcessing"));
+    	material = gameManager.materials.postProcessing;
         material.SetInt("_UseEffect", 0);
     }
 

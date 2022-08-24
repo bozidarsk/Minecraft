@@ -24,6 +24,7 @@ public class GameSettings : ScriptableObject
 	[System.Serializable]
 	public struct Terrain 
 	{
+		public int worldSize; // <= 0
 		public int chunkSize; // <= 0
 		public int chunkHeight; // <= 0
 		public int dirtDepth; // <= 0
@@ -35,6 +36,7 @@ public class GameSettings : ScriptableObject
 		public float walkingSpeed; // < 0
 		public float sprintingSpeed; // < 0
 		public float sneakingSpeed; // < 0
+		public float jumpSpeed; // < 0
 		public float jumpHeight; // < 0
 		public float reachingDistance; // < 0
 		public Vector2 rotationLimit;
@@ -49,12 +51,14 @@ public class GameSettings : ScriptableObject
 
 	void OnValidate() 
 	{
+		if (terrain.worldSize < 1) { terrain.worldSize = 1; }
 		if (terrain.chunkSize < 1) { terrain.chunkSize = 1; }
 		if (terrain.chunkHeight < 1) { terrain.chunkHeight = 1; }
 		if (terrain.dirtDepth < 1) { terrain.dirtDepth = 1; }
 		if (player.walkingSpeed < 0f) { player.walkingSpeed = 0f; }
 		if (player.sprintingSpeed < 0f) { player.sprintingSpeed = 0f; }
 		if (player.sneakingSpeed < 0f) { player.sneakingSpeed = 0f; }
+		if (player.jumpSpeed < 0f) { player.jumpSpeed = 0f; }
 		if (player.jumpHeight < 0f) { player.jumpHeight = 0f; }
 		if (player.reachingDistance < 0f) { player.reachingDistance = 0f; }
 		if (player.rotationLimit.x < 10f) { player.rotationLimit.x = 10f; }

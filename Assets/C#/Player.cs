@@ -6,14 +6,14 @@ using System.IO;
 using UnityEngine;
 using Utils;
 
-[RequireComponent(typeof(CharacterController))]
 public class Player : MonoBehaviour
 {
 	public PlayerSettings playerSettings;
+	public Transform playerCenter;
+	public Armature armature;
 	[HideInInspector] public PlayerInventory inventory;
 	[HideInInspector] public GameManager gameManager;
 	[HideInInspector] public CameraPerspective cameraPerspective;
-	[HideInInspector] public Armature armature;
 	[HideInInspector] public uint color; // rrggbbaa
 	[HideInInspector] public string id;
 	[HideInInspector] public float level;
@@ -23,17 +23,18 @@ public class Player : MonoBehaviour
 	new public string name { get { return gameObject.name; } }
 
 	private System.Random random;
-	private CharacterController controller;
-	private GameObject groundCheck;
-	private Vector3 currentGravity = Vector3.zero;
-	private RaycastHit hit;
-	private bool hasHit = false;
+	private MovementController movementController;
+	private Vector3 gravity = Vector3.zero;
+	private VoxelHit voxelHit;
+	private RaycastHit raycastHit;
+	private float jumpedHeight = 0f;
+	private bool isJumping = false;
 
 	public void DropItem(Item item, Vector3? position = null) 
 	{
 		if (item.IsEmpty) { return; }
 
-		DroppedItem obj = new DroppedItem(item, (position == null) ? armature.head.transform.position : (Vector3)position, position == null);
+		DroppedItem obj = new DroppedItem(item, (position == null) ? armature.head.transform.position : (Vector3)position, position == null, gameManager);
 		Vector3 offset = new Vector3(-0.5f, -0.5f, -0.5f);
 		obj.gameObject.transform.localScale = Vector3.one * 0.3f;
 		obj.gameObject.transform.eulerAngles = new Vector3(0f, (float)random.Next(0, 180), 0f);
@@ -53,11 +54,11 @@ public class Player : MonoBehaviour
 				obj.Add(index + 0, index + 3, index + 1, index + 1, index + 3, index + 2);
 
 				Vector2byte coords = property.textureCoords[f];
-				float coordsy = ((float)gameManager.voxelTextures.height / 16f) - (float)coords.y - 1;
-				float uvx = (16f * (float)coords.x) / (float)gameManager.voxelTextures.width;
-				float uvy = (16f * coordsy) / (float)gameManager.voxelTextures.height;
-				float uvsizex = 16f / (float)gameManager.voxelTextures.width;
-				float uvsizey = 16f / (float)gameManager.voxelTextures.height;
+				float coordsy = ((float)gameManager.textures.voxel.height / 16f) - (float)coords.y - 1;
+				float uvx = (16f * (float)coords.x) / (float)gameManager.textures.voxel.width;
+				float uvy = (16f * coordsy) / (float)gameManager.textures.voxel.height;
+				float uvsizex = 16f / (float)gameManager.textures.voxel.width;
+				float uvsizey = 16f / (float)gameManager.textures.voxel.height;
 
 				obj.Add(
 					new Vector2(uvx, uvy),
@@ -67,13 +68,13 @@ public class Player : MonoBehaviour
 				);
 			}
 
-			obj.renderer.material.SetTexture("_MainTex", gameManager.voxelTextures);
+			obj.renderer.material.SetTexture("_MainTex", gameManager.textures.voxel);
 		}
 
 		if (item.id.EndsWith("-model")) 
 		{
 			obj.Add(gameManager.modelMeshes.Where(x => x.Key == item.id).ToArray()[0].Value);
-			obj.renderer.material.SetTexture("_MainTex", gameManager.voxelTextures);
+			obj.renderer.material.SetTexture("_MainTex", gameManager.textures.voxel);
 		}
 
 		if (obj.vertexCount == 0) 
@@ -88,11 +89,11 @@ public class Player : MonoBehaviour
 			obj.Add(0, 1, 2, 2, 3, 0);
 
 			Vector2byte coords = gameManager.itemProperties[gameManager.GetItemTypeById(item.id + "-item")].textureCoords;
-			float coordsy = ((float)gameManager.itemTextures.height / 16f) - (float)coords.y - 1;
-			float uvx = (16f * (float)coords.x) / (float)gameManager.itemTextures.width;
-			float uvy = (16f * coordsy) / (float)gameManager.itemTextures.height;
-			float uvsizex = 16f / (float)gameManager.itemTextures.width;
-			float uvsizey = 16f / (float)gameManager.itemTextures.height;
+			float coordsy = ((float)gameManager.textures.item.height / 16f) - (float)coords.y - 1;
+			float uvx = (16f * (float)coords.x) / (float)gameManager.textures.item.width;
+			float uvy = (16f * coordsy) / (float)gameManager.textures.item.height;
+			float uvsizex = 16f / (float)gameManager.textures.item.width;
+			float uvsizey = 16f / (float)gameManager.textures.item.height;
 
 			obj.Add(
 				new Vector2(uvx, uvy),
@@ -101,7 +102,7 @@ public class Player : MonoBehaviour
 				new Vector2(uvx, uvy + uvsizey)
 			);
 
-			obj.renderer.material.SetTexture("_MainTex", gameManager.itemTextures);
+			obj.renderer.material.SetTexture("_MainTex", gameManager.textures.item);
 		}
 
 		obj.Update();
@@ -109,36 +110,30 @@ public class Player : MonoBehaviour
 
 	void Start() 
 	{
+		gameManager = (GameManager)GameObject.FindObjectOfType(typeof(GameManager));
+
 		chat = gameObject.GetComponent<ChatController>();
 		postProcessing = gameObject.GetComponentsInChildren<PostProcessing>()[0];
 
-		Transform[] transforms = gameObject.GetComponentsInChildren<Transform>();
-		armature.chest = transforms.Where(x => x.name == "Chest").ToList()[0].gameObject;
-		armature.head = transforms.Where(x => x.name == "Head").ToList()[0].gameObject;
-		armature.armL = transforms.Where(x => x.name == "Arm.L").ToList()[0].gameObject;
-		armature.armR = transforms.Where(x => x.name == "Arm.R").ToList()[0].gameObject;
-		armature.legL = transforms.Where(x => x.name == "Leg.L").ToList()[0].gameObject;
-		armature.legR = transforms.Where(x => x.name == "Leg.R").ToList()[0].gameObject;
-		groundCheck = transforms.Where(x => x.name == "GroundCheck").ToList()[0].gameObject;
-
 		random = new System.Random((int)gameObject.name.GetHashCode());
-		controller = gameObject.GetComponent<CharacterController>();
 		inventory = gameObject.GetComponent<PlayerInventory>();
 		id = gameObject.name + "-player";
 		color = 0x007f7fff; // rrggbbaa
 
-		Material material = new Material(Shader.Find("Custom/Player"));
+		Material material = gameManager.materials.player;
 		Texture2D texture = new Texture2D(516, 258);
 
 		// ImageConversion.LoadImage(texture, File.ReadAllBytes("Assets/Objects/player/texture-template.png"), false);
 		try { ImageConversion.LoadImage(texture, File.ReadAllBytes("Assets/Objects/player/Textures/" + id + ".png"), false); }
 		catch { ImageConversion.LoadImage(texture, File.ReadAllBytes("Assets/Objects/player/texture-default.png"), false); }
 		texture.filterMode = FilterMode.Point;
+		texture.wrapMode = TextureWrapMode.Clamp;
 
 		((SkinnedMeshRenderer)gameObject.GetComponentInChildren(typeof(SkinnedMeshRenderer))).material = material;
 		material.SetTexture("_MainTex", texture);
 
-		gameManager = (GameManager)GameObject.FindObjectOfType(typeof(GameManager));
+		movementController = gameObject.GetComponent<MovementController>();
+		movementController.Initialize(gameManager, playerCenter);
 	}
 
 	void Update() 
@@ -158,48 +153,57 @@ public class Player : MonoBehaviour
 		if (chat.IsOpen && Input.GetKeyDown(KeyCode.Escape)) 
 		{ chat.IsOpen = false; }
 
-		if (hasHit && !inventory.IsOpen && !chat.IsOpen) 
-		{
-			if (hit.transform.gameObject.tag != "ChunkMesh") { return; }
-			ChunkController chunkController = hit.transform.parent.gameObject.GetComponent<ChunkController>();
+		int mouseButtons = 0 | 
+		((Input.GetKeyDown(playerSettings.controlls.keyCodes.Attack)) ? 1 : 0) << 0 | 
+		((Input.GetKeyDown(playerSettings.controlls.keyCodes.UseItem)) ? 1 : 0) << 1 | 
+		((Input.GetKeyDown(playerSettings.controlls.keyCodes.PickBlock)) ? 1 : 0) << 2;
 
-			if (Input.GetKeyDown(playerSettings.controlls.keyCodes.Attack)) { chunkController.OnPlayerRemoveVoxel(this, hit); }
-			if (Input.GetKeyDown(playerSettings.controlls.keyCodes.PickBlock)) { chunkController.OnPlayerPickVoxel(this, hit); }
-			if (Input.GetKeyDown(playerSettings.controlls.keyCodes.UseItem)) { chunkController.OnPlayerPlaceVoxel(this, hit); }
+		if (GetAnyBit(mouseButtons)) 
+		{
+			if (VoxelHit.Check(armature.head.transform.position, -armature.head.transform.right * gameManager.gameSettings.player.reachingDistance, this, out voxelHit) && !inventory.IsOpen && !chat.IsOpen) 
+			{
+				ChunkController chunkController = voxelHit.chunk.gameObject.GetComponent<ChunkController>();
+
+				if (mouseButtons >> 0 == 1) { chunkController.OnPlayerRemoveVoxel(this, voxelHit); }
+				if (mouseButtons >> 2 == 1) { chunkController.OnPlayerPickVoxel(this, voxelHit); }
+				if (mouseButtons >> 1 == 1) { chunkController.OnPlayerPlaceVoxel(this, voxelHit); }
+			}
 		}
+
 
 		Cursor.lockState = (inventory.IsOpen || chat.IsOpen) ? CursorLockMode.None : CursorLockMode.Locked;
 		Cursor.visible = inventory.IsOpen || chat.IsOpen;
 	}
 
+	public static bool GetAnyBit(int x) { for (int i = 0; i < sizeof(int) * 8; i++) { if (x >> i == 0x1) { return true; } } return false; }
+
 	void FixedUpdate() 
 	{
-		bool isGrounded = Physics.CheckSphere(groundCheck.transform.position, 0.1f, 1 << 10);
-		Vector3 move = Vector3.zero;
-		Vector3 jump = Vector3.zero;
-		float speed = 0f;
+		movementController.ApplyGravity(gameManager.gameSettings.player.gravity);
+		float t = movementController.t;
 
-		if (isGrounded) { currentGravity = Vector3.zero; }
-		else { currentGravity += gameManager.gameSettings.player.gravity; }
+		float v = 0f;
+		if (Input.GetKey(playerSettings.controlls.keyCodes.Sneak)) { v = gameManager.gameSettings.player.sneakingSpeed; }
+		else if (Input.GetKey(playerSettings.controlls.keyCodes.Sprint)) { v = gameManager.gameSettings.player.sprintingSpeed; }
+		else { v = gameManager.gameSettings.player.walkingSpeed; }
 
-		if (inventory.IsOpen || chat.IsOpen) { controller.Move(currentGravity); return; }
+		if (Input.GetKey(playerSettings.controlls.keyCodes.Jump) && IsGrounded) { isJumping = true; jumpedHeight = 0f; }
+		if (Input.GetKeyUp(playerSettings.controlls.keyCodes.Jump)) { isJumping = false; jumpedHeight = 0f; }
 
-		hasHit = Physics.Raycast(armature.head.transform.position, -armature.head.transform.right, out hit, gameManager.gameSettings.player.reachingDistance, (1 << 10) + (1 << 11));
+		if (isJumping && jumpedHeight < gameManager.gameSettings.player.jumpHeight) 
+		{
+			Vector3 movement = gameObject.transform.up * gameManager.gameSettings.player.jumpSpeed * t;
+			if (movementController.Move(movement)) { jumpedHeight += Math2.Length(movement); }
+			else { isJumping = false; jumpedHeight = 0f; }
+		}
 
-		if (Input.GetKey(playerSettings.controlls.keyCodes.Sneak)) { speed = gameManager.gameSettings.player.sneakingSpeed; }
-		else if (Input.GetKey(playerSettings.controlls.keyCodes.Sprint)) { speed = gameManager.gameSettings.player.sprintingSpeed; }
-		else { speed = gameManager.gameSettings.player.walkingSpeed; }
-
-		if (Input.GetKey(playerSettings.controlls.keyCodes.MoveForward)) { move += gameObject.transform.forward; }
-		if (Input.GetKey(playerSettings.controlls.keyCodes.MoveBackwards)) { move += -gameObject.transform.forward; }
-		if (Input.GetKey(playerSettings.controlls.keyCodes.MoveLeft)) { move += -gameObject.transform.right; }
-		if (Input.GetKey(playerSettings.controlls.keyCodes.MoveRight)) { move += gameObject.transform.right; }
-
-		if (Input.GetKey(playerSettings.controlls.keyCodes.Jump) && isGrounded) 
-		{ jump = Vector3.up * Math2.Sqrt(gameManager.gameSettings.player.jumpHeight * -2f * gameManager.gameSettings.player.gravity.y) - currentGravity; }
-
-		controller.Move(move.normalized * speed + currentGravity + jump);
+		if (Input.GetKey(playerSettings.controlls.keyCodes.MoveForward)) { movementController.Move(gameObject.transform.forward * v * t); }
+		if (Input.GetKey(playerSettings.controlls.keyCodes.MoveBackwards)) { movementController.Move(-gameObject.transform.forward * v * t); }
+		if (Input.GetKey(playerSettings.controlls.keyCodes.MoveLeft)) { movementController.Move(-gameObject.transform.right * v * t); }
+		if (Input.GetKey(playerSettings.controlls.keyCodes.MoveRight)) { movementController.Move(gameObject.transform.right * v * t); }
 	}
+
+	public bool IsGrounded { get { return !movementController.CanApplyGravity(gameManager.gameSettings.player.gravity); } }
 
 	void OnTriggerEnter(Collider collider) 
 	{

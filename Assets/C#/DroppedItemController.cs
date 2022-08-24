@@ -4,9 +4,12 @@ using UnityEngine;
 
 public class DroppedItemController : MonoBehaviour
 {
-	void Start() { StartCoroutine(Timer()); }
-	public bool useCooldown;
+	[HideInInspector] public bool useCooldown;
+	[HideInInspector] public GameManager gameManager;
 	private float timeMax = 3f;
+
+	void Start() { StartCoroutine(Timer()); }
+
 	private IEnumerator Timer() 
 	{
 		float time = 0f;

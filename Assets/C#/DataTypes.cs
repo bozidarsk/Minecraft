@@ -5,6 +5,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Rendering;
+using Utils;
 using TMPro;
 
 public class DroppedItem 
@@ -18,6 +19,7 @@ public class DroppedItem
 	public MeshCollider collider { set; get; }
 	public Rigidbody body { set; get; }
 
+	private DroppedItemController controller;
 	private List<Vector3> vertices;
 	private List<int> triangles;
 	private List<Vector2> uvs;
@@ -55,7 +57,7 @@ public class DroppedItem
 		collider.convex = true;
 	}
 
-	public DroppedItem(Item item, Vector3 position, bool useCooldown) 
+	public DroppedItem(Item item, Vector3 position, bool useCooldown, GameManager gameManager) 
 	{
 		this.item = item;
 		this.gameObject = new GameObject(item.ToString());
@@ -65,7 +67,11 @@ public class DroppedItem
 		this.gameObject.transform.position = position;
 		this.gameObject.transform.eulerAngles = Vector3.zero;
 		this.gameObject.transform.localScale = Vector3.one;
-		((DroppedItemController)this.gameObject.AddComponent(typeof(DroppedItemController))).useCooldown = useCooldown;
+
+		this.controller = (DroppedItemController)this.gameObject.AddComponent(typeof(DroppedItemController));
+		this.controller.useCooldown = useCooldown;
+		this.controller.gameManager = gameManager;
+
 		this.renderer = (MeshRenderer)this.gameObject.AddComponent(typeof(MeshRenderer));
 		this.filter = (MeshFilter)this.gameObject.AddComponent(typeof(MeshFilter));
 		this.collider = (MeshCollider)this.gameObject.AddComponent(typeof(MeshCollider));
@@ -83,8 +89,58 @@ public class DroppedItem
 		this.body = ((Rigidbody)this.gameObject.AddComponent(typeof(Rigidbody)));
 		this.body.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
 
-		this.renderer.material = new Material(Shader.Find("Custom/DroppedItem"));
+		this.renderer.material = gameManager.materials.droppedItem;
 
+		this.vertices = new List<Vector3>();
+		this.triangles = new List<int>();
+		this.uvs = new List<Vector2>();
+	}
+}
+
+public class ObjectMesh 
+{
+	public int vertexCount { get { return vertices.Count; } }
+	public Mesh mesh 
+	{
+		get 
+		{
+			Mesh mesh = new Mesh();
+			mesh.indexFormat = IndexFormat.UInt32;
+			mesh.vertices = vertices.ToArray();
+			mesh.triangles = triangles.ToArray();
+			mesh.uv = uvs.ToArray();
+			mesh.RecalculateNormals();
+			mesh.Optimize();
+			return mesh;
+		}
+	}
+
+	public List<Vector3> vertices;
+	public List<int> triangles;
+	public List<Vector2> uvs;
+
+	public void Clear() 
+	{
+		vertices = new List<Vector3>();
+		triangles = new List<int>();
+		uvs = new List<Vector2>();
+	}
+
+	public void Add(params Vector3[] x) { for (int i = 0; i < x.Length; i++) { vertices.Add(x[i]); } }
+	public void Add(params int[] x) { for (int i = 0; i < x.Length; i++) { triangles.Add(x[i]); } }
+	public void Add(params Vector2[] x) { for (int i = 0; i < x.Length; i++) { uvs.Add(x[i]); } }
+	public void Add(params Mesh[] x) 
+	{
+		for (int i = 0; i < x.Length; i++) 
+		{
+			Add(x[i].vertices);
+			Add(x[i].triangles);
+			Add(x[i].uv);
+		}
+	}
+
+	public ObjectMesh() 
+	{
 		this.vertices = new List<Vector3>();
 		this.triangles = new List<int>();
 		this.uvs = new List<Vector2>();
@@ -106,6 +162,7 @@ public class ChunkMesh
 			mesh.triangles = triangles.ToArray();
 			mesh.uv = uvs.ToArray();
 			mesh.RecalculateNormals();
+			mesh.Optimize();
 			return mesh;
 		}
 	}
@@ -142,7 +199,6 @@ public class ChunkMesh
 	public void Update() 
 	{
 		Mesh mesh = this.mesh;
-		mesh.Optimize();
 		filter.mesh = mesh;
 		collider.sharedMesh = mesh;
 	}
@@ -184,11 +240,11 @@ public class InventorySlot
 		text.SetText((!item.IsEmpty && item.ammount > 1) ? Convert.ToString(item.ammount) : "");
 
 		Vector2byte coords = inventory.gameManager.itemProperties[inventory.gameManager.GetItemTypeById(item.id)].textureCoords;
-		float coordsy = ((float)inventory.gameManager.itemTextures.height / 16f) - (float)coords.y - 1;
-		float uvx = (16f * (float)coords.x) / (float)inventory.gameManager.itemTextures.width;
-		float uvy = (16f * coordsy) / (float)inventory.gameManager.itemTextures.height;
-		float uvsizex = 16f / (float)inventory.gameManager.itemTextures.width;
-		float uvsizey = 16f / (float)inventory.gameManager.itemTextures.height;
+		float coordsy = ((float)inventory.gameManager.textures.item.height / 16f) - (float)coords.y - 1;
+		float uvx = (16f * (float)coords.x) / (float)inventory.gameManager.textures.item.width;
+		float uvy = (16f * coordsy) / (float)inventory.gameManager.textures.item.height;
+		float uvsizex = 16f / (float)inventory.gameManager.textures.item.width;
+		float uvsizey = 16f / (float)inventory.gameManager.textures.item.height;
 
 		icon.uvRect = new Rect(uvx, uvy, uvsizex, uvsizey);
 	}
@@ -232,6 +288,7 @@ public class InventorySlot
 	}
 }
 
+[Serializable]
 public class Item 
 {
 	public string id { set; get; }
@@ -271,6 +328,88 @@ public class Command
 	}
 }
 
+public class VoxelHit 
+{
+	public Vector3 point { private set; get; }
+	public Vector3 normal { private set; get; }
+	public float distance { private set; get; }
+	public Player player { private set; get; }
+	public Chunk chunk { private set; get; }
+	public VoxelFace face { private set; get; }
+	public VoxelProperty property { private set; get; }
+	public VoxelHit previousHit { private set; get; }
+
+	public static bool Check(Vector3 origin, Vector3 direction, Player player, out VoxelHit voxelHit) 
+	{
+		voxelHit = new VoxelHit();
+		voxelHit.previousHit = new VoxelHit();
+		voxelHit.player = player;
+		voxelHit.previousHit.player = player;
+
+		Vector3 dir = direction * 0.1f;
+		Vector3 point = dir;
+
+		for (float step = 1f; Math2.Length(point) < Math2.Length(direction); step += 1f) 
+		{
+			voxelHit.chunk = player.gameManager.terrainManager.GetChunkFromPosition(origin + point);
+			if (voxelHit.chunk == null) { point = dir * step; continue; }
+
+			VoxelProperty property = player.gameManager.voxelProperties[voxelHit.chunk.GetVoxelTypeFromPoint(origin + point)];
+
+			if (property.id != "air-block") 
+			{
+				voxelHit.point = origin + point;
+				voxelHit.normal = -direction.normalized;
+				voxelHit.distance = Math2.Length(point);
+				voxelHit.property = property;
+				voxelHit.face = Chunk.GetFaceFromNormal(voxelHit.normal);
+				return true;
+			}
+			else 
+			{
+				voxelHit.previousHit.chunk = voxelHit.chunk;
+				voxelHit.previousHit.point = origin + point;
+				voxelHit.previousHit.normal = -direction.normalized;
+				voxelHit.previousHit.distance = Math2.Length(point);
+				voxelHit.previousHit.property = property;
+				voxelHit.previousHit.face = Chunk.GetFaceFromNormal(voxelHit.previousHit.normal);
+				voxelHit.previousHit.previousHit = null;
+			}
+
+			point = dir * step;
+		}
+
+		voxelHit = null;
+		return false;
+	}
+
+	private VoxelHit() {}
+	public VoxelHit(Vector3 point, Vector3 normal, float distance, Player player, Chunk chunk, VoxelProperty property, VoxelFace face, VoxelHit previousHit) 
+	{
+		this.point = point;
+		this.normal = normal;
+		this.distance = distance;
+		this.player = player;
+		this.chunk = chunk;
+		this.property = property;
+		this.face = face;
+		this.previousHit = previousHit;
+	}
+}
+
+public class Wrapper 
+{
+	public dynamic[] Data;
+	public Wrapper(params dynamic[] Data) { this.Data = Data; }
+}
+
+public enum Cull 
+{
+	Off,
+	Back,
+	Front,
+}
+
 public enum VoxelFace 
 {
 	Up,
@@ -288,6 +427,7 @@ public enum CameraPerspective
 	Front
 }
 
+[Serializable]
 public struct Armature 
 {
 	public GameObject chest;
@@ -331,11 +471,39 @@ public struct Vector3bool
 }
 
 [Serializable]
+public struct GameManagerTextures 
+{
+	public Texture2D voxel;
+	public Texture2D item;
+	public Texture2D liquid;
+}
+
+[Serializable]
+public struct GameManagerMaterials 
+{
+	public Material cullOff;
+	public Material cullBack;
+	public Material droppedItem;
+	public Material postProcessing;
+	public Material player;
+}
+
+[Serializable]
+public struct CraftingProperty 
+{
+	public Item resultItem;
+	public Item[,] recipe;
+
+	public override string ToString() { return JsonUtility.ToJson(this); }
+}
+
+[Serializable]
 public struct VoxelProperty 
 {
 	public string id;
 	public string dropItem;
 	public string preferedTool;
+	public Cull cull;
 	public int dropMultiplier;
 	public int miningForce;
 	public float miningSpeed;
@@ -346,6 +514,8 @@ public struct VoxelProperty
 	public Vector3bool enableRotation;
 	public bool[] usingFullFace;
 	public Vector2byte[] textureCoords;
+
+	public override string ToString() { return JsonUtility.ToJson(this); }
 }
 
 [Serializable]
@@ -355,6 +525,8 @@ public struct ToolProperty
 	public float durability;
 	public float miningSpeed;
 	public float miningForce;
+
+	public override string ToString() { return JsonUtility.ToJson(this); }
 }
 
 [Serializable]
@@ -363,6 +535,8 @@ public struct ArmourProperty
 	public float protection;
 	public float blastProtection;
 	public float projectileProtection;
+
+	public override string ToString() { return JsonUtility.ToJson(this); }
 }
 
 [Serializable]
@@ -370,6 +544,8 @@ public struct Enchantment
 {
 	public string id;
 	public uint level;
+
+	public override string ToString() { return id + ": " + Convert.ToString(level); }
 }
 
 [Serializable]
@@ -384,6 +560,8 @@ public struct ItemProperty
 	public Enchantment[] enchantments;
 	public ToolProperty toolProperty;
 	public ArmourProperty armourProperty;
+
+	public override string ToString() { return JsonUtility.ToJson(this); }
 }
 
 [Serializable]
@@ -393,4 +571,6 @@ public struct EnchantmentProperty
 	public string shader;
 	public uint maxLevel;
 	public string[] incompatibleEnchantments;
+
+	public override string ToString() { return JsonUtility.ToJson(this); }
 }

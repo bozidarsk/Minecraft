@@ -13,13 +13,14 @@ MonoBehaviour:
   m_Name: default
   m_EditorClassIdentifier: 
   player:
-    walkingSpeed: 0.1
-    sprintingSpeed: 0.2
-    sneakingSpeed: 0.05
-    jumpHeight: 100
+    walkingSpeed: 4.317
+    sprintingSpeed: 5.6121
+    sneakingSpeed: 1.439
+    jumpSpeed: 10
+    jumpHeight: 1.25
     reachingDistance: 5
     rotationLimit: {x: 70, y: 180}
-    gravity: {x: 0, y: -0.005, z: 0}
+    gravity: {x: 0, y: -9.8, z: 0}
     stackSize: 64
     queuedMessagesLength: 10
   postProcessing:

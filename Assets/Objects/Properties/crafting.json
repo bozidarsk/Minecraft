@@ -1,0 +1,14 @@
+{
+	"properties": 
+	[
+		{
+			"resultItem": { "id": "undefined-item", "ammount": 1 },
+			"recipe": 
+			[
+				[ { "id": "dirt-block", "ammount": 1 }, { "id": "dirt-block", "ammount": 1 }, { "id": "dirt-block", "ammount": 1 } ],
+				[ { "id": "dirt-block", "ammount": 1 }, { "id": "dirt-block", "ammount": 1 }, { "id": "dirt-block", "ammount": 1 } ],
+				[ { "id": "dirt-block", "ammount": 1 }, { "id": "dirt-block", "ammount": 1 }, { "id": "dirt-block", "ammount": 1 } ]
+			]
+		}
+	]
+}

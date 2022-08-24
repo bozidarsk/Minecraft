@@ -7,13 +7,15 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
 	public GameSettings gameSettings;
-	public Texture2D voxelTextures;
-	public Texture2D itemTextures;
-	public Texture2D liquidTextures;
+
+	public GameManagerTextures textures;
+	public GameManagerMaterials materials;
+
 	[HideInInspector] public Dictionary<string, Mesh> modelMeshes;
 	[HideInInspector] public Dictionary<string, Texture2D> textureEffects;
 	[HideInInspector] public TerrainManager terrainManager;
 	[HideInInspector] public ChatManager chatManager;
+	[HideInInspector] public CraftingProperty[] craftingProperties;
 	[HideInInspector] public VoxelProperty[] voxelProperties;
 	[HideInInspector] public ItemProperty[] itemProperties;
 	[HideInInspector] public EnchantmentProperty[] enchantmentProperties;
@@ -23,16 +25,19 @@ public class GameManager : MonoBehaviour
 	void Awake() 
 	{
 		modifiedChunks = new List<Chunk>();
-		voxelTextures.filterMode = FilterMode.Point;
-		voxelTextures.wrapMode = TextureWrapMode.Clamp;
-		itemTextures.filterMode = FilterMode.Point;
-		itemTextures.wrapMode = TextureWrapMode.Clamp;
+		textures.voxel.filterMode = FilterMode.Point;
+		textures.voxel.wrapMode = TextureWrapMode.Clamp;
+		textures.item.filterMode = FilterMode.Point;
+		textures.item.wrapMode = TextureWrapMode.Clamp;
+		textures.liquid.filterMode = FilterMode.Point;
+		textures.liquid.wrapMode = TextureWrapMode.Clamp;
 
 		modelMeshes = new Dictionary<string, Mesh>();
 		textureEffects = new Dictionary<string, Texture2D>();
-		voxelProperties = JsonUtility.FromJson<PropertyArray<VoxelProperty>>(File.ReadAllText("Assets/Objects/voxel/properties.json")).properties;
-		itemProperties = JsonUtility.FromJson<PropertyArray<ItemProperty>>(File.ReadAllText("Assets/Objects/item/properties.json")).properties;
-		enchantmentProperties = JsonUtility.FromJson<PropertyArray<EnchantmentProperty>>(File.ReadAllText("Assets/Objects/enchantment/properties.json")).properties;
+		craftingProperties = JsonUtility.FromJson<PropertyArray<CraftingProperty>>(File.ReadAllText("Assets/Objects/Properties/crafting.json")).properties;
+		voxelProperties = JsonUtility.FromJson<PropertyArray<VoxelProperty>>(File.ReadAllText("Assets/Objects/Properties/voxel.json")).properties;
+		itemProperties = JsonUtility.FromJson<PropertyArray<ItemProperty>>(File.ReadAllText("Assets/Objects/Properties/item.json")).properties;
+		enchantmentProperties = JsonUtility.FromJson<PropertyArray<EnchantmentProperty>>(File.ReadAllText("Assets/Objects/Properties/enchantment.json")).properties;
 		players = GameObject.FindGameObjectsWithTag("Player").Select(x => x.GetComponent<Player>()).ToArray();
 		terrainManager = gameObject.GetComponent<TerrainManager>();
 		chatManager = gameObject.GetComponent<ChatManager>();
@@ -41,6 +46,8 @@ public class GameManager : MonoBehaviour
 		for (int i = 0; i < files.Length; i++) 
 		{
 			Texture2D texture = new Texture2D(1920, 1080);
+			texture.filterMode = FilterMode.Point;
+			texture.wrapMode = TextureWrapMode.Clamp;
 			ImageConversion.LoadImage(texture, File.ReadAllBytes(files[i].Replace("\\", "/")), false);
 			textureEffects.Add(files[i].Remove(0, files[i].LastIndexOf("\\") + 1).Replace(".png", ""), texture);
 		}
