@@ -2,42 +2,45 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Camera))]
-public class PostProcessing : MonoBehaviour
+namespace Minecraft 
 {
-	private Material material;
-    private GameManager gameManager;
-
-    void Start() 
+    [RequireComponent(typeof(Camera))]
+    public class PostProcessing : MonoBehaviour
     {
-    	gameManager = (GameManager)GameObject.FindObjectOfType(typeof(GameManager));
-    	material = gameManager.materials.postProcessing;
-        material.SetInt("_UseEffect", 0);
-    }
+        private Material material;
+        private GameManager gameManager;
 
-    void OnRenderImage(RenderTexture src, RenderTexture dest) 
-    {
-    	if (material == null || gameManager == null) { Start(); }
+        void Start() 
+        {
+            gameManager = (GameManager)GameObject.FindObjectOfType(typeof(GameManager));
+            material = gameManager.materials.postProcessing;
+            material.SetInt("_UseEffect", 0);
+        }
 
-    	material.SetColor("_fogColor", gameManager.gameSettings.postProcessing.fogColor);
-	    material.SetFloat("_fogDensity", gameManager.gameSettings.postProcessing.fogDensity);
-	    material.SetFloat("_fogOffset", gameManager.gameSettings.postProcessing.fogOffset);
-	    material.SetFloat("_exposure", gameManager.gameSettings.postProcessing.exposure);
-	    material.SetFloat("_temperature", gameManager.gameSettings.postProcessing.temperature);
-	    material.SetFloat("_tint", gameManager.gameSettings.postProcessing.tint);
-	    material.SetFloat("_contrast", gameManager.gameSettings.postProcessing.contrast);
-	    material.SetFloat("_brightness", gameManager.gameSettings.postProcessing.brightness);
-	    material.SetFloat("_colorFiltering", gameManager.gameSettings.postProcessing.colorFiltering);
-	    material.SetFloat("_saturation", gameManager.gameSettings.postProcessing.saturation);
-	    material.SetFloat("_gamma", gameManager.gameSettings.postProcessing.gamma);
+        void OnRenderImage(RenderTexture src, RenderTexture dest) 
+        {
+            if (material == null || gameManager == null) { Start(); }
 
-        Graphics.Blit(src, dest, material);
-    }
+            material.SetColor("_fogColor", gameManager.gameSettings.postProcessing.fogColor);
+            material.SetFloat("_fogDensity", gameManager.gameSettings.postProcessing.fogDensity);
+            material.SetFloat("_fogOffset", gameManager.gameSettings.postProcessing.fogOffset);
+            material.SetFloat("_exposure", gameManager.gameSettings.postProcessing.exposure);
+            material.SetFloat("_temperature", gameManager.gameSettings.postProcessing.temperature);
+            material.SetFloat("_tint", gameManager.gameSettings.postProcessing.tint);
+            material.SetFloat("_contrast", gameManager.gameSettings.postProcessing.contrast);
+            material.SetFloat("_brightness", gameManager.gameSettings.postProcessing.brightness);
+            material.SetFloat("_colorFiltering", gameManager.gameSettings.postProcessing.colorFiltering);
+            material.SetFloat("_saturation", gameManager.gameSettings.postProcessing.saturation);
+            material.SetFloat("_gamma", gameManager.gameSettings.postProcessing.gamma);
 
-    public void RemoveTextureEffect() { material.SetInt("_UseEffect", 0); }
-    public void SetTextureEffect(Texture2D texture) 
-    {
-        material.SetTexture("_Effect", texture);
-        material.SetInt("_UseEffect", 1);
+            Graphics.Blit(src, dest, material);
+        }
+
+        public void RemoveTextureEffect() { material.SetInt("_UseEffect", 0); }
+        public void SetTextureEffect(Texture2D texture) 
+        {
+            material.SetTexture("_Effect", texture);
+            material.SetInt("_UseEffect", 1);
+        }
     }
 }

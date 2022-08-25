@@ -1,9 +1,58 @@
 Base path: 'D:/Program Files/Unity/Hub/Editor/2019.3.6f1/Editor/Data', plugins path 'D:/Program Files/Unity/Hub/Editor/2019.3.6f1/Editor/Data/PlaybackEngines'
 Cmd: initializeCompiler
-Cmd: compileSnippet
-  error: 2 plat 4 at (73): cannot implicitly convert from 'const float3' to 'float4'\nCompiling Vertex program
-Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_USE_DITHER_MASK_FOR_ALPHABLENDED_SHADOWS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING UNITY_ENABLE_DETAIL_NORMALMAP SHADER_API_DESKTOP UNITY_COLORSPACE_GAMMA UNITY_LIGHT_PROBE_PROXY_VOLUME UNITY_LIGHTMAP_FULL_HDR
-  api=4 type=0 insize=2043 outsize=0 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_USE_DITHER_MASK_FOR_ALPHABLENDED_SHADOWS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING UNITY_ENABLE_DETAIL_NORMALMAP SHADER_API_DESKTOP UNITY_COLORSPACE_GAMMA UNITY_LIGHT_PROBE_PROXY_VOLUME UNITY_LIGHTMAP_FULL_HDR ok=0
+Cmd: compileComputeKernel
+  error: 2 plat 4 at GenerateChunk.compute(7): syntax error: unexpected token '['
+  api=4 insize=626 outsize=0 ok=0
+Cmd: compileComputeKernel
+  error: 2 plat 4 at GenerateChunk.compute(15): array, matrix, vector, or indexable object type expected in index expression
+  api=4 insize=620 outsize=0 ok=0
+Cmd: compileComputeKernel
+  error: 2 plat 4 at GenerateChunk.compute(15): array, matrix, vector, or indexable object type expected in index expression
+  api=4 insize=622 outsize=0 ok=0
+Cmd: compileComputeKernel
+  error: 2 plat 4 at GenerateChunk.compute(15): array, matrix, vector, or indexable object type expected in index expression
+  api=4 insize=809 outsize=0 ok=0
+Cmd: compileComputeKernel
+  error: 2 plat 4 at GenerateChunk.compute(15): array, matrix, vector, or indexable object type expected in index expression
+  api=4 insize=817 outsize=0 ok=0
+Cmd: compileComputeKernel
+  error: 2 plat 4 at GenerateChunk.compute(15): array, matrix, vector, or indexable object type expected in index expression
+  api=4 insize=884 outsize=0 ok=0
+Cmd: compileComputeKernel
+  error: 2 plat 4 at GenerateChunk.compute(19): 'GetVoxelTypeById': cannot implicitly convert from 'const string' to 'min16uint[51]'
+  api=4 insize=852 outsize=0 ok=0
+Cmd: compileComputeKernel
+  error: 2 plat 4 at GenerateChunk.compute(19): undeclared identifier 'array'
+  api=4 insize=859 outsize=0 ok=0
+Cmd: compileComputeKernel
+  error: 2 plat 4 at GenerateChunk.compute(21): 'GetVoxelTypeById': no matching 0 parameter function
+  error: 2 plat 4 at GenerateChunk.compute(21): syntax error: unexpected token ';'
+  error: 2 plat 4 at GenerateChunk.compute(21): syntax error: unexpected token '{'
+  api=4 insize=895 outsize=0 ok=0
+Cmd: compileComputeKernel
+  error: 2 plat 4 at GenerateChunk.compute(21): 'GetVoxelTypeById': no matching 0 parameter function
+  error: 2 plat 4 at GenerateChunk.compute(21): syntax error: unexpected token ';'
+  error: 2 plat 4 at GenerateChunk.compute(21): syntax error: unexpected token '{'
+  api=4 insize=897 outsize=0 ok=0
+Cmd: compileComputeKernel
+  error: 2 plat 4 at GenerateChunk.compute(21): 'GetVoxelTypeById': no matching 0 parameter function
+  error: 2 plat 4 at GenerateChunk.compute(21): syntax error: unexpected token ';'
+  error: 2 plat 4 at GenerateChunk.compute(21): syntax error: unexpected token '{'
+  api=4 insize=899 outsize=0 ok=0
+Cmd: compileComputeKernel
+  error: 2 plat 4 at GenerateChunk.compute(18): invalid subscript 'voxelTypesLength'
+  api=4 insize=1040 outsize=0 ok=0
+Cmd: compileComputeKernel
+  error: 2 plat 4 at GenerateChunk.compute(26): 'GetVoxelTypeById': no matching 0 parameter function
+  error: 2 plat 4 at GenerateChunk.compute(26): syntax error: unexpected token '{'
+  api=4 insize=1034 outsize=0 ok=0
+Cmd: compileComputeKernel
+  error: 2 plat 4 at GenerateChunk.compute(26): 'GetVoxelTypeById': no matching 0 parameter function
+  error: 2 plat 4 at GenerateChunk.compute(26): syntax error: unexpected token '{'
+  api=4 insize=1044 outsize=0 ok=0
+Cmd: compileComputeKernel
+  error: 2 plat 4 at GenerateChunk.compute(18): array, matrix, vector, or indexable object type expected in index expression
+  api=4 insize=1032 outsize=0 ok=0
 Unhandled exception: Protocol error - unexpected end of data (did the Editor crash?)
 
 Quitting shader compiler process

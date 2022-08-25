@@ -4,7 +4,10 @@ using System.Linq;
 using UnityEngine;
 using Utils;
 
-public class TerrainGenerator 
+namespace Minecraft 
 {
-	
+	public class TerrainGenerator 
+	{
+
+	}
 }

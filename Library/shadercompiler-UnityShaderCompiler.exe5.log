@@ -1,5 +1,71 @@
 Base path: 'D:/Program Files/Unity/Hub/Editor/2019.3.6f1/Editor/Data', plugins path 'D:/Program Files/Unity/Hub/Editor/2019.3.6f1/Editor/Data/PlaybackEngines'
 Cmd: initializeCompiler
+Cmd: compileComputeKernel
+  error: 2 plat 4 at GenerateChunk.compute(15): array, matrix, vector, or indexable object type expected in index expression
+  api=4 insize=622 outsize=0 ok=0
+Cmd: compileComputeKernel
+  error: 2 plat 4 at GenerateChunk.compute(17): array, matrix, vector, or indexable object type expected in index expression
+  api=4 insize=809 outsize=0 ok=0
+Cmd: compileComputeKernel
+  error: 2 plat 4 at GenerateChunk.compute(19): type mismatch
+  api=4 insize=891 outsize=0 ok=0
+Cmd: compileComputeKernel
+  error: 2 plat 4 at GenerateChunk.compute(17): array, matrix, vector, or indexable object type expected in index expression
+  api=4 insize=890 outsize=0 ok=0
+Cmd: compileComputeKernel
+  error: 2 plat 4 at GenerateChunk.compute(16): array, matrix, vector, or indexable object type expected in index expression
+  api=4 insize=850 outsize=0 ok=0
+Cmd: compileComputeKernel
+  error: 2 plat 4 at GenerateChunk.compute(16): array, matrix, vector, or indexable object type expected in index expression
+  api=4 insize=853 outsize=0 ok=0
+Cmd: compileComputeKernel
+  error: 2 plat 4 at GenerateChunk.compute(15): array, matrix, vector, or indexable object type expected in index expression
+  api=4 insize=850 outsize=0 ok=0
+Cmd: compileComputeKernel
+  error: 2 plat 4 at GenerateChunk.compute(15): array, matrix, vector, or indexable object type expected in index expression
+  api=4 insize=853 outsize=0 ok=0
+Cmd: compileComputeKernel
+  error: 2 plat 4 at GenerateChunk.compute(12): syntax error: unexpected token '*'
+  error: 2 plat 4 at GenerateChunk.compute(17): array, matrix, vector, or indexable object type expected in index expression
+  api=4 insize=861 outsize=0 ok=0
+Cmd: compileComputeKernel
+  error: 2 plat 4 at GenerateChunk.compute(21): 'GetVoxelTypeById': no matching 0 parameter function
+  error: 2 plat 4 at GenerateChunk.compute(21): syntax error: unexpected token ']' syntax error: unexpected token '{'
+  api=4 insize=894 outsize=0 ok=0
+Cmd: compileComputeKernel
+  error: 2 plat 4 at GenerateChunk.compute(21): 'GetVoxelTypeById': no matching 0 parameter function
+  error: 2 plat 4 at GenerateChunk.compute(21): syntax error: unexpected token ';'
+  error: 2 plat 4 at GenerateChunk.compute(21): syntax error: unexpected token '{'
+  api=4 insize=899 outsize=0 ok=0
+Cmd: compileComputeKernel
+  error: 2 plat 4 at GenerateChunk.compute(21): 'GetVoxelTypeById': no matching 0 parameter function
+  error: 2 plat 4 at GenerateChunk.compute(21): syntax error: unexpected token ';'
+  error: 2 plat 4 at GenerateChunk.compute(21): syntax error: unexpected token '{'
+  api=4 insize=898 outsize=0 ok=0
+Cmd: compileComputeKernel
+  error: 2 plat 4 at GenerateChunk.compute(11): unrecognized identifier 'CBUFFER_START'
+  api=4 insize=993 outsize=0 ok=0
+Cmd: compileComputeKernel
+  error: 2 plat 4 at GenerateChunk.compute(11): unrecognized identifier 'CBUFFER_START'
+  api=4 insize=989 outsize=0 ok=0
+Cmd: compileComputeKernel
+  error: 2 plat 4 at GenerateChunk.compute(11): unrecognized identifier 'CGINCLUDE'
+  api=4 insize=1041 outsize=0 ok=0
+Cmd: compileComputeKernel
+  error: 2 plat 4 at GenerateChunk.compute(18): invalid subscript 'VoxelTypesLength'
+  api=4 insize=1040 outsize=0 ok=0
+Cmd: compileComputeKernel
+  error: 2 plat 4 at GenerateChunk.compute(26): 'GetVoxelTypeById': no matching 0 parameter function
+  error: 2 plat 4 at GenerateChunk.compute(26): syntax error: unexpected token '{'
+  api=4 insize=1050 outsize=0 ok=0
+Cmd: compileComputeKernel
+  error: 2 plat 4 at GenerateChunk.compute(26): 'GetVoxelTypeById': no matching 0 parameter function
+  error: 2 plat 4 at GenerateChunk.compute(26): syntax error: unexpected token '{'
+  api=4 insize=1029 outsize=0 ok=0
+Cmd: compileComputeKernel
+  error: 2 plat 4 at GenerateChunk.compute(26): 'GetVoxelTypeById': no matching 0 parameter function
+  error: 2 plat 4 at GenerateChunk.compute(26): syntax error: unexpected token '{'
+  api=4 insize=1030 outsize=0 ok=0
 Unhandled exception: Protocol error - unexpected end of data (did the Editor crash?)
 
 Quitting shader compiler process

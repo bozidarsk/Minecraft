@@ -2,39 +2,42 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MessageController : MonoBehaviour
+namespace Minecraft 
 {
-	private float timeMax = 5f;
-	private float alphaFade = 0.1f;
-	private CanvasGroup canvasGroup;
-
-	void Start() 
+	public class MessageController : MonoBehaviour
 	{
-		gameObject.GetComponentsInChildren<TMPro.TextMeshProUGUI>()[0].text = gameObject.name;
-		canvasGroup = gameObject.GetComponent<CanvasGroup>();
-		StartCoroutine(Timer());
-	}
+		private float timeMax = 5f;
+		private float alphaFade = 0.1f;
+		private CanvasGroup canvasGroup;
 
-	private IEnumerator Timer() 
-	{
-		float time = 0f;
-		while (time < timeMax) 
+		void Start() 
 		{
-			time += 1f;
-			yield return new WaitForSeconds(1f);
+			gameObject.GetComponentsInChildren<TMPro.TextMeshProUGUI>()[0].text = gameObject.name;
+			canvasGroup = gameObject.GetComponent<CanvasGroup>();
+			StartCoroutine(Timer());
 		}
 
-		StartCoroutine(FadeAlpha());
-	}
-
-	private IEnumerator FadeAlpha() 
-	{
-		while (canvasGroup.alpha > 0f) 
+		private IEnumerator Timer() 
 		{
-			canvasGroup.alpha -= alphaFade;
-			yield return new WaitForSeconds(alphaFade);
+			float time = 0f;
+			while (time < timeMax) 
+			{
+				time += 1f;
+				yield return new WaitForSeconds(1f);
+			}
+
+			StartCoroutine(FadeAlpha());
 		}
 
-		Destroy(gameObject);
+		private IEnumerator FadeAlpha() 
+		{
+			while (canvasGroup.alpha > 0f) 
+			{
+				canvasGroup.alpha -= alphaFade;
+				yield return new WaitForSeconds(alphaFade);
+			}
+
+			Destroy(gameObject);
+		}
 	}
 }
