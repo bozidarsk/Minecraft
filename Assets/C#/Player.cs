@@ -180,6 +180,8 @@ namespace Minecraft
 			movementController.ApplyGravity(gameManager.gameSettings.player.gravity);
 			float t = movementController.t;
 
+			if (inventory.IsOpen || chat.IsOpen) { return; }
+
 			float v = 0f;
 			if (Input.GetKey(playerSettings.controlls.keyCodes.Sneak)) { v = gameManager.gameSettings.player.sneakingSpeed; }
 			else if (Input.GetKey(playerSettings.controlls.keyCodes.Sprint)) { v = gameManager.gameSettings.player.sprintingSpeed; }

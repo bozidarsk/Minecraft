@@ -404,10 +404,16 @@ namespace Minecraft
 		}
 	}
 
-	public class Wrapper 
+	public class ErrorException : Exception 
 	{
-		public dynamic[] Data;
-		public Wrapper(params dynamic[] Data) { this.Data = Data; }
+		public ErrorException(string message) : base(message) {}
+		// public ErrorException(string message) : base(message) 
+		// {
+		// 	string stack = "";
+		// 	List<string> list = Environment.StackTrace.Split('\x000a').ToList();
+		// 	for (int i = 2; i < list.Count; i++) { stack += list[i] + ((i < list.Count - 1) ? "\n" : ""); }
+		// 	Console.Error(message + "|" + stack + "|");
+		// }
 	}
 
 	public enum Cull 
@@ -434,10 +440,23 @@ namespace Minecraft
 		Front
 	}
 
-	public struct StringStruct 
+	// public struct StringStruct 
+	// {
+	// 	public char[] id;
+	// 	public StringStruct(string id) { this.id = id.ToCharArray(); }
+	// }
+
+	public unsafe struct SecurityAttributes 
 	{
-		public char[] id;
-		public StringStruct(string id) { this.id = id.ToCharArray(); }
+		public uint nLength;
+		public void* lpSecurityDescriptor;
+		public bool bInheritHandle;
+	}
+
+	public struct COORD 
+	{
+		public short x;
+		public short y;
 	}
 
 	[Serializable]

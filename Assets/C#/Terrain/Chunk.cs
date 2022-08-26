@@ -284,24 +284,11 @@ namespace Minecraft
 
 			if (!saveType) { SetVoxelType(gameManager.GetVoxelTypeById("air-block"), x, y, z); }
 
-			int i = 0;
-			for (; i < objectMesh.triangles.Count; i++) 
-			{
-				if (objectMesh.triangles[i] != voxelTriangles[x, y, z][0]) 
-				{ continue; }
-
-				int t = 0;
-				while (t < voxelTriangles[x, y, z].Length) 
-				{
-					if (objectMesh.triangles[i + t] != voxelTriangles[x, y, z][t]) 
-					{ break; }
-					t++;
-				}
-
-				if (t >= voxelTriangles[x, y, z].Length) { break; }
-			}
-
+			int i = GetTriangleIndexFromPosition(x, y, z);
 			objectMesh.triangles.RemoveRange(i, voxelTriangles[x, y, z].Length);
+
+			/* if saveType is false remove all vertices and uvs for this voxel */
+			/* when adding a new voxel first check if this position already has vertices or uvs, and reuse them */
 
 			// for (; i < objectMesh.triangles.Count; i++) 
 			// { objectMesh.triangles[i] -= voxelTriangles[x, y, z].Length; }
@@ -317,9 +304,11 @@ namespace Minecraft
 
 			// objectMesh.vertices = vertices;
 			// objectMesh.uvs = uvs;
+
 			voxelTriangles[x, y, z] = null;
 		}
 
+		[Obsolete("It's probably not working.")]
 		public void RemoveFace(int x, int y, int z, VoxelFace face) 
 		{
 			if (x < 0 || x >= voxelTypes.GetLength(0) || 
@@ -335,23 +324,7 @@ namespace Minecraft
 				property.id == "air-block"
 			) { return; }
 
-			int i = 0;
-			for (; i < objectMesh.triangles.Count; i++) 
-			{
-				if (objectMesh.triangles[i] != voxelTriangles[x, y, z][0]) 
-				{ continue; }
-
-				int t = 0;
-				while (t < voxelTriangles[x, y, z].Length) 
-				{
-					if (objectMesh.triangles[i + t] != voxelTriangles[x, y, z][t]) 
-					{ break; }
-					t++;
-				}
-
-				if (t >= voxelTriangles[x, y, z].Length) { break; }
-			}
-
+			int i = GetTriangleIndexFromPosition(x, y, z);
 			for (int t = i; t - i < voxelTriangles[x, y, z].Length; t += 6) 
 			{
 				if (GetFaceFromTriangleIndex(objectMesh.vertices, objectMesh.triangles, new Vector3(x, y, z), t) == face) 
@@ -363,6 +336,26 @@ namespace Minecraft
 					return;
 				}
 			}
+		}
+
+		public int GetTriangleIndexFromPosition(int x, int y, int z) 
+		{
+			for (int i = 0; i < objectMesh.triangles.Count; i++) 
+			{
+				if (objectMesh.triangles[i] != voxelTriangles[x, y, z][0]) 
+				{ continue; }
+
+				int t = 0;
+				while (t < voxelTriangles[x, y, z].Length) 
+				{
+					if (objectMesh.triangles[i + t] != voxelTriangles[x, y, z][t]) { break; }
+					t++;
+				}
+
+				if (t >= voxelTriangles[x, y, z].Length) { return i; }
+			}
+
+			return -1;
 		}
 
 		public static VoxelFace GetFaceFromTriangleIndex(List<Vector3> vertices, List<int> triangles, Vector3 voxel, int index) 
@@ -502,7 +495,6 @@ namespace Minecraft
 				int y = position.y;
 				int z = position.z;
 				Chunk.AddFaceToPosition(ref x, ref y, ref z, (VoxelFace)face);
-				// RemoveFace(x, y, z, ((VoxelFace)face));
 				RemoveVoxel(x, y, z, true);
 				AddVoxel(GetVoxelType(x, y, z), x, y, z, Matrix4x4.identity);
 			}
@@ -535,7 +527,6 @@ namespace Minecraft
 				int y = position.y;
 				int z = position.z;
 				Chunk.AddFaceToPosition(ref x, ref y, ref z, (VoxelFace)face);
-				// RemoveFace(x, y, z, (VoxelFace)face);
 				RemoveVoxel(x, y, z, true);
 				AddVoxel(GetVoxelType(x, y, z), x, y, z, Matrix4x4.identity);
 			}

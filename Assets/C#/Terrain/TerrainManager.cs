@@ -20,9 +20,9 @@ namespace Minecraft
 			modifiedChunks = new List<Chunk>();
 			chunks = new Chunk[10000, 10000];
 
-			StartCoroutine(GenerateChunks());
-			// Vector2Int index = GetIndexFromPosition(new Vector3(0f, 0f, 0f));
-			// chunks[index.x, index.y] = new Chunk(gameManager, new Vector3(0f, 0f, 0f), gameObject.transform);
+			// StartCoroutine(GenerateChunks());
+			Vector2Int index = GetIndexFromPosition(new Vector3(0f, 0f, 0f));
+			chunks[index.x, index.y] = new Chunk(gameManager, new Vector3(0f, 0f, 0f), gameObject.transform);
 		}
 
 		public Vector2Int GetIndexFromPosition(Vector3 position) 

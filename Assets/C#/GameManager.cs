@@ -27,6 +27,8 @@ namespace Minecraft
 
 		void Awake() 
 		{
+			Console.Initialize();
+
 			textures.voxel.filterMode = FilterMode.Point;
 			textures.voxel.wrapMode = TextureWrapMode.Clamp;
 			textures.voxelWidth = textures.voxel.width;
@@ -64,7 +66,7 @@ namespace Minecraft
 			}
 
 			if (voxelProperties.Length > 0xffff + 1) { Console.Warning("Max ammount of volxel properties is 0xffff + 1, every property above this limit will be ignored."); }
-			for (int i = 0; i < voxelProperties.Length; i++) { if (voxelProperties[i].id.Length > 50) { Console.Error("VoxelProperty.id.Length must be less than 50. (id: " + voxelProperties[i].id + ")"); } }
+			for (int i = 0; i < voxelProperties.Length; i++) { if (voxelProperties[i].id.Length > 50) { throw new System.OverflowException("VoxelProperty.id.Length must be less than 50. (id: " + voxelProperties[i].id + ")"); } }
 
 			for (int i = 0; i < itemProperties.Length; i++) 
 			{
