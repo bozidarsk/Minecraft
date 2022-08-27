@@ -63,6 +63,13 @@ namespace Minecraft
 			Attach();
 
 			fixed (byte* chars = &Encoding.ASCII.GetBytes("Minecraft - Debug Console\x0000")[0]) { SetConsoleTitle(chars); }
+
+			#if UNITY_EDITOR
+			SetActive(false);
+			#else
+			SetActive(true);
+			#endif
+
 			initialized = true;
 		}
 
