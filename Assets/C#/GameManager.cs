@@ -8,11 +8,12 @@ namespace Minecraft
 {
 	public class GameManager : MonoBehaviour
 	{
-		public GameSettings gameSettings;
-
-		public ComputeShader generateChunk;
-		public GameManagerTextures textures;
-		public GameManagerMaterials materials;
+		// public ComputeShader generateChunk;
+		#pragma warning disable CS0649
+		[SerializeField] private GameSettingsObject gameSettings;
+		[SerializeField] private GameManagerTextures textures;
+		[SerializeField] private GameManagerMaterials materials;
+		#pragma warning restore CS0649
 
 		public MonoBehaviour monoBehaviour { get { return this; } }
 		[HideInInspector] public Dictionary<string, Mesh> modelMeshes;
@@ -27,8 +28,6 @@ namespace Minecraft
 
 		void Awake() 
 		{
-			Console.Initialize();
-
 			textures.voxel.filterMode = FilterMode.Point;
 			textures.voxel.wrapMode = TextureWrapMode.Clamp;
 			textures.voxelWidth = textures.voxel.width;
@@ -44,6 +43,8 @@ namespace Minecraft
 			textures.liquidWidth = textures.liquid.width;
 			textures.liquidHeight = textures.liquid.height;
 
+			Console.Initialize();
+			GameSettings.Initialize(gameSettings, textures, materials);
 
 			modelMeshes = new Dictionary<string, Mesh>();
 			textureEffects = new Dictionary<string, Texture2D>();
@@ -71,8 +72,8 @@ namespace Minecraft
 			for (int i = 0; i < itemProperties.Length; i++) 
 			{
 				if (itemProperties[i].stackSize == 0) { itemProperties[i].stackSize = 1; continue; }
-				if (itemProperties[i].stackSize > gameSettings.player.stackSize) 
-				{ itemProperties[i].stackSize = gameSettings.player.stackSize; }
+				if (itemProperties[i].stackSize > GameSettings.player.stackSize) 
+				{ itemProperties[i].stackSize = GameSettings.player.stackSize; }
 			}
 		}
 

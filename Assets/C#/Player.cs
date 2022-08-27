@@ -10,7 +10,7 @@ namespace Minecraft
 {
 	public class Player : MonoBehaviour
 	{
-		public PlayerSettings playerSettings;
+		public PlayerSettingsObject playerSettings;
 		public Transform playerCenter;
 		public Armature armature;
 		[HideInInspector] public PlayerInventory inventory;
@@ -54,11 +54,11 @@ namespace Minecraft
 					obj.Add(index + 0, index + 3, index + 1, index + 1, index + 3, index + 2);
 
 					Vector2byte coords = property.textureCoords[f];
-					float coordsy = ((float)gameManager.textures.voxel.height / 16f) - (float)coords.y - 1;
-					float uvx = (16f * (float)coords.x) / (float)gameManager.textures.voxel.width;
-					float uvy = (16f * coordsy) / (float)gameManager.textures.voxel.height;
-					float uvsizex = 16f / (float)gameManager.textures.voxel.width;
-					float uvsizey = 16f / (float)gameManager.textures.voxel.height;
+					float coordsy = ((float)GameSettings.textures.voxel.height / 16f) - (float)coords.y - 1;
+					float uvx = (16f * (float)coords.x) / (float)GameSettings.textures.voxel.width;
+					float uvy = (16f * coordsy) / (float)GameSettings.textures.voxel.height;
+					float uvsizex = 16f / (float)GameSettings.textures.voxel.width;
+					float uvsizey = 16f / (float)GameSettings.textures.voxel.height;
 
 					obj.Add(
 						new Vector2(uvx, uvy),
@@ -68,13 +68,13 @@ namespace Minecraft
 					);
 				}
 
-				obj.renderer.material.SetTexture("_MainTex", gameManager.textures.voxel);
+				obj.renderer.material.SetTexture("_MainTex", GameSettings.textures.voxel);
 			}
 
 			if (item.id.EndsWith("-model")) 
 			{
 				obj.Add(gameManager.modelMeshes.Where(x => x.Key == item.id).ToArray()[0].Value);
-				obj.renderer.material.SetTexture("_MainTex", gameManager.textures.voxel);
+				obj.renderer.material.SetTexture("_MainTex", GameSettings.textures.voxel);
 			}
 
 			if (obj.vertexCount == 0) 
@@ -89,11 +89,11 @@ namespace Minecraft
 				obj.Add(0, 1, 2, 2, 3, 0);
 
 				Vector2byte coords = gameManager.itemProperties[gameManager.GetItemTypeById(item.id + "-item")].textureCoords;
-				float coordsy = ((float)gameManager.textures.item.height / 16f) - (float)coords.y - 1;
-				float uvx = (16f * (float)coords.x) / (float)gameManager.textures.item.width;
-				float uvy = (16f * coordsy) / (float)gameManager.textures.item.height;
-				float uvsizex = 16f / (float)gameManager.textures.item.width;
-				float uvsizey = 16f / (float)gameManager.textures.item.height;
+				float coordsy = ((float)GameSettings.textures.item.height / 16f) - (float)coords.y - 1;
+				float uvx = (16f * (float)coords.x) / (float)GameSettings.textures.item.width;
+				float uvy = (16f * coordsy) / (float)GameSettings.textures.item.height;
+				float uvsizex = 16f / (float)GameSettings.textures.item.width;
+				float uvsizey = 16f / (float)GameSettings.textures.item.height;
 
 				obj.Add(
 					new Vector2(uvx, uvy),
@@ -102,7 +102,7 @@ namespace Minecraft
 					new Vector2(uvx, uvy + uvsizey)
 				);
 
-				obj.renderer.material.SetTexture("_MainTex", gameManager.textures.item);
+				obj.renderer.material.SetTexture("_MainTex", GameSettings.textures.item);
 			}
 
 			obj.Update();
@@ -120,7 +120,7 @@ namespace Minecraft
 			id = gameObject.name + "-player";
 			color = 0x007f7fff; // rrggbbaa
 
-			Material material = gameManager.materials.player;
+			Material material = GameSettings.materials.player;
 			Texture2D texture = new Texture2D(516, 258);
 
 			// ImageConversion.LoadImage(texture, File.ReadAllBytes("Assets/Objects/player/texture-template.png"), false);
@@ -133,7 +133,7 @@ namespace Minecraft
 			material.SetTexture("_MainTex", texture);
 
 			movementController = gameObject.GetComponent<MovementController>();
-			movementController.Initialize(gameManager, playerCenter);
+			movementController.Initialize(gameManager, playerCenter, Vector3.zero);
 		}
 
 		void Update() 
@@ -160,7 +160,7 @@ namespace Minecraft
 
 			if (GetAnyBit(mouseButtons)) 
 			{
-				if (VoxelHit.Check(armature.head.transform.position, -armature.head.transform.right * gameManager.gameSettings.player.reachingDistance, this, out voxelHit) && !inventory.IsOpen && !chat.IsOpen) 
+				if (VoxelHit.Check(armature.head.transform.position, -armature.head.transform.right * GameSettings.player.reachingDistance, this, out voxelHit) && !inventory.IsOpen && !chat.IsOpen) 
 				{
 					if (mouseButtons >> 0 == 1) { voxelHit.chunk.OnPlayerRemoveVoxel(this, voxelHit); }
 					if (mouseButtons >> 2 == 1) { voxelHit.chunk.OnPlayerPickVoxel(this, voxelHit); }
@@ -177,22 +177,22 @@ namespace Minecraft
 
 		void FixedUpdate() 
 		{
-			movementController.ApplyGravity(gameManager.gameSettings.player.gravity);
+			movementController.ApplyGravity(GameSettings.player.gravity);
 			float t = movementController.t;
 
 			if (inventory.IsOpen || chat.IsOpen) { return; }
 
 			float v = 0f;
-			if (Input.GetKey(playerSettings.controlls.keyCodes.Sneak)) { v = gameManager.gameSettings.player.sneakingSpeed; }
-			else if (Input.GetKey(playerSettings.controlls.keyCodes.Sprint)) { v = gameManager.gameSettings.player.sprintingSpeed; }
-			else { v = gameManager.gameSettings.player.walkingSpeed; }
+			if (Input.GetKey(playerSettings.controlls.keyCodes.Sneak)) { v = GameSettings.player.sneakingSpeed; }
+			else if (Input.GetKey(playerSettings.controlls.keyCodes.Sprint)) { v = GameSettings.player.sprintingSpeed; }
+			else { v = GameSettings.player.walkingSpeed; }
 
 			if (Input.GetKey(playerSettings.controlls.keyCodes.Jump) && IsGrounded) { isJumping = true; jumpedHeight = 0f; }
 			if (Input.GetKeyUp(playerSettings.controlls.keyCodes.Jump)) { isJumping = false; jumpedHeight = 0f; }
 
-			if (isJumping && jumpedHeight < gameManager.gameSettings.player.jumpHeight) 
+			if (isJumping && jumpedHeight < GameSettings.player.jumpHeight) 
 			{
-				Vector3 movement = gameObject.transform.up * gameManager.gameSettings.player.jumpSpeed * t;
+				Vector3 movement = gameObject.transform.up * GameSettings.player.jumpSpeed * t;
 				if (movementController.Move(movement)) { jumpedHeight += Math2.Length(movement); }
 				else { isJumping = false; jumpedHeight = 0f; }
 			}
@@ -203,7 +203,7 @@ namespace Minecraft
 			if (Input.GetKey(playerSettings.controlls.keyCodes.MoveRight)) { movementController.Move(gameObject.transform.right * v * t); }
 		}
 
-		public bool IsGrounded { get { return !movementController.CanApplyGravity(gameManager.gameSettings.player.gravity); } }
+		public bool IsGrounded { get { return !movementController.CanApplyGravity(GameSettings.player.gravity); } }
 
 		void OnTriggerEnter(Collider collider) 
 		{

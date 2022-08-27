@@ -6,12 +6,12 @@ namespace Minecraft
 {
 	public class MovementController : MonoBehaviour
 	{
-		[HideInInspector] public GameManager gameManager;
-		[HideInInspector] public Transform center;
-		[HideInInspector] public Vector3 offset;
+		private GameManager gameManager;
+		private Transform center;
+		private Vector3 gravity = Vector3.zero;
+		private Vector3 offset;
 
 		public float t { get { return Time.fixedDeltaTime; } }
-		private Vector3 gravity = Vector3.zero;
 
 		void Start() { center.position += offset; }
 
@@ -58,10 +58,11 @@ namespace Minecraft
 			return !property.useCollision;
 		}
 
-		public void Initialize(GameManager gameManager, Transform center) 
+		public void Initialize(GameManager gameManager, Transform center, Vector3 offset) 
 		{
 			this.gameManager = gameManager;
 			this.center = center;
+			this.offset = offset;
 		}
 	}
 }

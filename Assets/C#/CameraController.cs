@@ -8,10 +8,7 @@ namespace Minecraft
 	[RequireComponent(typeof(Camera))]
 	public class CameraController : MonoBehaviour
 	{
-
 		private Player player;
-		private GameSettings gameSettings;
-		private PlayerSettings playerSettings;
 		new private Camera camera;
 
 		void Awake() { camera = gameObject.GetComponent<Camera>(); }
@@ -19,10 +16,6 @@ namespace Minecraft
 		void Initialize() 
 		{
 			player = gameObject.transform.parent.gameObject.GetComponent<Player>();
-			gameSettings = player.gameManager.gameSettings;
-			// gameSettings = ((GameManager)GameObject.FindObjectOfType(typeof(GameManager))).gameSettings;
-			playerSettings = player.playerSettings;
-
 			gameObject.transform.SetParent(player.armature.head.transform);
 		}
 
@@ -32,27 +25,27 @@ namespace Minecraft
 			if (player.inventory.IsOpen || player.chat.IsOpen) { return; }
 
 			Vector3 direction = new Vector3(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"), 0f);
-			if (playerSettings.controlls.invertMouse) { direction *= -1f; }
-			direction.x *= playerSettings.controlls.sensitivity.x;
-			direction.y *= playerSettings.controlls.sensitivity.y;
+			if (player.playerSettings.controlls.invertMouse) { direction *= -1f; }
+			direction.x *= player.playerSettings.controlls.sensitivity.x;
+			direction.y *= player.playerSettings.controlls.sensitivity.y;
 
 			float z = -direction.y + player.armature.head.transform.localEulerAngles.z;
-			if ((z < 360f - (gameSettings.player.rotationLimit.y / 2f) && z > 180f) || 
-				(z > (gameSettings.player.rotationLimit.y / 2f) && z < 180f)
+			if ((z < 360f - (GameSettings.player.rotationLimit.y / 2f) && z > 180f) || 
+				(z > (GameSettings.player.rotationLimit.y / 2f) && z < 180f)
 			) { z += direction.y; }
 
 			float y = direction.x + player.armature.head.transform.localEulerAngles.y;
-			if ((y < 360f - gameSettings.player.rotationLimit.x && y > 180f) || 
-				(y > gameSettings.player.rotationLimit.x && y < 180f)
+			if ((y < 360f - GameSettings.player.rotationLimit.x && y > 180f) || 
+				(y > GameSettings.player.rotationLimit.x && y < 180f)
 			) { player.gameObject.transform.localEulerAngles = new Vector3(0f, direction.x + player.gameObject.transform.localEulerAngles.y, 0f);
 				y -= direction.x; }
 
 			player.armature.head.transform.localEulerAngles = new Vector3(0f, y, z);
 
-			if (Input.GetKey(playerSettings.controlls.keyCodes.MoveForward) || 
-				Input.GetKey(playerSettings.controlls.keyCodes.MoveBackwards) || 
-				Input.GetKey(playerSettings.controlls.keyCodes.MoveLeft) || 
-				Input.GetKey(playerSettings.controlls.keyCodes.MoveRight)
+			if (Input.GetKey(player.playerSettings.controlls.keyCodes.MoveForward) || 
+				Input.GetKey(player.playerSettings.controlls.keyCodes.MoveBackwards) || 
+				Input.GetKey(player.playerSettings.controlls.keyCodes.MoveLeft) || 
+				Input.GetKey(player.playerSettings.controlls.keyCodes.MoveRight)
 			) 
 			{
 				float angle = 90f * Math2.Dot(player.armature.head.transform.forward, player.gameObject.transform.forward);

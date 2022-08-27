@@ -39,7 +39,7 @@ namespace Minecraft
 						if (y < h) 
 						{
 							ushort type = 
-							(y < h - gameManager.gameSettings.terrain.dirtDepth)
+							(y < h - GameSettings.terrain.dirtDepth)
 							? gameManager.GetVoxelTypeById("stone-block")
 							: gameManager.GetVoxelTypeById("dirt-block");
 							SetVoxelType(type, x, y, z);
@@ -92,11 +92,11 @@ namespace Minecraft
 				);
 
 				Vector2byte coords = property.textureCoords[face];
-				float coordsy = ((float)gameManager.textures.voxelHeight / 16f) - (float)coords.y - 1;
-				float uvx = (16f * (float)coords.x) / (float)gameManager.textures.voxelWidth;
-				float uvy = (16f * coordsy) / (float)gameManager.textures.voxelHeight;
-				float uvsizex = 16f / (float)gameManager.textures.voxelWidth;
-				float uvsizey = 16f / (float)gameManager.textures.voxelHeight;
+				float coordsy = ((float)GameSettings.textures.voxelHeight / 16f) - (float)coords.y - 1;
+				float uvx = (16f * (float)coords.x) / (float)GameSettings.textures.voxelWidth;
+				float uvy = (16f * coordsy) / (float)GameSettings.textures.voxelHeight;
+				float uvsizex = 16f / (float)GameSettings.textures.voxelWidth;
+				float uvsizey = 16f / (float)GameSettings.textures.voxelHeight;
 
 				objectMesh.Add(
 					new Vector2(uvx, uvy),
@@ -129,11 +129,11 @@ namespace Minecraft
 			);
 
 			Vector2byte coords = property.textureCoords[0];
-			float coordsy = ((float)gameManager.textures.voxelHeight / 16f) - (float)coords.y - 1;
-			float uvx = (16f * (float)coords.x) / (float)gameManager.textures.voxelWidth;
-			float uvy = (16f * coordsy) / (float)gameManager.textures.voxelHeight;
-			float uvsizex = 16f / (float)gameManager.textures.voxelWidth;
-			float uvsizey = 16f / (float)gameManager.textures.voxelHeight;
+			float coordsy = ((float)GameSettings.textures.voxelHeight / 16f) - (float)coords.y - 1;
+			float uvx = (16f * (float)coords.x) / (float)GameSettings.textures.voxelWidth;
+			float uvy = (16f * coordsy) / (float)GameSettings.textures.voxelHeight;
+			float uvsizex = 16f / (float)GameSettings.textures.voxelWidth;
+			float uvsizey = 16f / (float)GameSettings.textures.voxelHeight;
 
 			objectMesh.Add(
 				new Vector2(uvx, uvy),
@@ -181,8 +181,8 @@ namespace Minecraft
 			{
 				liquidMeshes.Add(new ChunkMesh(gameObject.transform, property.id, 12));
 				i = liquidMeshes.Count - 1;
-				liquidMeshes[i].renderer.material = gameManager.materials.cullBack;
-				liquidMeshes[i].renderer.material.SetTexture("_MainTex", gameManager.textures.liquid);
+				liquidMeshes[i].renderer.material = GameSettings.materials.cullBack;
+				liquidMeshes[i].renderer.material.SetTexture("_MainTex", GameSettings.textures.liquid);
 				liquidMeshes[i].gameObject.tag = "Liquid";
 				liquidMeshes[i].collider.convex = true;
 				liquidMeshes[i].collider.isTrigger = true;
@@ -199,8 +199,8 @@ namespace Minecraft
 					matrix.MultiplyPoint3x4(blockVertices[(int)face, 3] + offset)
 				});
 
-				float uvx = 32f / (float)gameManager.textures.liquidWidth;
-				float uvy = 1f - (32f / (float)gameManager.textures.liquidHeight);
+				float uvx = 32f / (float)GameSettings.textures.liquidWidth;
+				float uvy = 1f - (32f / (float)GameSettings.textures.liquidHeight);
 
 				liquidMeshes[i].Add(new Vector2[] {
 					new Vector2(0f, uvy),
@@ -539,9 +539,9 @@ namespace Minecraft
 			this.gameManager = gameManager;
 			this.liquidMeshes = new List<ChunkMesh>();
 			this.voxelTypes = new ushort[
-				gameManager.gameSettings.terrain.chunkSize,
-				gameManager.gameSettings.terrain.chunkHeight,
-				gameManager.gameSettings.terrain.chunkSize
+				GameSettings.terrain.chunkSize,
+				GameSettings.terrain.chunkHeight,
+				GameSettings.terrain.chunkSize
 			];
 
 			this.canUpdate = false;
@@ -558,8 +558,8 @@ namespace Minecraft
 			this.gameObject.tag = "Chunk";
 
 			MeshRenderer renderer = (MeshRenderer)this.gameObject.AddComponent(typeof(MeshRenderer));
-			renderer.material = gameManager.materials.cullBack;
-			renderer.material.SetTexture("_MainTex", this.gameManager.textures.voxel);
+			renderer.material = GameSettings.materials.cullBack;
+			renderer.material.SetTexture("_MainTex", GameSettings.textures.voxel);
 
 			new Thread(new ThreadStart(Generate)).Start();
 			monoBehaviour.StartCoroutine(this.Update(false));

@@ -7,12 +7,11 @@ namespace Minecraft
 	public class DroppedItemController : MonoBehaviour
 	{
 		[HideInInspector] public bool useCooldown;
-		[HideInInspector] public GameManager gameManager;
 		[HideInInspector] public MovementController movementController;
 		private float timeMax = 3f;
 
 		void Start() { StartCoroutine(Timer()); }
-		void FixedUpdate() { movementController.ApplyGravity(gameManager.gameSettings.player.gravity); }
+		void FixedUpdate() { movementController.ApplyGravity(GameSettings.player.gravity); }
 
 		private IEnumerator Timer() 
 		{

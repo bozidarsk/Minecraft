@@ -10,100 +10,6 @@ using TMPro;
 
 namespace Minecraft 
 {
-	public class DroppedItem 
-	{
-		public GameObject gameObject { get; }
-		public int vertexCount { get { return vertices.Count; } }
-		public Item item { set; get; }
-
-		public MeshRenderer renderer { set; get; }
-		public MeshFilter filter { set; get; }
-		public MeshCollider collider { set; get; }
-		public Rigidbody body { set; get; }
-
-		private List<Vector3> vertices;
-		private List<int> triangles;
-		private List<Vector2> uvs;
-
-		public void Clear() 
-		{
-			vertices = new List<Vector3>();
-			triangles = new List<int>();
-			uvs = new List<Vector2>();
-			Update();
-		}
-
-		public void Add(params Vector3[] x) { for (int i = 0; i < x.Length; i++) { vertices.Add(x[i]); } }
-		public void Add(params int[] x) { for (int i = 0; i < x.Length; i++) { triangles.Add(x[i]); } }
-		public void Add(params Vector2[] x) { for (int i = 0; i < x.Length; i++) { uvs.Add(x[i]); } }
-		public void Add(params Mesh[] x) 
-		{
-			for (int i = 0; i < x.Length; i++) 
-			{
-				Add(x[i].vertices);
-				Add(x[i].triangles);
-				Add(x[i].uv);
-			}
-		}
-
-		public void Update() 
-		{
-			Mesh mesh = new Mesh();
-			mesh.vertices = vertices.ToArray();
-			mesh.triangles = triangles.ToArray();
-			mesh.uv = uvs.ToArray();
-			mesh.RecalculateNormals();
-			filter.mesh = mesh;
-			collider.sharedMesh = mesh;
-			collider.convex = true;
-		}
-
-		public DroppedItem(Item item, Vector3 position, bool useCooldown, GameManager gameManager) 
-		{
-			this.item = item;
-			this.gameObject = new GameObject(item.ToString());
-			this.gameObject.name = item.ToString();
-			this.gameObject.tag = "DroppedItem";
-			this.gameObject.layer = 13;
-			this.gameObject.transform.position = position;
-			this.gameObject.transform.eulerAngles = Vector3.zero;
-			this.gameObject.transform.localScale = Vector3.one * 0.3f;
-
-			DroppedItemController controller = (DroppedItemController)this.gameObject.AddComponent(typeof(DroppedItemController));
-			controller.movementController = (MovementController)this.gameObject.AddComponent(typeof(MovementController));
-			controller.movementController.gameManager = gameManager;
-			controller.movementController.center = this.gameObject.transform;
-			controller.movementController.offset = -gameManager.gameSettings.player.gravity.normalized * (0.3f * 0.5f);
-			controller.useCooldown = useCooldown;
-			controller.gameManager = gameManager;
-
-			this.renderer = (MeshRenderer)this.gameObject.AddComponent(typeof(MeshRenderer));
-			this.filter = (MeshFilter)this.gameObject.AddComponent(typeof(MeshFilter));
-			this.collider = (MeshCollider)this.gameObject.AddComponent(typeof(MeshCollider));
-
-			GameObject colliderObject = new GameObject("collider");
-			colliderObject.transform.SetParent(this.gameObject.transform);
-			colliderObject.transform.localPosition = Vector3.zero;
-			colliderObject.transform.eulerAngles = Vector3.zero;
-			colliderObject.transform.localScale = Vector3.one;
-			colliderObject.layer = 14;
-			SphereCollider sphere = (SphereCollider)colliderObject.AddComponent(typeof(SphereCollider));
-			sphere.center = new Vector3(0f, -0.707f, 0f);
-			sphere.radius = 0.2f;
-
-			this.body = ((Rigidbody)this.gameObject.AddComponent(typeof(Rigidbody)));
-			this.body.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
-			this.body.isKinematic = true;
-			this.body.angularDrag = 0.02f;
-
-			this.renderer.material = gameManager.materials.droppedItem;
-
-			this.vertices = new List<Vector3>();
-			this.triangles = new List<int>();
-			this.uvs = new List<Vector2>();
-		}
-	}
-
 	public class ObjectMesh 
 	{
 		public int vertexCount { get { return vertices.Count; } }
@@ -126,7 +32,7 @@ namespace Minecraft
 		public List<int> triangles;
 		public List<Vector2> uvs;
 
-		public void Clear() 
+		public virtual void Clear() 
 		{
 			vertices = new List<Vector3>();
 			triangles = new List<int>();
@@ -154,35 +60,17 @@ namespace Minecraft
 		}
 	}
 
-	public class ChunkMesh 
+	public class DroppedItem : ObjectMesh
 	{
 		public GameObject gameObject { get; }
-		public int vertexCount { get { return vertices.Count; } }
-		public string name { set { gameObject.name = value; } get { return gameObject.name; } }
-		public Mesh mesh 
-		{
-			get 
-			{
-				Mesh mesh = new Mesh();
-				mesh.indexFormat = IndexFormat.UInt32;
-				mesh.vertices = vertices.ToArray();
-				mesh.triangles = triangles.ToArray();
-				mesh.uv = uvs.ToArray();
-				mesh.RecalculateNormals();
-				mesh.Optimize();
-				return mesh;
-			}
-		}
+		public Item item { set; get; }
 
 		public MeshRenderer renderer { set; get; }
 		public MeshFilter filter { set; get; }
 		public MeshCollider collider { set; get; }
+		public Rigidbody body { set; get; }
 
-		public List<Vector3> vertices;
-		public List<int> triangles;
-		public List<Vector2> uvs;
-
-		public void Clear() 
+		public override void Clear() 
 		{
 			vertices = new List<Vector3>();
 			triangles = new List<int>();
@@ -190,17 +78,81 @@ namespace Minecraft
 			Update();
 		}
 
-		public void Add(params Vector3[] x) { for (int i = 0; i < x.Length; i++) { vertices.Add(x[i]); } }
-		public void Add(params int[] x) { for (int i = 0; i < x.Length; i++) { triangles.Add(x[i]); } }
-		public void Add(params Vector2[] x) { for (int i = 0; i < x.Length; i++) { uvs.Add(x[i]); } }
-		public void Add(params Mesh[] x) 
+		public void Update() 
 		{
-			for (int i = 0; i < x.Length; i++) 
-			{
-				Add(x[i].vertices);
-				Add(x[i].triangles);
-				Add(x[i].uv);
-			}
+			Mesh mesh = new Mesh();
+			mesh.vertices = vertices.ToArray();
+			mesh.triangles = triangles.ToArray();
+			mesh.uv = uvs.ToArray();
+			mesh.RecalculateNormals();
+			filter.mesh = mesh;
+			collider.sharedMesh = mesh;
+			collider.convex = true;
+		}
+
+		public DroppedItem(Item item, Vector3 position, bool useCooldown, GameManager gameManager) 
+		{
+			this.item = item;
+			this.gameObject = new GameObject(item.ToString());
+			this.gameObject.name = item.ToString();
+			this.gameObject.tag = "DroppedItem";
+			this.gameObject.layer = 13;
+			this.gameObject.transform.position = position;
+			this.gameObject.transform.eulerAngles = Vector3.zero;
+			this.gameObject.transform.localScale = Vector3.one * 0.3f;
+
+			DroppedItemController controller = (DroppedItemController)this.gameObject.AddComponent(typeof(DroppedItemController));
+			controller.movementController = (MovementController)this.gameObject.AddComponent(typeof(MovementController));
+			controller.movementController.Initialize(
+				gameManager,
+				this.gameObject.transform,
+				-GameSettings.player.gravity.normalized * (0.3f * 0.5f)
+			);
+
+			controller.useCooldown = useCooldown;
+
+			this.renderer = (MeshRenderer)this.gameObject.AddComponent(typeof(MeshRenderer));
+			this.filter = (MeshFilter)this.gameObject.AddComponent(typeof(MeshFilter));
+			this.collider = (MeshCollider)this.gameObject.AddComponent(typeof(MeshCollider));
+
+			GameObject colliderObject = new GameObject("collider");
+			colliderObject.transform.SetParent(this.gameObject.transform);
+			colliderObject.transform.localPosition = Vector3.zero;
+			colliderObject.transform.eulerAngles = Vector3.zero;
+			colliderObject.transform.localScale = Vector3.one;
+			colliderObject.layer = 14;
+			SphereCollider sphere = (SphereCollider)colliderObject.AddComponent(typeof(SphereCollider));
+			sphere.center = new Vector3(0f, -0.707f, 0f);
+			sphere.radius = 0.2f;
+
+			this.body = ((Rigidbody)this.gameObject.AddComponent(typeof(Rigidbody)));
+			this.body.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
+			this.body.isKinematic = true;
+			this.body.angularDrag = 0.02f;
+
+			this.renderer.material = GameSettings.materials.droppedItem;
+
+			this.vertices = new List<Vector3>();
+			this.triangles = new List<int>();
+			this.uvs = new List<Vector2>();
+		}
+	}
+
+	public class ChunkMesh : ObjectMesh
+	{
+		public GameObject gameObject { get; }
+		public string name { set { gameObject.name = value; } get { return gameObject.name; } }
+
+		public MeshRenderer renderer { set; get; }
+		public MeshFilter filter { set; get; }
+		public MeshCollider collider { set; get; }
+
+		public override void Clear() 
+		{
+			vertices = new List<Vector3>();
+			triangles = new List<int>();
+			uvs = new List<Vector2>();
+			Update();
 		}
 
 		public void Update() 
@@ -247,11 +199,11 @@ namespace Minecraft
 			text.SetText((!item.IsEmpty && item.ammount > 1) ? Convert.ToString(item.ammount) : "");
 
 			Vector2byte coords = inventory.gameManager.itemProperties[inventory.gameManager.GetItemTypeById(item.id)].textureCoords;
-			float coordsy = ((float)inventory.gameManager.textures.item.height / 16f) - (float)coords.y - 1;
-			float uvx = (16f * (float)coords.x) / (float)inventory.gameManager.textures.item.width;
-			float uvy = (16f * coordsy) / (float)inventory.gameManager.textures.item.height;
-			float uvsizex = 16f / (float)inventory.gameManager.textures.item.width;
-			float uvsizey = 16f / (float)inventory.gameManager.textures.item.height;
+			float coordsy = ((float)GameSettings.textures.item.height / 16f) - (float)coords.y - 1;
+			float uvx = (16f * (float)coords.x) / (float)GameSettings.textures.item.width;
+			float uvy = (16f * coordsy) / (float)GameSettings.textures.item.height;
+			float uvsizex = 16f / (float)GameSettings.textures.item.width;
+			float uvsizey = 16f / (float)GameSettings.textures.item.height;
 
 			icon.uvRect = new Rect(uvx, uvy, uvsizex, uvsizey);
 		}
