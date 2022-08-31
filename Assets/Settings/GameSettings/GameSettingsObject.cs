@@ -9,13 +9,17 @@ namespace Minecraft
 	{
 		public Settings.Player player;
 		public Settings.PostProcessing postProcessing;
+		public Settings.World world;
 		public Settings.Terrain terrain;
+		public Settings.Path path;
+		public Settings.Textures textures;
+		public Settings.Materials materials;
 
 		void OnValidate() 
 		{
-			if (terrain.worldSize < 1) { terrain.worldSize = 1; }
-			if (terrain.chunkSize < 1) { terrain.chunkSize = 1; }
-			if (terrain.chunkHeight < 1) { terrain.chunkHeight = 1; }
+			if (world.worldSize < 1) { world.worldSize = 1; }
+			if (world.chunkSize < 1) { world.chunkSize = 1; }
+			if (world.chunkHeight < 1) { world.chunkHeight = 1; }
 			if (terrain.dirtDepth < 1) { terrain.dirtDepth = 1; }
 			if (player.walkingSpeed < 0f) { player.walkingSpeed = 0f; }
 			if (player.sprintingSpeed < 0f) { player.sprintingSpeed = 0f; }

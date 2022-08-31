@@ -1,4 +1,4 @@
-﻿Shader "Custom/Liquid"
+﻿Shader "Minecraft/Liquid"
 {
     Properties
     {
@@ -23,7 +23,6 @@
             #pragma vertex vert
             #pragma fragment frag
             #include "UnityCG.cginc"
-            #include "../Includes/PostProcessing.h"
 
             struct appdata 
             {

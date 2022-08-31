@@ -14,7 +14,6 @@ namespace Minecraft
 		public Transform playerCenter;
 		public Armature armature;
 		[HideInInspector] public PlayerInventory inventory;
-		[HideInInspector] public GameManager gameManager;
 		[HideInInspector] public CameraPerspective cameraPerspective;
 		[HideInInspector] public uint color; // rrggbbaa
 		[HideInInspector] public string id;
@@ -36,7 +35,7 @@ namespace Minecraft
 		{
 			if (item.IsEmpty) { return; }
 
-			DroppedItem obj = new DroppedItem(item, (position == null) ? armature.head.transform.position : (Vector3)position, position == null, gameManager);
+			DroppedItem obj = new DroppedItem(item, (position == null) ? armature.head.transform.position : (Vector3)position, position == null);
 			Vector3 offset = new Vector3(-0.5f, -0.5f, -0.5f);
 			obj.gameObject.transform.eulerAngles = new Vector3(0f, (float)random.Next(0, 180), 0f);
 
@@ -44,7 +43,7 @@ namespace Minecraft
 
 			if (item.id.EndsWith("-block")) 
 			{
-				VoxelProperty property = gameManager.voxelProperties[gameManager.GetVoxelTypeById(item.id)];
+				VoxelProperty property = GameManager.voxelProperties[GameManager.GetVoxelTypeById(item.id)];
 				for (int f = 0; f < Chunk.blockVertices.GetLength(0); f++) 
 				{
 					for (int v = 0; v < Chunk.blockVertices.GetLength(1); v++) 
@@ -73,7 +72,7 @@ namespace Minecraft
 
 			if (item.id.EndsWith("-model")) 
 			{
-				obj.Add(gameManager.modelMeshes.Where(x => x.Key == item.id).ToArray()[0].Value);
+				obj.Add(GameManager.modelMeshes.Where(x => x.Key == item.id).ToArray()[0].Value);
 				obj.renderer.material.SetTexture("_MainTex", GameSettings.textures.voxel);
 			}
 
@@ -88,7 +87,7 @@ namespace Minecraft
 
 				obj.Add(0, 1, 2, 2, 3, 0);
 
-				Vector2byte coords = gameManager.itemProperties[gameManager.GetItemTypeById(item.id + "-item")].textureCoords;
+				Vector2byte coords = GameManager.itemProperties[GameManager.GetItemTypeById(item.id + "-item")].textureCoords;
 				float coordsy = ((float)GameSettings.textures.item.height / 16f) - (float)coords.y - 1;
 				float uvx = (16f * (float)coords.x) / (float)GameSettings.textures.item.width;
 				float uvy = (16f * coordsy) / (float)GameSettings.textures.item.height;
@@ -110,8 +109,6 @@ namespace Minecraft
 
 		void Start() 
 		{
-			gameManager = (GameManager)GameObject.FindObjectOfType(typeof(GameManager));
-
 			chat = gameObject.GetComponent<ChatController>();
 			postProcessing = gameObject.GetComponentsInChildren<PostProcessing>()[0];
 
@@ -133,7 +130,7 @@ namespace Minecraft
 			material.SetTexture("_MainTex", texture);
 
 			movementController = gameObject.GetComponent<MovementController>();
-			movementController.Initialize(gameManager, playerCenter, Vector3.zero);
+			movementController.Initialize(playerCenter, Vector3.zero);
 		}
 
 		void Update() 
@@ -158,7 +155,7 @@ namespace Minecraft
 			((Input.GetKeyDown(playerSettings.controlls.keyCodes.UseItem)) ? 1 : 0) << 1 | 
 			((Input.GetKeyDown(playerSettings.controlls.keyCodes.PickBlock)) ? 1 : 0) << 2;
 
-			if (GetAnyBit(mouseButtons)) 
+			if (Tools.GetAnyBit(mouseButtons)) 
 			{
 				if (VoxelHit.Check(armature.head.transform.position, -armature.head.transform.right * GameSettings.player.reachingDistance, this, out voxelHit) && !inventory.IsOpen && !chat.IsOpen) 
 				{
@@ -173,11 +170,9 @@ namespace Minecraft
 			Cursor.visible = inventory.IsOpen || chat.IsOpen;
 		}
 
-		public static bool GetAnyBit(int x) { for (int i = 0; i < sizeof(int) * 8; i++) { if (x >> i == 0x1) { return true; } } return false; }
-
 		void FixedUpdate() 
 		{
-			movementController.ApplyGravity(GameSettings.player.gravity);
+			movementController.ApplyGravity(GameSettings.world.gravity);
 			float t = movementController.t;
 
 			if (inventory.IsOpen || chat.IsOpen) { return; }
@@ -188,7 +183,7 @@ namespace Minecraft
 			else { v = GameSettings.player.walkingSpeed; }
 
 			if (Input.GetKey(playerSettings.controlls.keyCodes.Jump) && IsGrounded) { isJumping = true; jumpedHeight = 0f; }
-			if (Input.GetKeyUp(playerSettings.controlls.keyCodes.Jump)) { isJumping = false; jumpedHeight = 0f; }
+			// if (Input.GetKeyUp(playerSettings.controlls.keyCodes.Jump)) { isJumping = false; jumpedHeight = 0f; }
 
 			if (isJumping && jumpedHeight < GameSettings.player.jumpHeight) 
 			{
@@ -203,14 +198,14 @@ namespace Minecraft
 			if (Input.GetKey(playerSettings.controlls.keyCodes.MoveRight)) { movementController.Move(gameObject.transform.right * v * t); }
 		}
 
-		public bool IsGrounded { get { return !movementController.CanApplyGravity(GameSettings.player.gravity); } }
+		public bool IsGrounded { get { return !movementController.CanApplyGravity(GameSettings.world.gravity); } }
 
 		void OnTriggerEnter(Collider collider) 
 		{
 			switch (collider.tag) 
 			{
 				case "Liquid":
-					postProcessing.SetTextureEffect(gameManager.textureEffects["underwater"]);
+					postProcessing.SetTextureEffect(GameManager.textureEffects["underwater"]);
 					break;
 				case "DroppedItem":
 					collider.name = collider.name.Replace(":", "");

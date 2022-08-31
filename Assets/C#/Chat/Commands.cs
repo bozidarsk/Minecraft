@@ -69,38 +69,33 @@ namespace Minecraft
 		{
 			public static void Clear(dynamic[] args) 
 			{
-				Player player = (Player)GameObject.FindObjectsOfType(typeof(Player)).Where(x => x.name == args[0]).ToArray()[0];
-				player.inventory.Clear();
+				GameManager.GetPlayerByName(args[0]).inventory.Clear();
 			}
 
 			public static void Remove(dynamic[] args) 
 			{
-				Player player = (Player)GameObject.FindObjectsOfType(typeof(Player)).Where(x => x.name == args[0]).ToArray()[0];
-				player.inventory.TryRemoveItem(new Item(args[1], args[2]));
+				GameManager.GetPlayerByName(args[0]).inventory.TryRemoveItem(new Item(args[1], args[2]));
 			}
 
 			public static void Give(dynamic[] args) 
 			{
-				Player player = (Player)GameObject.FindObjectsOfType(typeof(Player)).Where(x => x.name == args[0]).ToArray()[0];
-				player.inventory.TryAddItem(new Item(args[1], args[2]));
+				GameManager.GetPlayerByName(args[0]).inventory.TryAddItem(new Item(args[1], args[2]));
 			}
 
 			public static void Place(dynamic[] args) 
 			{
-				GameManager gameManager = (GameManager)GameObject.FindObjectsOfType(typeof(GameManager))[0];
-				gameManager.terrainManager.AddVoxel(gameManager.GetVoxelTypeById(args[0]), args[1], args[2], args[3]);
+				TerrainManager.AddVoxel(GameManager.GetVoxelTypeById(args[0]), args[1], args[2], args[3]);
 			}
 
 			public static void SetTextureEffect(dynamic[] args) 
 			{
-				Player player = (Player)GameObject.FindObjectsOfType(typeof(Player)).Where(x => x.name == args[0]).ToArray()[0];
-				player.postProcessing.SetTextureEffect(player.gameManager.textureEffects[args[1]]);
+				Player player = GameManager.GetPlayerByName(args[0]);
+				player.postProcessing.SetTextureEffect(GameManager.textureEffects[args[1]]);
 			}
 
 			public static void RemoveTextureEffect(dynamic[] args) 
 			{
-				Player player = (Player)GameObject.FindObjectsOfType(typeof(Player)).Where(x => x.name == args[0]).ToArray()[0];
-				player.postProcessing.RemoveTextureEffect();
+				GameManager.GetPlayerByName(args[0]).postProcessing.RemoveTextureEffect();
 			}
 		}
 	}

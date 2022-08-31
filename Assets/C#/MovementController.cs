@@ -6,7 +6,6 @@ namespace Minecraft
 {
 	public class MovementController : MonoBehaviour
 	{
-		private GameManager gameManager;
 		private Transform center;
 		private Vector3 gravity = Vector3.zero;
 		private Vector3 offset;
@@ -36,8 +35,8 @@ namespace Minecraft
 
 			try 
 			{
-				chunk = gameManager.terrainManager.GetChunkFromPosition(center.position + movement);
-				property = gameManager.voxelProperties[chunk.GetVoxelTypeFromPoint(center.position + movement)];
+				chunk = TerrainManager.GetChunkFromPosition(center.position + movement);
+				property = GameManager.voxelProperties[chunk.GetVoxelTypeFromPoint(center.position + movement)];
 			} catch { gameObject.transform.position += movement; return true; }
 
 			gameObject.transform.position += (!property.useCollision) ? movement : Vector3.zero;
@@ -51,16 +50,15 @@ namespace Minecraft
 
 			try 
 			{
-				chunk = gameManager.terrainManager.GetChunkFromPosition(center.position + movement);
-				property = gameManager.voxelProperties[chunk.GetVoxelTypeFromPoint(center.position + movement)];
+				chunk = TerrainManager.GetChunkFromPosition(center.position + movement);
+				property = GameManager.voxelProperties[chunk.GetVoxelTypeFromPoint(center.position + movement)];
 			} catch { return true; }
 
 			return !property.useCollision;
 		}
 
-		public void Initialize(GameManager gameManager, Transform center, Vector3 offset) 
+		public void Initialize(Transform center, Vector3 offset) 
 		{
-			this.gameManager = gameManager;
 			this.center = center;
 			this.offset = offset;
 		}

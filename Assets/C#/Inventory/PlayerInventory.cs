@@ -60,7 +60,6 @@ namespace Minecraft
 
 		void Start() 
 		{
-			gameManager = (GameManager)GameObject.FindObjectOfType(typeof(GameManager));
 			slotStartIndex = new Dictionary<string, int>(6);
 			player = gameObject.GetComponent<Player>();
 			slots = new List<InventorySlot>(46);

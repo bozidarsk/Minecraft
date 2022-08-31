@@ -17704,7 +17704,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gui: {fileID: 88540026}
-  gameManager: {fileID: 0}
   hotbarSelector: {fileID: 1704931238}
   offhand: {fileID: 479446117}
   buttonIndex: 0
@@ -17730,7 +17729,6 @@ MonoBehaviour:
     legL: {fileID: 1929544947}
     legR: {fileID: 1531035303}
   inventory: {fileID: 0}
-  gameManager: {fileID: 0}
   cameraPerspective: 0
   color: 0
   id: 
@@ -17832,8 +17830,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f09b6052668a6e4ca9ddea7b8497a31, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameManager: {fileID: 0}
-  center: {fileID: 0}
 --- !u!1 &1729180583
 GameObject:
   m_ObjectHideFlags: 0
@@ -19651,31 +19647,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a84fa396eee8ca343963fc97bd4a4c34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameSettings: {fileID: 11400000, guid: 9b9e73ce80d955a4c89c5520320ac201, type: 2}
-  generateChunk: {fileID: 7200000, guid: c87040c9fd42646429cf8ce280c56941, type: 3}
-  textures:
-    voxel: {fileID: 2800000, guid: e5af4cd63e85f0744a82dee317bd57be, type: 3}
-    item: {fileID: 2800000, guid: b6a33b86eb995f049b61cb05e0e36748, type: 3}
-    liquid: {fileID: 2800000, guid: abe399b8e2252964fa6b7182e18a8388, type: 3}
-    voxelWidth: 0
-    voxelHeight: 0
-    itemWidth: 0
-    itemHeight: 0
-    liquidWidth: 0
-    liquidHeight: 0
-  materials:
-    cullOff: {fileID: 2100000, guid: bb70606ceff9466459ba81ed09e12d66, type: 2}
-    cullBack: {fileID: 2100000, guid: 4982597663bfd844b8b8234a81840205, type: 2}
-    droppedItem: {fileID: 2100000, guid: 7faf774c27c3953498b7d6314acb103d, type: 2}
-    postProcessing: {fileID: 2100000, guid: e38ae57da75991a47a38990b80e9c131, type: 2}
-    player: {fileID: 2100000, guid: ab76cd6034acda8409f07f7fb7885f72, type: 2}
-  terrainManager: {fileID: 0}
-  chatManager: {fileID: 1973811181}
-  craftingProperties: []
-  voxelProperties: []
-  itemProperties: []
-  enchantmentProperties: []
-  players: []
+  defaultGameSettings: {fileID: 11400000, guid: 9b9e73ce80d955a4c89c5520320ac201,
+    type: 2}
 --- !u!4 &1973811180
 Transform:
   m_ObjectHideFlags: 0
@@ -19702,9 +19675,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32de25cedeb77074798198deb8b20297, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  chatQueue: {fileID: 1415167674}
-  messagePrefab: {fileID: 5881092942680010175, guid: 0c44d3f0b9108e54abc6b1384fecae7e,
-    type: 3}
 --- !u!114 &1973811182
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19717,7 +19687,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dda85cc915b2b144ea082d669979b509, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameManager: {fileID: 0}
 --- !u!1 &1997696994
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,4 +1,4 @@
-﻿Shader "Custom/Player"
+﻿Shader "Minecraft/Player"
 {
     Properties
     {
@@ -44,10 +44,13 @@
             }
 
             sampler2D _MainTex;
+            float4 _LightColor0;
 
             float4 frag (v2f IN) : SV_Target
             {
                 float4 color = tex2D(_MainTex, IN.uv);
+
+                // return float4(saturate((dot(_WorldSpaceLightPos0.xyz, IN.normal).xxxx * 0.3) + (_LightColor0 * 0.6)).rgb, 1);
 
                 return color;
             }

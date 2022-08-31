@@ -9,43 +9,44 @@ namespace Minecraft
 {
 	public class ChatManager : MonoBehaviour
 	{
-		public GameObject chatQueue;
-		public GameObject messagePrefab;
+		public static GameObject chatQueue;
+		public static GameObject messagePrefab;
+		public static ChatManager instance { private set; get; }
 
-		private List<string> allMessages;
-		private GameManager gameManager;
+		private static List<string> allMessages;
 
-		void Start() 
+		void Awake() { ChatManager.Initialize(this); }
+		public static void Initialize(ChatManager instance) 
 		{
-			gameManager = gameObject.GetComponent<GameManager>();
-			allMessages = new List<string>();
+			ChatManager.instance = instance;
+			ChatManager.allMessages = new List<string>();
 		}
 
-		public int MessagesCount { get { return allMessages.Count; } }
-		public string AllMessages 
+		public static int MessagesCount { get { return ChatManager.allMessages.Count; } }
+		public static string AllMessages 
 		{
 			get 
 			{
 				string output = "";
-				for (int i = 0; i < allMessages.Count; i++) 
-				{ output += allMessages[i] + ((i < allMessages.Count - 1) ? "\n" : ""); }
+				for (int i = 0; i < ChatManager.allMessages.Count; i++) 
+				{ output += ChatManager.allMessages[i] + ((i < ChatManager.allMessages.Count - 1) ? "\n" : ""); }
 				return output;
 			}
 		}
 
-		public void Push(Player player, string request) 
+		public static void Push(Player player, string request) 
 		{
 			if (request[0] == '/') { ExecuteCommand(player, request); return; }
-			// string message = "<<color=\"#" + Hex(player.color, false) + "\">" + player.name + "</color>> " + request;
+			// string message = "<<color=\"#" + Tools.Hex(player.color, false) + "\">" + player.name + "</color>> " + request;
 			string message = "<" + player.name + "> " + request;
 
 			Console.Log(message);
 
 			GameObject.Instantiate(messagePrefab, chatQueue.transform).name = message;
-			allMessages.Add(message);
+			ChatManager.allMessages.Add(message);
 		}
 
-		public void ExecuteCommand(Player player, string request) 
+		public static void ExecuteCommand(Player player, string request) 
 		{
 			string[] tokens = request.Split(' ');
 			Command command = Commands.GetCommand(tokens[0]);
@@ -63,17 +64,6 @@ namespace Minecraft
 			}
 
 			command.Execute(args);
-		}
-
-		public static string Hex(uint x, bool trimZeroes) 
-		{
-			string hexChar = "0123456789abcdef";
-			string output = "";
-
-			for (int i = 0; i < sizeof(uint) * 2; i++) 
-			{ output = Convert.ToString(hexChar[(int)((x >> (i * 4)) & 0xf)]) + output; }
-
-			return (trimZeroes) ? output.TrimStart('0') : output;
 		}
 	}
 }

@@ -1,4 +1,4 @@
-﻿Shader "Custom/PostProcessing"
+﻿Shader "Minecraft/PostProcessing"
 {
     Properties 
     {

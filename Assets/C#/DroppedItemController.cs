@@ -11,7 +11,7 @@ namespace Minecraft
 		private float timeMax = 3f;
 
 		void Start() { StartCoroutine(Timer()); }
-		void FixedUpdate() { movementController.ApplyGravity(GameSettings.player.gravity); }
+		void FixedUpdate() { movementController.ApplyGravity(GameSettings.world.gravity); }
 
 		private IEnumerator Timer() 
 		{

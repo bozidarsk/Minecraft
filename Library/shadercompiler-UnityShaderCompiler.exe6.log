@@ -1,74 +1,8 @@
 Base path: 'D:/Program Files/Unity/Hub/Editor/2019.3.6f1/Editor/Data', plugins path 'D:/Program Files/Unity/Hub/Editor/2019.3.6f1/Editor/Data/PlaybackEngines'
 Cmd: initializeCompiler
-Cmd: compileComputeKernel
-  error: 2 plat 4 at GenerateChunk.compute(15): array, matrix, vector, or indexable object type expected in index expression
-  api=4 insize=803 outsize=0 ok=0
-Cmd: compileComputeKernel
-  error: 2 plat 4 at GenerateChunk.compute(15): array, matrix, vector, or indexable object type expected in index expression
-  api=4 insize=809 outsize=0 ok=0
-Cmd: compileComputeKernel
-  error: 2 plat 4 at GenerateChunk.compute(15): array, matrix, vector, or indexable object type expected in index expression
-  api=4 insize=817 outsize=0 ok=0
-Cmd: compileComputeKernel
-  error: 2 plat 4 at GenerateChunk.compute(15): array, matrix, vector, or indexable object type expected in index expression
-  api=4 insize=845 outsize=0 ok=0
-Cmd: compileComputeKernel
-  api=4 insize=897 outsize=230 ok=1
-Cmd: compileComputeKernel
-  error: 2 plat 4 at GenerateChunk.compute(20): type mismatch
-  api=4 insize=895 outsize=0 ok=0
-Cmd: compileComputeKernel
-  error: 2 plat 4 at GenerateChunk.compute(15): array, matrix, vector, or indexable object type expected in index expression
-  api=4 insize=858 outsize=0 ok=0
-Cmd: compileComputeKernel
-  error: 2 plat 4 at GenerateChunk.compute(16): array, matrix, vector, or indexable object type expected in index expression
-  api=4 insize=854 outsize=0 ok=0
-Cmd: compileComputeKernel
-  error: 2 plat 4 at GenerateChunk.compute(20): 'GetVoxelTypeById': no matching 0 parameter function
-  error: 2 plat 4 at GenerateChunk.compute(20): syntax error: unexpected token '['
-  api=4 insize=951 outsize=0 ok=0
-Cmd: compileComputeKernel
-  error: 2 plat 4 at GenerateChunk.compute(21): 'GetVoxelTypeById': no matching 0 parameter function
-  error: 2 plat 4 at GenerateChunk.compute(21): syntax error: unexpected token ']' syntax error: unexpected token '{'
-  api=4 insize=895 outsize=0 ok=0
-Cmd: compileComputeKernel
-  error: 2 plat 4 at GenerateChunk.compute(21): 'GetVoxelTypeById': no matching 0 parameter function
-  error: 2 plat 4 at GenerateChunk.compute(21): syntax error: unexpected token ';'
-  error: 2 plat 4 at GenerateChunk.compute(21): syntax error: unexpected token '{'
-  api=4 insize=897 outsize=0 ok=0
-Cmd: compileComputeKernel
-  error: 2 plat 4 at GenerateChunk.compute(21): 'GetVoxelTypeById': no matching 1 parameter function
-  error: 2 plat 4 at GenerateChunk.compute(21): syntax error: unexpected token ']' syntax error: unexpected token '{'
-  api=4 insize=896 outsize=0 ok=0
-Cmd: compileComputeKernel
-  error: 2 plat 4 at GenerateChunk.compute(22): 'GetVoxelTypeById': no matching 0 parameter function
-  error: 2 plat 4 at GenerateChunk.compute(22): syntax error: unexpected token '{'
-  api=4 insize=943 outsize=0 ok=0
-Cmd: compileComputeKernel
-  error: 2 plat 4 at GenerateChunk.compute(11): unrecognized identifier 'CBUFFER_START'
-  api=4 insize=989 outsize=0 ok=0
-Cmd: compileComputeKernel
-  error: 2 plat 4 at GenerateChunk.compute(22): 'GetVoxelTypeById': no matching 0 parameter function
-  error: 2 plat 4 at GenerateChunk.compute(22): syntax error: unexpected token '{'
-  api=4 insize=948 outsize=0 ok=0
-Cmd: compileComputeKernel
-  error: 2 plat 4 at GenerateChunk.compute(22): 'GetVoxelTypeById': no matching 0 parameter function
-  error: 2 plat 4 at GenerateChunk.compute(22): syntax error: unexpected token '{'
-  api=4 insize=952 outsize=0 ok=0
-Cmd: compileComputeKernel
-  error: 2 plat 4 at GenerateChunk.compute(18): invalid subscript 'VoxelTypesLength'
-  api=4 insize=1040 outsize=0 ok=0
-Cmd: compileComputeKernel
-  error: 2 plat 4 at GenerateChunk.compute(18): scalar, vector, or matrix expected
-  api=4 insize=1040 outsize=0 ok=0
-Cmd: compileComputeKernel
-  error: 2 plat 4 at GenerateChunk.compute(26): 'GetVoxelTypeById': no matching 0 parameter function
-  error: 2 plat 4 at GenerateChunk.compute(26): syntax error: unexpected token '{'
-  api=4 insize=1034 outsize=0 ok=0
-Cmd: compileComputeKernel
-  error: 2 plat 4 at GenerateChunk.compute(26): 'GetVoxelTypeById': no matching 0 parameter function
-  error: 2 plat 4 at GenerateChunk.compute(26): syntax error: unexpected token '{'
-  api=4 insize=1050 outsize=0 ok=0
-Unhandled exception: Protocol error - unexpected end of data (did the Editor crash?)
-
-Quitting shader compiler process
+Cmd: compileSnippet
+  error: 2 plat 4 at (88): 'GetVoxelLight': no matching 1 parameter function\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_USE_DITHER_MASK_FOR_ALPHABLENDED_SHADOWS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING UNITY_ENABLE_DETAIL_NORMALMAP SHADER_API_DESKTOP UNITY_COLORSPACE_GAMMA UNITY_LIGHT_PROBE_PROXY_VOLUME UNITY_LIGHTMAP_FULL_HDR
+  error: 2 plat 4 at (88): invalid subscript 'voxelPosition'\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_USE_DITHER_MASK_FOR_ALPHABLENDED_SHADOWS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING UNITY_ENABLE_DETAIL_NORMALMAP SHADER_API_DESKTOP UNITY_COLORSPACE_GAMMA UNITY_LIGHT_PROBE_PROXY_VOLUME UNITY_LIGHTMAP_FULL_HDR
+  api=4 type=0 insize=2944 outsize=0 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_USE_DITHER_MASK_FOR_ALPHABLENDED_SHADOWS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING UNITY_ENABLE_DETAIL_NORMALMAP SHADER_API_DESKTOP UNITY_COLORSPACE_GAMMA UNITY_LIGHT_PROBE_PROXY_VOLUME UNITY_LIGHTMAP_FULL_HDR ok=0

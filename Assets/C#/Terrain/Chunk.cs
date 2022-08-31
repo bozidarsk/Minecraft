@@ -13,13 +13,14 @@ namespace Minecraft
 		public GameObject gameObject { get; }
 		public Vector3 position { get { return gameObject.transform.position; } }
 		public string name { get { return gameObject.name; } }
+		public static int ChunkSize { get { return GameSettings.world.chunkSize; } }
+		public static int ChunkHeight { get { return GameSettings.world.chunkHeight; } }
 
-		private GameManager gameManager;
-		private ushort[,,] voxelTypes;
+		private uint[] voxels; // 00empty 0_light __type __type
 		private int[,,][] voxelTriangles;
 		private bool canUpdate;
 
-		private MonoBehaviour monoBehaviour { get { return gameManager.monoBehaviour; } }
+		private MeshRenderer renderer;
 		private MeshFilter filter;
 		private ObjectMesh objectMesh;
 
@@ -30,33 +31,33 @@ namespace Minecraft
 		{
 			int h = 3;
 
-			for (int y = 0; y < voxelTypes.GetLength(1); y++) 
+			for (int y = 0; y < ChunkHeight; y++) 
 			{
-				for (int z = 0; z < voxelTypes.GetLength(2); z++) 
+				for (int z = 0; z < ChunkSize; z++) 
 				{
-					for (int x = 0; x < voxelTypes.GetLength(0); x++) 
+					for (int x = 0; x < ChunkSize; x++) 
 					{
 						if (y < h) 
 						{
-							ushort type = 
+							uint type = 
 							(y < h - GameSettings.terrain.dirtDepth)
-							? gameManager.GetVoxelTypeById("stone-block")
-							: gameManager.GetVoxelTypeById("dirt-block");
+							? GameManager.GetVoxelTypeById("stone-block")
+							: GameManager.GetVoxelTypeById("dirt-block");
 							SetVoxelType(type, x, y, z);
 						}
-						else { SetVoxelType(gameManager.GetVoxelTypeById("air-block"), x, y, z); }
+						else { SetVoxelType(GameManager.GetVoxelTypeById("air-block"), x, y, z); }
 
-						if (GetVoxelType(x, y - 1, z) == gameManager.GetVoxelTypeById("dirt-block") && 
-							(GetVoxelType(x, y, z) == gameManager.GetVoxelTypeById("air-block"))
-						) { SetVoxelType(gameManager.GetVoxelTypeById("grass-block"), x, y - 1, z); }
+						if (GetVoxelType(x, y - 1, z) == GameManager.GetVoxelTypeById("dirt-block") && 
+							(GetVoxelType(x, y, z) == GameManager.GetVoxelTypeById("air-block"))
+						) { SetVoxelType(GameManager.GetVoxelTypeById("grass-block"), x, y - 1, z); }
 
-						if (GetVoxelType(x, y - 1, z) == gameManager.GetVoxelTypeById("grass-block") && 
+						if (GetVoxelType(x, y - 1, z) == GameManager.GetVoxelTypeById("grass-block") && 
 							x > 5 && x < 10 && z > 5 && z < 10
-						) { SetVoxelType(gameManager.GetVoxelTypeById("water-liquid"), x, y - 1, z); }
+						) { SetVoxelType(GameManager.GetVoxelTypeById("water-liquid"), x, y - 1, z); }
 
-						// if (GetVoxelType(x, y - 1, z) == gameManager.GetVoxelTypeById("grass-block") && 
-						// 	(GetVoxelType(x, y, z) == gameManager.GetVoxelTypeById("air-block"))
-						// ) { SetVoxelType(gameManager.GetVoxelTypeById("grass-quads"), x, y, z); }
+						// if (GetVoxelType(x, y - 1, z) == GameManager.GetVoxelTypeById("grass-block") && 
+						// 	(GetVoxelType(x, y, z) == GameManager.GetVoxelTypeById("air-block"))
+						// ) { SetVoxelType(GameManager.GetVoxelTypeById("grass-quads"), x, y, z); }
 					}
 				}
 			}
@@ -64,16 +65,16 @@ namespace Minecraft
 
 		private bool CanDrawFace(int x, int y, int z, VoxelFace face) 
 		{
-			bool isThisALiquid = gameManager.voxelProperties[GetVoxelType(x, y, z)].id.EndsWith("-liquid");
+			bool isThisALiquid = GameManager.voxelProperties[GetVoxelType(x, y, z)].id.EndsWith("-liquid");
 			AddFaceToPosition(ref x, ref y, ref z, face);
 
-			if (x < 0 || x >= voxelTypes.GetLength(0) || 
-				y < 0 || y >= voxelTypes.GetLength(1) || 
-				z < 0 || z >= voxelTypes.GetLength(2) || 
-				(!isThisALiquid && gameManager.voxelProperties[GetVoxelType(x, y, z)].id.EndsWith("-liquid"))
+			if (x < 0 || x >= ChunkSize || 
+				y < 0 || y >= ChunkHeight || 
+				z < 0 || z >= ChunkSize || 
+				(!isThisALiquid && GameManager.voxelProperties[GetVoxelType(x, y, z)].id.EndsWith("-liquid"))
 			) { return true; }
 
-			VoxelProperty property = gameManager.voxelProperties[GetVoxelType(x, y, z)];
+			VoxelProperty property = GameManager.voxelProperties[GetVoxelType(x, y, z)];
 			return !property.usingFullFace[(int)OpositeFace(face)];
 		}
 
@@ -107,7 +108,7 @@ namespace Minecraft
 
 				int index = objectMesh.vertexCount - 4;
 				int[] tris = { index + 0, index + 3, index + 1, index + 1, index + 3, index + 2 };
-				CullTriangles(ref tris, property.cull);
+				Tools.CullTriangles(ref tris, property.cull);
 				objectMesh.Add(tris);
 				triangles.AddRange(tris);
 			}
@@ -152,20 +153,20 @@ namespace Minecraft
 				4, 5, 6, 6, 7, 4
 			};
 
-			CullTriangles(ref triangles, property.cull);
+			Tools.CullTriangles(ref triangles, property.cull);
 			objectMesh.Add(triangles);
 			voxelTriangles[(int)offset.x, (int)offset.y, (int)offset.z] = triangles;
 		}
 
 		private void DrawModel(Vector3 offset, VoxelProperty property, Matrix4x4 matrix) 
 		{
-			Mesh mesh = gameManager.modelMeshes[property.id];
+			Mesh mesh = GameManager.modelMeshes[property.id];
 
 			for (int i = 0; i < mesh.vertices.Length; i++) 
 			{ objectMesh.Add(matrix.MultiplyPoint3x4(mesh.vertices[i])); }
 
 			int[] tris = mesh.triangles;
-			CullTriangles(ref tris, property.cull);
+			Tools.CullTriangles(ref tris, property.cull);
 			objectMesh.Add(tris);
 			objectMesh.Add(mesh.uv);
 
@@ -181,7 +182,7 @@ namespace Minecraft
 			{
 				liquidMeshes.Add(new ChunkMesh(gameObject.transform, property.id, 12));
 				i = liquidMeshes.Count - 1;
-				liquidMeshes[i].renderer.material = GameSettings.materials.cullBack;
+				liquidMeshes[i].renderer.material = GameSettings.materials.liquid;
 				liquidMeshes[i].renderer.material.SetTexture("_MainTex", GameSettings.textures.liquid);
 				liquidMeshes[i].gameObject.tag = "Liquid";
 				liquidMeshes[i].collider.convex = true;
@@ -211,7 +212,7 @@ namespace Minecraft
 
 				int index = liquidMeshes[i].vertexCount - 4;
 				int[] tris = { index + 0, index + 3, index + 1, index + 1, index + 3, index + 2 };
-				CullTriangles(ref tris, property.cull);
+				Tools.CullTriangles(ref tris, property.cull);
 				liquidMeshes[i].Add(tris);
 				triangles.AddRange(tris);
 			}
@@ -224,11 +225,11 @@ namespace Minecraft
 			for (int i = 0; i < liquidMeshes.Count; i++) 
 			{ liquidMeshes[i].Clear(); }
 
-			for (int y = 0; y < voxelTypes.GetLength(1); y++) 
+			for (int y = 0; y < ChunkHeight; y++) 
 			{
-				for (int z = 0; z < voxelTypes.GetLength(2); z++) 
+				for (int z = 0; z < ChunkSize; z++) 
 				{
-					for (int x = 0; x < voxelTypes.GetLength(0); x++) 
+					for (int x = 0; x < ChunkSize; x++) 
 					{
 						AddVoxel(GetVoxelType(x, y, z), x, y, z, Matrix4x4.identity);
 					}
@@ -236,29 +237,43 @@ namespace Minecraft
 			}
 		}
 
-		public void SetVoxelType(ushort type, int x, int y, int z) 
+		public static int GetVoxelIndex(int x, int y, int z) { return x + (z * ChunkSize) + (y * ChunkSize * ChunkSize); }
+
+		public void SetVoxelType(uint type, int x, int y, int z) 
 		{
-			try { voxelTypes[x, y, z] = type; }
+			try { voxels[GetVoxelIndex(x, y, z)] = (voxels[GetVoxelIndex(x, y, z)] & 0xffff0000) + (type & 0xffff); }
 			catch {}
 		}
 
-		public ushort GetVoxelType(int x, int y, int z) 
+		public void SetVoxelLight(uint light, int x, int y, int z) 
 		{
-			try { return voxelTypes[x, y, z]; }
-			catch { return gameManager.GetVoxelTypeById("air-block"); }
+			try { voxels[GetVoxelIndex(x, y, z)] = (voxels[GetVoxelIndex(x, y, z)] & 0xfff0ffff) + ((light << 16) & 0xf); }
+			catch {}
 		}
 
-		public void AddVoxel(ushort type, int x, int y, int z, Matrix4x4 matrix) 
+		public uint GetVoxelType(int x, int y, int z) 
 		{
-			if (x < 0 || x >= voxelTypes.GetLength(0) || 
-				y < 0 || y >= voxelTypes.GetLength(1) || 
-				z < 0 || z >= voxelTypes.GetLength(2)
+			try { return voxels[GetVoxelIndex(x, y, z)] & 0xffff; }
+			catch { return GameManager.GetVoxelTypeById("air-block"); }
+		}
+
+		public uint GetVoxelLight(int x, int y, int z) 
+		{
+			try { return (voxels[GetVoxelIndex(x, y, z)] >> 16) & 0xf; }
+			catch { return 0xf; }
+		}
+
+		public void AddVoxel(uint type, int x, int y, int z, Matrix4x4 matrix) 
+		{
+			if (x < 0 || x >= ChunkSize || 
+				y < 0 || y >= ChunkHeight || 
+				z < 0 || z >= ChunkSize
 			) { return; }
 
 			SetVoxelType(type, x, y, z);
-			if (gameManager.voxelProperties[type].id == "air-block") { return; }
+			if (GameManager.voxelProperties[type].id == "air-block") { return; }
 
-			VoxelProperty property = gameManager.voxelProperties[type];
+			VoxelProperty property = GameManager.voxelProperties[type];
 			Vector3 offset = new Vector3((float)x, (float)y, (float)z);
 
 			if (property.id.EndsWith("-block")) { DrawBlock(offset, property, matrix); return; }
@@ -269,12 +284,12 @@ namespace Minecraft
 
 		public void RemoveVoxel(int x, int y, int z, bool saveType) 
 		{
-			if (x < 0 || x >= voxelTypes.GetLength(0) || 
-				y < 0 || y >= voxelTypes.GetLength(1) || 
-				z < 0 || z >= voxelTypes.GetLength(2)
+			if (x < 0 || x >= ChunkSize || 
+				y < 0 || y >= ChunkHeight || 
+				z < 0 || z >= ChunkSize
 			) { return; }
 
-			VoxelProperty property = gameManager.voxelProperties[GetVoxelType(x, y, z)];
+			VoxelProperty property = GameManager.voxelProperties[GetVoxelType(x, y, z)];
 
 			if (voxelTriangles[x, y, z] == null || 
 				voxelTriangles[x, y, z].Length == 0 || 
@@ -282,7 +297,7 @@ namespace Minecraft
 				property.id == "air-block"
 			) { return; }
 
-			if (!saveType) { SetVoxelType(gameManager.GetVoxelTypeById("air-block"), x, y, z); }
+			if (!saveType) { SetVoxelType(GameManager.GetVoxelTypeById("air-block"), x, y, z); }
 
 			int i = GetTriangleIndexFromPosition(x, y, z);
 			objectMesh.triangles.RemoveRange(i, voxelTriangles[x, y, z].Length);
@@ -308,15 +323,15 @@ namespace Minecraft
 			voxelTriangles[x, y, z] = null;
 		}
 
-		[Obsolete("It's probably not working.")]
+		[Obsolete("It's not working.")]
 		public void RemoveFace(int x, int y, int z, VoxelFace face) 
 		{
-			if (x < 0 || x >= voxelTypes.GetLength(0) || 
-				y < 0 || y >= voxelTypes.GetLength(1) || 
-				z < 0 || z >= voxelTypes.GetLength(2)
+			if (x < 0 || x >= ChunkSize || 
+				y < 0 || y >= ChunkHeight || 
+				z < 0 || z >= ChunkSize
 			) { return; }
 
-			VoxelProperty property = gameManager.voxelProperties[GetVoxelType(x, y, z)];
+			VoxelProperty property = GameManager.voxelProperties[GetVoxelType(x, y, z)];
 
 			if (voxelTriangles[x, y, z] == null || 
 				voxelTriangles[x, y, z].Length == 0 || 
@@ -420,19 +435,19 @@ namespace Minecraft
 			vertex.z >= voxel.z && vertex.z <= voxel.z + 1f;
 		}
 
-		public ushort GetAdjacentVoxelType(int x, int y, int z, VoxelFace face) 
+		public uint GetAdjacentVoxelType(int x, int y, int z, VoxelFace face) 
 		{
 			AddFaceToPosition(ref x, ref y, ref z, face);
 
-			if (x < 0 || x >= voxelTypes.GetLength(0) || 
-				y < 0 || y >= voxelTypes.GetLength(1) || 
-				z < 0 || z >= voxelTypes.GetLength(2)
-			) { return gameManager.GetVoxelTypeById("air-block"); }
+			if (x < 0 || x >= ChunkSize || 
+				y < 0 || y >= ChunkHeight || 
+				z < 0 || z >= ChunkSize
+			) { return GameManager.GetVoxelTypeById("air-block"); }
 
 			return GetVoxelType(x, y, z);
 		}
 
-		public void Update() { monoBehaviour.StartCoroutine(Update(true)); }
+		public void Update() { GameManager.instance.StartCoroutine(Update(true)); }
 		private IEnumerator Update(bool forceUpdate = false) 
 		{
 			while (!forceUpdate && !canUpdate) { yield return null; }
@@ -443,10 +458,20 @@ namespace Minecraft
 			}
 
 			filter.mesh = objectMesh.mesh;
+
+			// SetVoxelLight(15, 0, 0, 0);
+			// SetVoxelLight(10, 1, 0, 0);
+			// SetVoxelLight(5, 2, 0, 0);
+
+			// ComputeBuffer buffer = new ComputeBuffer(ChunkSize * ChunkHeight * ChunkSize, sizeof(uint));
+			// buffer.SetData(voxels);
+			// renderer.material.SetBuffer("voxels", buffer);
+			// buffer.Release();
+			
 			for (int i = 0; i < liquidMeshes.Count; i++) { liquidMeshes[i].Update(); }
 		}
 
-		public ushort GetVoxelTypeFromPoint(Vector3 point) 
+		public uint GetVoxelTypeFromPoint(Vector3 point) 
 		{
 			Vector3Int position = GetVoxelPositionFromPoint(point);
 			return GetVoxelType(position.x, position.y, position.z);
@@ -454,7 +479,7 @@ namespace Minecraft
 
 		public string GetVoxelIdFromPoint(Vector3 point) 
 		{
-			try { return gameManager.voxelProperties[GetVoxelTypeFromPoint(point)].id; }
+			try { return GameManager.voxelProperties[GetVoxelTypeFromPoint(point)].id; }
 			catch { return "undefined-block"; }
 		}
 
@@ -485,7 +510,7 @@ namespace Minecraft
 		/* Add delay based on mining speed, force, etc. */
 		public void OnPlayerRemoveVoxel(Player player, VoxelHit hit) 
 		{
-			if (!ContainsInList(gameManager.terrainManager.modifiedChunks)) { gameManager.terrainManager.modifiedChunks.Add(this); }
+			if (!ContainsInList(TerrainManager.modifiedChunks)) { TerrainManager.modifiedChunks.Add(this); }
 			Vector3Int position = GetVoxelPositionFromPoint(hit.point);
 
 			RemoveVoxel(position.x, position.y, position.z, false);
@@ -516,10 +541,10 @@ namespace Minecraft
 		/* Check for avaliable rotations from the property. */
 		public void OnPlayerPlaceVoxel(Player player, VoxelHit hit) 
 		{
-			if (!ContainsInList(gameManager.terrainManager.modifiedChunks)) { gameManager.terrainManager.modifiedChunks.Add(this); }
+			if (!ContainsInList(TerrainManager.modifiedChunks)) { TerrainManager.modifiedChunks.Add(this); }
 			Vector3Int position = GetVoxelPositionFromPoint(hit.previousHit.point);
 
-			AddVoxel(gameManager.GetVoxelTypeById("grass-block"), position.x, position.y, position.z, Matrix4x4.identity);
+			AddVoxel(GameManager.GetVoxelTypeById("grass-block"), position.x, position.y, position.z, Matrix4x4.identity);
 
 			for (int face = 0; face < 6; face++) 
 			{
@@ -534,35 +559,31 @@ namespace Minecraft
 			Update();
 		}
 
-		public Chunk(GameManager gameManager, Vector3 position, Transform parent) 
+		public Chunk(Vector3 position, Transform parent) 
 		{
-			this.gameManager = gameManager;
 			this.liquidMeshes = new List<ChunkMesh>();
-			this.voxelTypes = new ushort[
-				GameSettings.terrain.chunkSize,
-				GameSettings.terrain.chunkHeight,
-				GameSettings.terrain.chunkSize
-			];
-
-			this.canUpdate = false;
-			this.voxelTriangles = new int[voxelTypes.GetLength(0), voxelTypes.GetLength(1), voxelTypes.GetLength(2)][];
 			this.liquidsToGenerate = new List<dynamic[]>();
+			this.voxelTriangles = new int[ChunkSize, ChunkHeight, ChunkSize][];
+			this.voxels = new uint[ChunkSize * ChunkHeight * ChunkSize];
 			this.objectMesh = new ObjectMesh();
+			this.canUpdate = false;
 
 			this.gameObject = new GameObject(position.ToString());
 			this.gameObject.transform.SetParent(parent);
 			this.gameObject.transform.position = position;
 			this.gameObject.transform.eulerAngles = Vector3.zero;
 			this.gameObject.transform.localScale = Vector3.one;
-			this.filter = (MeshFilter)this.gameObject.AddComponent(typeof(MeshFilter));
 			this.gameObject.tag = "Chunk";
 
-			MeshRenderer renderer = (MeshRenderer)this.gameObject.AddComponent(typeof(MeshRenderer));
-			renderer.material = GameSettings.materials.cullBack;
+			this.filter = (MeshFilter)this.gameObject.AddComponent(typeof(MeshFilter));
+			this.renderer = (MeshRenderer)this.gameObject.AddComponent(typeof(MeshRenderer));
+			renderer.material = GameSettings.materials.chunk;
 			renderer.material.SetTexture("_MainTex", GameSettings.textures.voxel);
+			renderer.material.SetInt("chunkSize", ChunkSize);
+			renderer.material.SetInt("chunkHeight", ChunkHeight);
 
-			new Thread(new ThreadStart(Generate)).Start();
-			monoBehaviour.StartCoroutine(this.Update(false));
+			new Thread(new ThreadStart(this.Generate)).Start();
+			GameManager.instance.StartCoroutine(this.Update(false));
 		}
 
 		private void Generate() 
@@ -571,32 +592,6 @@ namespace Minecraft
 			GenerateVoxels();
 			GenerateMesh();
 			canUpdate = true;
-		}
-
-		public static int[] CullTriangles(int[] triangles, Cull mode) { CullTriangles(ref triangles, mode); return triangles; }
-		public static void CullTriangles(ref int[] triangles, Cull mode) 
-		{
-			if (triangles.Length % 3 != 0) { throw new ArgumentException("Triangle array must be multiple of 3."); }
-
-			switch (mode) 
-			{
-				case Cull.Back:
-					return;
-				case Cull.Front:
-					for (int i = 0; i < triangles.Length; i += 3) 
-					{
-						int tmp = triangles[i + 1];
-						triangles[i + 1] = triangles[i + 2];
-						triangles[i + 2] = tmp;
-					}
-
-					return;
-				case Cull.Off:
-					List<int> list = triangles.ToList();
-					for (int i = 0; i < list.Count; i += 6) { list.InsertRange(i, new int[] { list[i + 0], list[i + 2], list[i + 1] }); }
-					triangles = list.ToArray();
-					return;
-			}
 		}
 
 		public static readonly Vector3[,] blockVertices = 

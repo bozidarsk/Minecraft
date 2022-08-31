@@ -31,7 +31,7 @@ namespace Minecraft
 		{
 			if (!IsOpen) { return; }
 
-			chatBox.text = player.gameManager.chatManager.AllMessages;
+			chatBox.text = ChatManager.AllMessages;
 			inputField.ActivateInputField();
 
 			Vector2 mouse = Input.mousePosition;
@@ -43,7 +43,7 @@ namespace Minecraft
 				(mouse.x < corners[2].x && mouse.y < corners[2].y) && 
 				(mouse.x < corners[3].x && mouse.y > corners[3].y)
 			) {
-				float maxScroll = player.gameManager.chatManager.MessagesCount * 18.5185185f;
+				float maxScroll = ChatManager.MessagesCount * 18.5185185f;
 				chatBoxTransform.offsetMin += new Vector2(0f, -Input.mouseScrollDelta.y * player.playerSettings.controlls.scrollSensitivity);
 				if (chatBoxTransform.offsetMin.y > 0f) { chatBoxTransform.offsetMin = Vector2.zero; }
 				if (chatBoxTransform.offsetMin.y < -maxScroll) { chatBoxTransform.offsetMin = Vector2.up * -maxScroll; }
@@ -51,7 +51,7 @@ namespace Minecraft
 
 			if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter)) 
 			{
-				if (inputField.text != "") { player.gameManager.chatManager.Push(player, inputField.text); }
+				if (inputField.text != "") { ChatManager.Push(player, inputField.text); }
 				inputField.text = "";
 				IsOpen = false;
 			}

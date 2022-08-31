@@ -18,7 +18,6 @@ namespace Minecraft
 	public class Inventory : MonoBehaviour
 	{
 		public GameObject gui;
-		[HideInInspector] public GameManager gameManager;
 		protected List<InventorySlot> slots;
 		protected Dictionary<string, int> slotStartIndex;
 		protected InventorySlot cursorSlot;
@@ -74,7 +73,7 @@ namespace Minecraft
 
 			if (slots[index].item.id == cursorSlot.item.id) 
 			{
-				uint stackSize = gameManager.itemProperties[gameManager.GetItemTypeById(slots[index].item.id)].stackSize;
+				uint stackSize = GameManager.itemProperties[GameManager.GetItemTypeById(slots[index].item.id)].stackSize;
 				if (slots[index].item.ammount + cursorSlot.item.ammount <= stackSize) 
 				{
 					slots[index].item.ammount += cursorSlot.item.ammount;
@@ -145,7 +144,7 @@ namespace Minecraft
 			else 
 			{
 				if ((slots[index].item.id != cursorSlot.item.id && !slots[index].item.IsEmpty) || 
-					slots[index].item.ammount >= gameManager.itemProperties[gameManager.GetItemTypeById(cursorSlot.item.id)].stackSize || 
+					slots[index].item.ammount >= GameManager.itemProperties[GameManager.GetItemTypeById(cursorSlot.item.id)].stackSize || 
 					!slots[index].IsInFilter(cursorSlot.item.id)
 				) { return; }
 
@@ -166,7 +165,7 @@ namespace Minecraft
 				(slots[index].item.id != cursorSlot.item.id && !cursorSlot.item.IsEmpty)
 			) { return; }
 
-			uint stackSize = gameManager.itemProperties[gameManager.GetItemTypeById(slots[index].item.id)].stackSize;
+			uint stackSize = GameManager.itemProperties[GameManager.GetItemTypeById(slots[index].item.id)].stackSize;
 			uint leftover = TryRemoveItem(new Item(slots[index].item.id, stackSize - cursorSlot.item.ammount));
 			cursorSlot.item = new Item(slots[index].item.id, stackSize - cursorSlot.item.ammount - leftover);
 
@@ -179,7 +178,7 @@ namespace Minecraft
 			if (!slots[index].item.IsEmpty) 
 			{
 				description.gameObject.SetActive(true);
-				ItemProperty property = gameManager.itemProperties[gameManager.GetItemTypeById(slots[index].item.id)];
+				ItemProperty property = GameManager.itemProperties[GameManager.GetItemTypeById(slots[index].item.id)];
 				description.offsetMax = new Vector2(property.descriptionSize.x, description.offsetMax.y);
 				description.offsetMin = new Vector2(description.offsetMin.x, property.descriptionSize.y);
 				descriptionText.text = property.description + "\n"/*"\n<color=\"#575757\">"*/ + slots[index].item.id/* + "</color>"*/;
@@ -196,7 +195,7 @@ namespace Minecraft
 
 		public uint TryAddItemInventory(Item item) 
 		{
-			uint stackSize = gameManager.itemProperties[gameManager.GetItemTypeById(item.id)].stackSize;
+			uint stackSize = GameManager.itemProperties[GameManager.GetItemTypeById(item.id)].stackSize;
 
 			for (int i = slotStartIndex["Inventory"]; i < slotStartIndex["Inventory"] + (9*3); i++) 
 			{
@@ -241,7 +240,7 @@ namespace Minecraft
 
 		public uint TryAddItemHotbar(Item item) 
 		{
-			uint stackSize = gameManager.itemProperties[gameManager.GetItemTypeById(item.id)].stackSize;
+			uint stackSize = GameManager.itemProperties[GameManager.GetItemTypeById(item.id)].stackSize;
 
 			for (int i = slotStartIndex["Hotbar"]; i < slotStartIndex["Hotbar"] + 9; i++) 
 			{

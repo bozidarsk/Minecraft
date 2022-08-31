@@ -8,6 +8,29 @@ namespace Minecraft
 	public static class Settings 
 	{
 		[Serializable]
+		public struct Path 
+		{
+			[Header("Textures")]
+			public string voxelTextures;
+			public string itemTextures;
+			public string liquidTextures;
+			public string textureEffects;
+
+			[Header("Properties")]
+			public string voxelProperties;
+			public string itemProperties;
+			public string craftingProperties;
+			public string enchantmentProperties;
+
+			[Header("Shaders")]
+			public string chunkShader;
+			public string postProcessingShader;
+			public string droppedItemShader;
+			public string playerShader;
+			public string liquidShader;
+		}
+
+		[Serializable]
 		public struct PostProcessing 
 		{
 			public Color fogColor;
@@ -26,10 +49,16 @@ namespace Minecraft
 		[Serializable]
 		public struct Terrain 
 		{
+			public int dirtDepth; // <= 0
+		}
+
+		[Serializable]
+		public struct World 
+		{
+			public Vector3 gravity;
 			public int worldSize; // <= 0
 			public int chunkSize; // <= 0
 			public int chunkHeight; // <= 0
-			public int dirtDepth; // <= 0
 		}
 
 		[Serializable]
@@ -42,9 +71,31 @@ namespace Minecraft
 			public float jumpHeight; // < 0
 			public float reachingDistance; // < 0
 			public Vector2 rotationLimit;
-			public Vector3 gravity;
-			public uint stackSize;
+			public uint maxStackSize;
 			public uint queuedMessagesLength;
+		}
+
+		public struct Textures 
+		{
+			public Texture2D voxel;
+			public Texture2D item;
+			public Texture2D liquid;
+
+			[HideInInspector] public int voxelWidth;
+			[HideInInspector] public int voxelHeight;
+			[HideInInspector] public int itemWidth;
+			[HideInInspector] public int itemHeight;
+			[HideInInspector] public int liquidWidth;
+			[HideInInspector] public int liquidHeight;
+		}
+
+		public struct Materials 
+		{
+			public Material liquid;
+			public Material chunk;
+			public Material droppedItem;
+			public Material postProcessing;
+			public Material player;
 		}
 
 		/*******************************************/

@@ -37,7 +37,6 @@ namespace Minecraft
 
 		public static void* Handle { private set; get; }
 		public static void* Buffer { private set; get; }
-		private static bool initialized = false;
 
 		private const ushort FOREGROUND_BLUE      = 0x0001;
 		private const ushort FOREGROUND_GREEN     = 0x0002;
@@ -50,8 +49,6 @@ namespace Minecraft
 
 		public static void Initialize() 
 		{
-			if (initialized) { Console.Error("You can initialize the console only once."); return; }
-
 			#if UNITY_EDITOR
 			UnityEditor.EditorApplication.playModeStateChanged += (UnityEditor.PlayModeStateChange change) => 
 			{ if (change == UnityEditor.PlayModeStateChange.ExitingPlayMode) { Detach(); } };
@@ -69,8 +66,6 @@ namespace Minecraft
 			#else
 			SetActive(true);
 			#endif
-
-			initialized = true;
 		}
 
 		public static void SetActive(bool state) { ShowWindow(Handle, (state) ? 5 : 0); }
@@ -169,8 +164,6 @@ namespace Minecraft
 
 		public static void Write(string input) 
 		{
-			if (!initialized) { Initialize(); }
-
 			fixed (byte* chars = &Encoding.ASCII.GetBytes(input + "\x0000")[0]) 
 			{
 				WriteConsole(Buffer, chars, (uint)input.Length, out uint* charsWritten, null);

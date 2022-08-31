@@ -90,7 +90,7 @@ namespace Minecraft
 			collider.convex = true;
 		}
 
-		public DroppedItem(Item item, Vector3 position, bool useCooldown, GameManager gameManager) 
+		public DroppedItem(Item item, Vector3 position, bool useCooldown) 
 		{
 			this.item = item;
 			this.gameObject = new GameObject(item.ToString());
@@ -104,9 +104,8 @@ namespace Minecraft
 			DroppedItemController controller = (DroppedItemController)this.gameObject.AddComponent(typeof(DroppedItemController));
 			controller.movementController = (MovementController)this.gameObject.AddComponent(typeof(MovementController));
 			controller.movementController.Initialize(
-				gameManager,
 				this.gameObject.transform,
-				-GameSettings.player.gravity.normalized * (0.3f * 0.5f)
+				-GameSettings.world.gravity.normalized * (0.3f * 0.5f)
 			);
 
 			controller.useCooldown = useCooldown;
@@ -198,7 +197,7 @@ namespace Minecraft
 		{
 			text.SetText((!item.IsEmpty && item.ammount > 1) ? Convert.ToString(item.ammount) : "");
 
-			Vector2byte coords = inventory.gameManager.itemProperties[inventory.gameManager.GetItemTypeById(item.id)].textureCoords;
+			Vector2byte coords = GameManager.itemProperties[GameManager.GetItemTypeById(item.id)].textureCoords;
 			float coordsy = ((float)GameSettings.textures.item.height / 16f) - (float)coords.y - 1;
 			float uvx = (16f * (float)coords.x) / (float)GameSettings.textures.item.width;
 			float uvy = (16f * coordsy) / (float)GameSettings.textures.item.height;
@@ -310,10 +309,10 @@ namespace Minecraft
 
 			for (float step = 1f; Math2.Length(point) < Math2.Length(direction); step += 1f) 
 			{
-				voxelHit.chunk = player.gameManager.terrainManager.GetChunkFromPosition(origin + point);
+				voxelHit.chunk = TerrainManager.GetChunkFromPosition(origin + point);
 				if (voxelHit.chunk == null) { point = dir * step; continue; }
 
-				VoxelProperty property = player.gameManager.voxelProperties[voxelHit.chunk.GetVoxelTypeFromPoint(origin + point)];
+				VoxelProperty property = GameManager.voxelProperties[voxelHit.chunk.GetVoxelTypeFromPoint(origin + point)];
 
 				if (property.id != "air-block" && !property.id.EndsWith("-liquid")) 
 				{
@@ -359,13 +358,6 @@ namespace Minecraft
 	public class ErrorException : Exception 
 	{
 		public ErrorException(string message) : base(message) {}
-		// public ErrorException(string message) : base(message) 
-		// {
-		// 	string stack = "";
-		// 	List<string> list = Environment.StackTrace.Split('\x000a').ToList();
-		// 	for (int i = 2; i < list.Count; i++) { stack += list[i] + ((i < list.Count - 1) ? "\n" : ""); }
-		// 	Console.Error(message + "|" + stack + "|");
-		// }
 	}
 
 	public enum Cull 
@@ -423,10 +415,6 @@ namespace Minecraft
 	}
 
 	[Serializable]
-	public struct PropertyArray<T> 
-	{ public T[] properties; }
-
-	[Serializable]
 	public struct Vector2byte 
 	{
 		public byte x;
@@ -455,114 +443,11 @@ namespace Minecraft
 	}
 
 	[Serializable]
-	public struct GameManagerTextures 
-	{
-		public Texture2D voxel;
-		public Texture2D item;
-		public Texture2D liquid;
-
-		[HideInInspector] public int voxelWidth;
-		[HideInInspector] public int voxelHeight;
-		[HideInInspector] public int itemWidth;
-		[HideInInspector] public int itemHeight;
-		[HideInInspector] public int liquidWidth;
-		[HideInInspector] public int liquidHeight;
-	}
-
-	[Serializable]
-	public struct GameManagerMaterials 
-	{
-		public Material cullOff;
-		public Material cullBack;
-		public Material droppedItem;
-		public Material postProcessing;
-		public Material player;
-	}
-
-	[Serializable]
-	public struct CraftingProperty 
-	{
-		public Item resultItem;
-		public Item[,] recipe;
-
-		public override string ToString() { return JsonUtility.ToJson(this); }
-	}
-
-	[Serializable]
-	public struct VoxelProperty 
-	{
-		public string id;
-		public string dropItem;
-		public string preferedTool;
-		public Cull cull;
-		public int dropMultiplier;
-		public int miningForce;
-		public float miningSpeed;
-		public float speedMultiplier;
-		public float xp;
-		public bool useCollision;
-		public bool indestructible;
-		public Vector3bool enableRotation;
-		public bool[] usingFullFace;
-		public Vector2byte[] textureCoords;
-
-		public override string ToString() { return JsonUtility.ToJson(this); }
-	}
-
-	[Serializable]
-	public struct ToolProperty 
-	{
-		public float damage;
-		public float durability;
-		public float miningSpeed;
-		public float miningForce;
-
-		public override string ToString() { return JsonUtility.ToJson(this); }
-	}
-
-	[Serializable]
-	public struct ArmourProperty 
-	{
-		public float protection;
-		public float blastProtection;
-		public float projectileProtection;
-
-		public override string ToString() { return JsonUtility.ToJson(this); }
-	}
-
-	[Serializable]
 	public struct Enchantment 
 	{
 		public string id;
 		public uint level;
 
 		public override string ToString() { return id + ": " + Convert.ToString(level); }
-	}
-
-	[Serializable]
-	public struct ItemProperty 
-	{
-		public string id;
-		public string description;
-		public Vector2 descriptionSize;
-		public Vector2byte textureCoords;
-		public uint stackSize;
-		public string[] allowedEnchantments;
-		public Enchantment[] enchantments;
-		public ToolProperty toolProperty;
-		public ArmourProperty armourProperty;
-
-		public override string ToString() { return JsonUtility.ToJson(this); }
-	}
-
-	[Serializable]
-	public struct EnchantmentProperty 
-	{
-		public string id;
-		public string shader;
-		public uint maxLevel;
-		public string[] incompatibleEnchantments;
-
-		public override string ToString() { return JsonUtility.ToJson(this); }
 	}
 }

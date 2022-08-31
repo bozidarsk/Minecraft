@@ -1,4 +1,4 @@
-﻿Shader "Custom/DroppedItem"
+﻿Shader "Minecraft/DroppedItem"
 {
     Properties
     {
