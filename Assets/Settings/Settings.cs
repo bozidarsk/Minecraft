@@ -8,6 +8,14 @@ namespace Minecraft
 	public static class Settings 
 	{
 		[Serializable]
+		public struct Biome 
+		{
+			public string id;
+			public uint seaLevel;
+			public uint dirtDepth;
+		}
+
+		[Serializable]
 		public struct Path 
 		{
 			[Header("Textures")]
@@ -28,6 +36,33 @@ namespace Minecraft
 			public string droppedItemShader;
 			public string playerShader;
 			public string liquidShader;
+
+			[Header("Saved Data")]
+			public string savedChunks;
+			public string savedPlayers;
+			public string savedInteractables;
+			public string savedEntities;
+			public string savedDroppedItems;
+
+			public string GameData { get { return Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\.minecraft2"; } }
+			public string GameSaves { get { return GameSettings.path.GameData + "\\saves"; } }
+			public string WorldData { get { return GameSettings.path.GameSaves + "\\" + GameSettings.world.name; } }
+			public string WorldProperties { get { return GameSettings.path.WorldData + "\\properties"; } }
+			public string WorldTextures { get { return GameSettings.path.WorldData + "\\textures"; } }
+			public string DefaultData { get { return "Assets/Settings/Defaults"; } }
+			public string DefaultProperties { get { return DefaultData + "\\properties"; } }
+			public string DefaultTextures { get { return DefaultData + "\\textures"; } }
+		}
+
+		[Serializable]
+		public struct Noise 
+		{
+			public int maxHeight;
+			public float persistance;
+			public float lacunarity;
+			public float scale;
+			public uint octaves;
+			public Vector2 offset;
 		}
 
 		[Serializable]
@@ -49,27 +84,33 @@ namespace Minecraft
 		[Serializable]
 		public struct Terrain 
 		{
-			public int dirtDepth; // <= 0
+			public Biome[] biomes;
+
+			public Biome GetBiomeById(string id) 
+			{ for (uint i = 0; i < biomes.Length; i++) 
+				{ if (biomes[i].id == id) { return biomes[i]; } 
+			} return GetBiomeById("plains-biome"); }
 		}
 
 		[Serializable]
 		public struct World 
 		{
+			public string name;
+			public int seed;
 			public Vector3 gravity;
-			public int worldSize; // <= 0
-			public int chunkSize; // <= 0
-			public int chunkHeight; // <= 0
+			public int chunkSize;
+			public int chunkHeight;
 		}
 
 		[Serializable]
 		public struct Player 
 		{
-			public float walkingSpeed; // < 0
-			public float sprintingSpeed; // < 0
-			public float sneakingSpeed; // < 0
-			public float jumpSpeed; // < 0
-			public float jumpHeight; // < 0
-			public float reachingDistance; // < 0
+			public float walkingSpeed;
+			public float sprintingSpeed;
+			public float sneakingSpeed;
+			public float jumpSpeed;
+			public float jumpHeight;
+			public float reachingDistance;
 			public Vector2 rotationLimit;
 			public uint maxStackSize;
 			public uint queuedMessagesLength;
@@ -142,7 +183,7 @@ namespace Minecraft
 		public struct Controlls 
 		{
 			public float scrollSensitivity;
-			public Vector2 sensitivity; // <= 0
+			public Vector2 sensitivity;
 			public bool invertMouse;
 			public bool autoJump;
 			public KeyCodes keyCodes;
@@ -151,19 +192,19 @@ namespace Minecraft
 		[Serializable]
 		public struct Sound 
 		{
-			public float musicVolume; // <= 0
+			public float musicVolume;
 			public bool muteMusic;
-			public float soundVolume; // <= 0
+			public float soundVolume;
 			public bool muteSound;
 		}
 
 		[Serializable]
 		public struct Graphics 
 		{
-			public float FOV; // <= 0
-			public float GUIScale; // <= 0
-			public int renderDistance; // <= 0
-			public int maxFPS; // <= 0
+			public float FOV;
+			public float GUIScale;
+			public int renderDistance;
+			public int maxFPS;
 		}
 	}
 }

@@ -10,24 +10,27 @@ namespace Minecraft
 {
 	public class Player : MonoBehaviour
 	{
-		public PlayerSettingsObject playerSettings;
+		public string playerSettingsPath;
 		public Transform playerCenter;
 		public Armature armature;
-		[HideInInspector] public PlayerInventory inventory;
+		[HideInInspector] public PlayerSettingsObject playerSettings;
 		[HideInInspector] public CameraPerspective cameraPerspective;
-		[HideInInspector] public uint color; // rrggbbaa
-		[HideInInspector] public string id;
-		[HideInInspector] public float level;
-		[HideInInspector] public float xp;
-		[HideInInspector] public ChatController chat;
+		[HideInInspector] public PlayerInventory inventory;
 		[HideInInspector] public PostProcessing postProcessing;
-		new public string name { get { return gameObject.name; } }
+		[HideInInspector] public ChatController chat;
+		[HideInInspector] public uint color = 0xffffffff; // rrggbbaa
+		[HideInInspector] public string id = "default-player";
+		[HideInInspector] public float level = 0f;
+		[HideInInspector] public float xp = 0f;
+		[HideInInspector] public int health = 9;
+		[HideInInspector] public int food = 9;
+		public bool canUseCommands { private set; get; }
+		public bool IsGrounded { get { return !movementController.CanApplyGravity(GameSettings.world.gravity); } }
 
 		private System.Random random;
 		private MovementController movementController;
 		private Vector3 gravity = Vector3.zero;
 		private VoxelHit voxelHit;
-		private RaycastHit raycastHit;
 		private float jumpedHeight = 0f;
 		private bool isJumping = false;
 
@@ -36,77 +39,15 @@ namespace Minecraft
 			if (item.IsEmpty) { return; }
 
 			DroppedItem obj = new DroppedItem(item, (position == null) ? armature.head.transform.position : (Vector3)position, position == null);
-			Vector3 offset = new Vector3(-0.5f, -0.5f, -0.5f);
 			obj.gameObject.transform.eulerAngles = new Vector3(0f, (float)random.Next(0, 180), 0f);
 
 			if (position == null) { obj.body.AddForce(-armature.head.transform.right * 5f, ForceMode.Impulse); }
 
-			if (item.id.EndsWith("-block")) 
-			{
-				VoxelProperty property = GameManager.voxelProperties[GameManager.GetVoxelTypeById(item.id)];
-				for (int f = 0; f < Chunk.blockVertices.GetLength(0); f++) 
-				{
-					for (int v = 0; v < Chunk.blockVertices.GetLength(1); v++) 
-					{ obj.Add(Chunk.blockVertices[f, v] + offset); }
-
-					int index = obj.vertexCount - 4;
-					obj.Add(index + 0, index + 3, index + 1, index + 1, index + 3, index + 2);
-
-					Vector2byte coords = property.textureCoords[f];
-					float coordsy = ((float)GameSettings.textures.voxel.height / 16f) - (float)coords.y - 1;
-					float uvx = (16f * (float)coords.x) / (float)GameSettings.textures.voxel.width;
-					float uvy = (16f * coordsy) / (float)GameSettings.textures.voxel.height;
-					float uvsizex = 16f / (float)GameSettings.textures.voxel.width;
-					float uvsizey = 16f / (float)GameSettings.textures.voxel.height;
-
-					obj.Add(
-						new Vector2(uvx, uvy),
-						new Vector2(uvx + uvsizex, uvy),
-						new Vector2(uvx + uvsizex, uvy + uvsizey),
-						new Vector2(uvx, uvy + uvsizey)
-					);
-				}
-
-				obj.renderer.material.SetTexture("_MainTex", GameSettings.textures.voxel);
-			}
-
-			if (item.id.EndsWith("-model")) 
-			{
-				obj.Add(GameManager.modelMeshes.Where(x => x.Key == item.id).ToArray()[0].Value);
-				obj.renderer.material.SetTexture("_MainTex", GameSettings.textures.voxel);
-			}
-
-			if (obj.vertexCount == 0) 
-			{
-				obj.Add(
-					new Vector3(-0.5f, -0.5f, 0f),
-					new Vector3(0.5f, -0.5f, 0f),
-					new Vector3(0.5f, 0.5f, 0f),
-					new Vector3(-0.5f, 0.5f, 0f)
-				);
-
-				obj.Add(0, 1, 2, 2, 3, 0);
-
-				Vector2byte coords = GameManager.itemProperties[GameManager.GetItemTypeById(item.id + "-item")].textureCoords;
-				float coordsy = ((float)GameSettings.textures.item.height / 16f) - (float)coords.y - 1;
-				float uvx = (16f * (float)coords.x) / (float)GameSettings.textures.item.width;
-				float uvy = (16f * coordsy) / (float)GameSettings.textures.item.height;
-				float uvsizex = 16f / (float)GameSettings.textures.item.width;
-				float uvsizey = 16f / (float)GameSettings.textures.item.height;
-
-				obj.Add(
-					new Vector2(uvx, uvy),
-					new Vector2(uvx + uvsizex, uvy),
-					new Vector2(uvx + uvsizex, uvy + uvsizey),
-					new Vector2(uvx, uvy + uvsizey)
-				);
-
-				obj.renderer.material.SetTexture("_MainTex", GameSettings.textures.item);
-			}
-
+			obj.GenerateMesh();
 			obj.Update();
 		}
 
+		void Awake() { playerSettings = JsonUtility.FromJson<PlayerSettingsObject>(File.ReadAllText(GameManager.FormatPath(playerSettingsPath))); }
 		void Start() 
 		{
 			chat = gameObject.GetComponent<ChatController>();
@@ -116,13 +57,13 @@ namespace Minecraft
 			inventory = gameObject.GetComponent<PlayerInventory>();
 			id = gameObject.name + "-player";
 			color = 0x007f7fff; // rrggbbaa
+			canUseCommands = true;
 
 			Material material = GameSettings.materials.player;
 			Texture2D texture = new Texture2D(516, 258);
 
-			// ImageConversion.LoadImage(texture, File.ReadAllBytes("Assets/Objects/player/texture-template.png"), false);
-			try { ImageConversion.LoadImage(texture, File.ReadAllBytes("Assets/Objects/player/Textures/" + id + ".png"), false); }
-			catch { ImageConversion.LoadImage(texture, File.ReadAllBytes("Assets/Objects/player/texture-default.png"), false); }
+			try { ImageConversion.LoadImage(texture, File.ReadAllBytes("Assets/Objects/player/Skins/" + id + ".png"), false); }
+			catch { ImageConversion.LoadImage(texture, File.ReadAllBytes(GameManager.FormatPath("$(DefaultTextures)/skins/default.png")), false); }
 			texture.filterMode = FilterMode.Point;
 			texture.wrapMode = TextureWrapMode.Clamp;
 
@@ -198,8 +139,6 @@ namespace Minecraft
 			if (Input.GetKey(playerSettings.controlls.keyCodes.MoveRight)) { movementController.Move(gameObject.transform.right * v * t); }
 		}
 
-		public bool IsGrounded { get { return !movementController.CanApplyGravity(GameSettings.world.gravity); } }
-
 		void OnTriggerEnter(Collider collider) 
 		{
 			switch (collider.tag) 
@@ -223,5 +162,49 @@ namespace Minecraft
 		}
 
 		void OnTriggerExit(Collider collider) { if (collider.tag == "Liquid") { postProcessing.RemoveTextureEffect(); } }
+
+		public string ToJson() 
+		{
+			SavedData data = new SavedData(gameObject.name, health, food, gameObject.transform.position, gameObject.transform.eulerAngles, inventory.slots.Select(x => x.item).ToArray());
+			string json = JsonUtility.ToJson(data);
+			json.Remove(json.IndexOf("{"), 1);
+			json.Remove(json.LastIndexOf("}"), 1);
+			return json;
+		}
+
+		public static void Save(string[] jsons) 
+		{
+			string output = "{\n\t\"content\":\n\t[\n";
+			for (int i = 0; i < jsons.Length; i++) { output += "\t\t" + jsons[i] + ((i < jsons.Length - 1) ? ",\n" : "\n"); }
+			output += "\t]\n}";
+			File.WriteAllText(GameManager.FormatPath(GameSettings.path.savedPlayers), output);
+		}
+
+		public static void Load() 
+		{
+			throw new System.NotImplementedException();
+		}
+
+		[System.Serializable]
+		public struct SavedData 
+		{
+			public string name;
+			public int health;
+			public int food;
+			public Vector3 position;
+			public Vector3 eulerAngles;
+			public Item[] inventoryItems;
+
+			public SavedData(string name, int health, int food, Vector3 position, Vector3 eulerAngles, Item[] inventoryItems) 
+			{
+				this.name = name;
+				this.food = food;
+				this.health = health;
+				this.position = position;
+				this.eulerAngles = eulerAngles;
+				this.inventoryItems = inventoryItems;
+				/* PLAYER EFFECTS */
+			}
+		}
 	}
 }

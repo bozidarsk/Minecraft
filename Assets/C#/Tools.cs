@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Linq;
 using UnityEngine;
 
@@ -9,6 +10,13 @@ namespace Minecraft
 	public static class Tools 
 	{
 		public static bool GetAnyBit(int x) { for (int i = 0; i < sizeof(int) * 8; i++) { if (x >> i == 0x1) { return true; } } return false; }
+
+		public static bool HasMember(Type type, string member) 
+		{
+			MemberInfo[] infos = type.GetMembers();
+			for (int i = 0; i < infos.Length; i++) { if (infos[i].ToString() == member) { return true; } }
+			return false;
+		}
 
 		public static int[] CullTriangles(int[] triangles, Cull mode) { CullTriangles(ref triangles, mode); return triangles; }
 		public static void CullTriangles(ref int[] triangles, Cull mode) 

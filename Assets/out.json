@@ -15,10 +15,10 @@
     },
     "postProcessing":{
         "fogColor":{
-            "r":0.0,
-            "g":0.0,
-            "b":0.0,
-            "a":0.0
+            "r":1.0,
+            "g":1.0,
+            "b":1.0,
+            "a":0.4000000059604645
         },
         "fogDensity":0.0,
         "fogOffset":0.0,
@@ -32,12 +32,13 @@
         "gamma":1.0
     },
     "world":{
+        "name":"Dev",
+        "seed":69,
         "gravity":{
             "x":0.0,
             "y":-9.800000190734864,
             "z":0.0
         },
-        "worldSize":5,
         "chunkSize":16,
         "chunkHeight":256
     },
@@ -57,6 +58,11 @@
         "postProcessingShader":"Minecraft/PostProcessing",
         "droppedItemShader":"Minecraft/DroppedItem",
         "playerShader":"Minecraft/Player",
-        "liquidShader":"Minecraft/Liquid"
+        "liquidShader":"Minecraft/Liquid",
+        "savedChunks":"$(WorldData)/chunks.json",
+        "savedPlayers":"$(WorldData)/players.json",
+        "savedInteractables":"$(WorldData)/interactables.json",
+        "savedEntities":"$(WorldData)/entities.json",
+        "savedDroppedItems":"$(WorldData)/droppedItems.json"
     }
 }

@@ -36,6 +36,7 @@ namespace Minecraft
 
 		public static void Push(Player player, string request) 
 		{
+			if (!player.canUseCommands) { return; }
 			if (request[0] == '/') { ExecuteCommand(player, request); return; }
 			// string message = "<<color=\"#" + Tools.Hex(player.color, false) + "\">" + player.name + "</color>> " + request;
 			string message = "<" + player.name + "> " + request;

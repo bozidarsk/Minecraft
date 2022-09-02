@@ -92,6 +92,16 @@ namespace Minecraft
 			Handle = GetConsoleWindow();
 		}
 
+		public static void Crash() 
+		{
+			SetActive(true);
+			#if UNITY_EDITOR
+			UnityEditor.EditorApplication.isPlaying = false;
+			#else
+			Environment.Exit(1);
+			#endif
+		}
+
 		private static void RedirectedLogs(string input, string stackTrace, LogType type) 
 		{
 			switch (type) 

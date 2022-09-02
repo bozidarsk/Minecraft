@@ -8,6 +8,7 @@ namespace Minecraft
 	{
 		[HideInInspector] public bool useCooldown;
 		[HideInInspector] public MovementController movementController;
+		public DroppedItem droppedItem;
 		private float timeMax = 3f;
 
 		void Start() { StartCoroutine(Timer()); }

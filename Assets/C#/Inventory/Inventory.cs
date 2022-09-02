@@ -9,6 +9,7 @@ namespace Minecraft
 	{
 		void Toggle();
 		bool IsOpen { get; }
+		void InitializeSlots();
 		void SlotLeftClicked(int index);
 		void SlotRightClicked(int index);
 		void SlotDoubleClicked(int index);
@@ -18,7 +19,7 @@ namespace Minecraft
 	public class Inventory : MonoBehaviour
 	{
 		public GameObject gui;
-		protected List<InventorySlot> slots;
+		public List<InventorySlot> slots;
 		protected Dictionary<string, int> slotStartIndex;
 		protected InventorySlot cursorSlot;
 		protected RectTransform description;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using UnityEngine;
@@ -15,6 +16,7 @@ namespace Minecraft
 		public string name { get { return gameObject.name; } }
 		public static int ChunkSize { get { return GameSettings.world.chunkSize; } }
 		public static int ChunkHeight { get { return GameSettings.world.chunkHeight; } }
+		public bool IsActive { set { gameObject.SetActive(value); } get { return gameObject.activeSelf; } }
 
 		private uint[] voxels; // 00empty 0_light __type __type
 		private int[,,][] voxelTriangles;
@@ -29,7 +31,31 @@ namespace Minecraft
 
 		private void GenerateVoxels() 
 		{
-			int h = 3;
+			for (int y = 0; y < ChunkHeight; y++) 
+			{
+				for (int z = 0; z < ChunkSize; z++) 
+				{
+					for (int x = 0; x < ChunkSize; x++) 
+					{
+						string id = "air-block";
+
+						if (y < 25) { id = "stone-block"; }
+
+						// if (y < Noise.Perlin2D(new Vector2(x, y), GameSettings.terrain.shapeNoise) * 256f) 
+						// { id = "stone-block"; }
+
+						uint type = GameManager.GetVoxelTypeById(id);
+						VoxelProperty property = GameManager.voxelProperties[type];
+						SetVoxelType(type, x, y, z);
+					}
+				}
+			}
+		}
+
+		/*
+		private void GenerateVoxels() 
+		{
+			int h = 15;
 
 			for (int y = 0; y < ChunkHeight; y++) 
 			{
@@ -62,6 +88,7 @@ namespace Minecraft
 				}
 			}
 		}
+		*/
 
 		private bool CanDrawFace(int x, int y, int z, VoxelFace face) 
 		{
@@ -238,6 +265,17 @@ namespace Minecraft
 		}
 
 		public static int GetVoxelIndex(int x, int y, int z) { return x + (z * ChunkSize) + (y * ChunkSize * ChunkSize); }
+
+		public Chunk GetOutsideChunk(int x, int y, int z) 
+		{
+			Vector3 position = new Vector3(
+				(x < 0) ? -1 : ((x >= ChunkSize) ? 1 : 0),
+				(y < 0) ? -1 : ((y >= ChunkSize) ? 1 : 0),
+				(z < 0) ? -1 : ((z >= ChunkSize) ? 1 : 0)
+			) + this.position;
+
+			return (this.position == position) ? this : TerrainManager.GetChunkFromPosition(position);
+		}
 
 		public void SetVoxelType(uint type, int x, int y, int z) 
 		{
@@ -519,12 +557,12 @@ namespace Minecraft
 				int x = position.x;
 				int y = position.y;
 				int z = position.z;
-				Chunk.AddFaceToPosition(ref x, ref y, ref z, (VoxelFace)face);
+				AddFaceToPosition(ref x, ref y, ref z, (VoxelFace)face);
 				RemoveVoxel(x, y, z, true);
 				AddVoxel(GetVoxelType(x, y, z), x, y, z, Matrix4x4.identity);
 			}
 
-			Update();
+			hit.chunk.Update();
 
 			Vector3 offset = (Vector3.one * 0.5f) + gameObject.transform.position;
 			player.DropItem(new Item(hit.property.dropItem, 1), new Vector3((float)position.x, (float)position.y, (float)position.z) + offset);
@@ -542,29 +580,37 @@ namespace Minecraft
 		public void OnPlayerPlaceVoxel(Player player, VoxelHit hit) 
 		{
 			if (!ContainsInList(TerrainManager.modifiedChunks)) { TerrainManager.modifiedChunks.Add(this); }
-			Vector3Int position = GetVoxelPositionFromPoint(hit.previousHit.point);
 
-			AddVoxel(GameManager.GetVoxelTypeById("grass-block"), position.x, position.y, position.z, Matrix4x4.identity);
+			Vector3Int position = GetVoxelPositionFromPoint(hit.previousHit.point);
+			InventorySlot slot = player.inventory.GetHandSlot();
+
+			if (slot.item.IsEmpty) { return; }
+			uint type = GameManager.GetVoxelTypeById(slot.item.id);
+			slot.item.ammount--;
+			slot.Update();
+
+			VoxelProperty property = GameManager.voxelProperties[type];
+			AddVoxel(type, position.x, position.y, position.z, Matrix4x4.identity);
 
 			for (int face = 0; face < 6; face++) 
 			{
 				int x = position.x;
 				int y = position.y;
 				int z = position.z;
-				Chunk.AddFaceToPosition(ref x, ref y, ref z, (VoxelFace)face);
+				AddFaceToPosition(ref x, ref y, ref z, (VoxelFace)face);
 				RemoveVoxel(x, y, z, true);
 				AddVoxel(GetVoxelType(x, y, z), x, y, z, Matrix4x4.identity);
 			}
 
-			Update();
+			hit.chunk.Update();
 		}
 
-		public Chunk(Vector3 position, Transform parent) 
+		public Chunk(Vector3 position, Transform parent, uint[] voxels = null) 
 		{
 			this.liquidMeshes = new List<ChunkMesh>();
 			this.liquidsToGenerate = new List<dynamic[]>();
 			this.voxelTriangles = new int[ChunkSize, ChunkHeight, ChunkSize][];
-			this.voxels = new uint[ChunkSize * ChunkHeight * ChunkSize];
+			this.voxels = (voxels == null) ? (new uint[ChunkSize * ChunkHeight * ChunkSize]) : voxels;
 			this.objectMesh = new ObjectMesh();
 			this.canUpdate = false;
 
@@ -582,16 +628,20 @@ namespace Minecraft
 			renderer.material.SetInt("chunkSize", ChunkSize);
 			renderer.material.SetInt("chunkHeight", ChunkHeight);
 
-			new Thread(new ThreadStart(this.Generate)).Start();
-			GameManager.instance.StartCoroutine(this.Update(false));
+			this.Generate();
 		}
 
-		private void Generate() 
+		public void Generate() 
 		{
-			canUpdate = false;
-			GenerateVoxels();
-			GenerateMesh();
-			canUpdate = true;
+			GameManager.instance.StartCoroutine(this.Update(false));
+			new Thread(new ThreadStart(() => 
+				{
+					canUpdate = false;
+					GenerateVoxels();
+					GenerateMesh();
+					canUpdate = true;
+				}
+			)).Start();
 		}
 
 		public static readonly Vector3[,] blockVertices = 
@@ -615,5 +665,46 @@ namespace Minecraft
 			new Vector3(0f, 1f, 1f),
 			new Vector3(0f, 0f, 1f)
 		};
+
+		public string ToJson() 
+		{
+			SavedData data = new SavedData(this.position, this.voxels);
+			string json = JsonUtility.ToJson(data);
+			json.Remove(json.IndexOf("{"), 1);
+			json.Remove(json.LastIndexOf("}"), 1);
+			return json;
+		}
+
+		public static void Save(string[] jsons) 
+		{
+			string output = "{\n\t\"content\":\n\t[\n";
+			for (int i = 0; i < jsons.Length; i++) { output += "\t\t" + jsons[i] + ((i < jsons.Length - 1) ? ",\n" : "\n"); }
+			output += "\t]\n}";
+			File.WriteAllText(GameManager.FormatPath(GameSettings.path.savedChunks), output);
+		}
+
+		public static void Load() 
+		{
+			SavedData[] data = JsonUtility.FromJson<ArrayWrapper<SavedData>>(File.ReadAllText(GameSettings.path.savedChunks)).content;
+			for (int i = 0; i < data.Length; i++) 
+			{
+				Chunk obj = new Chunk(data[i].position, TerrainManager.instance.gameObject.transform, data[i].voxels);
+				TerrainManager.modifiedChunks.Add(obj);
+				TerrainManager.chunks.Add(obj);
+			}
+		}
+
+		[System.Serializable]
+		public struct SavedData 
+		{
+			public Vector3 position;
+			public uint[] voxels;
+
+			public SavedData(Vector3 position, uint[] voxels) 
+			{
+				this.position = position;
+				this.voxels = voxels;
+			}
+		}
 	}
 }

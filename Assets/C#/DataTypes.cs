@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -78,6 +79,73 @@ namespace Minecraft
 			Update();
 		}
 
+		public void GenerateMesh() 
+		{
+			if (item.id.EndsWith("-block")) 
+			{
+				Vector3 offset = Vector3.one / -2f;
+				VoxelProperty property = GameManager.voxelProperties[GameManager.GetVoxelTypeById(item.id)];
+				for (int f = 0; f < Chunk.blockVertices.GetLength(0); f++) 
+				{
+					for (int v = 0; v < Chunk.blockVertices.GetLength(1); v++) 
+					{ Add(Chunk.blockVertices[f, v] + offset); }
+
+					int index = vertexCount - 4;
+					Add(index + 0, index + 3, index + 1, index + 1, index + 3, index + 2);
+
+					Vector2byte coords = property.textureCoords[f];
+					float coordsy = ((float)GameSettings.textures.voxel.height / 16f) - (float)coords.y - 1;
+					float uvx = (16f * (float)coords.x) / (float)GameSettings.textures.voxel.width;
+					float uvy = (16f * coordsy) / (float)GameSettings.textures.voxel.height;
+					float uvsizex = 16f / (float)GameSettings.textures.voxel.width;
+					float uvsizey = 16f / (float)GameSettings.textures.voxel.height;
+
+					Add(
+						new Vector2(uvx, uvy),
+						new Vector2(uvx + uvsizex, uvy),
+						new Vector2(uvx + uvsizex, uvy + uvsizey),
+						new Vector2(uvx, uvy + uvsizey)
+					);
+				}
+
+				renderer.material.SetTexture("_MainTex", GameSettings.textures.voxel);
+			}
+
+			if (item.id.EndsWith("-model")) 
+			{
+				Add(GameManager.modelMeshes.Where(x => x.Key == item.id).ToArray()[0].Value);
+				renderer.material.SetTexture("_MainTex", GameSettings.textures.voxel);
+			}
+
+			if (vertexCount == 0) 
+			{
+				Add(
+					new Vector3(-0.5f, -0.5f, 0f),
+					new Vector3(0.5f, -0.5f, 0f),
+					new Vector3(0.5f, 0.5f, 0f),
+					new Vector3(-0.5f, 0.5f, 0f)
+				);
+
+				Add(0, 1, 2, 2, 3, 0);
+
+				Vector2byte coords = GameManager.itemProperties[GameManager.GetItemTypeById(item.id + "-item")].textureCoords;
+				float coordsy = ((float)GameSettings.textures.item.height / 16f) - (float)coords.y - 1;
+				float uvx = (16f * (float)coords.x) / (float)GameSettings.textures.item.width;
+				float uvy = (16f * coordsy) / (float)GameSettings.textures.item.height;
+				float uvsizex = 16f / (float)GameSettings.textures.item.width;
+				float uvsizey = 16f / (float)GameSettings.textures.item.height;
+
+				Add(
+					new Vector2(uvx, uvy),
+					new Vector2(uvx + uvsizex, uvy),
+					new Vector2(uvx + uvsizex, uvy + uvsizey),
+					new Vector2(uvx, uvy + uvsizey)
+				);
+
+				renderer.material.SetTexture("_MainTex", GameSettings.textures.item);
+			}
+		}
+
 		public void Update() 
 		{
 			Mesh mesh = new Mesh();
@@ -102,13 +170,13 @@ namespace Minecraft
 			this.gameObject.transform.localScale = Vector3.one * 0.3f;
 
 			DroppedItemController controller = (DroppedItemController)this.gameObject.AddComponent(typeof(DroppedItemController));
+			controller.useCooldown = useCooldown;
+			controller.droppedItem = this;
 			controller.movementController = (MovementController)this.gameObject.AddComponent(typeof(MovementController));
 			controller.movementController.Initialize(
 				this.gameObject.transform,
 				-GameSettings.world.gravity.normalized * (0.3f * 0.5f)
 			);
-
-			controller.useCooldown = useCooldown;
 
 			this.renderer = (MeshRenderer)this.gameObject.AddComponent(typeof(MeshRenderer));
 			this.filter = (MeshFilter)this.gameObject.AddComponent(typeof(MeshFilter));
@@ -134,6 +202,48 @@ namespace Minecraft
 			this.vertices = new List<Vector3>();
 			this.triangles = new List<int>();
 			this.uvs = new List<Vector2>();
+		}
+
+		public string ToJson() 
+		{
+			SavedData data = new SavedData(item, gameObject.transform.position);
+			string json = JsonUtility.ToJson(data);
+			json.Remove(json.IndexOf("{"), 1);
+			json.Remove(json.LastIndexOf("}"), 1);
+			return json;
+		}
+
+		public static void Save(string[] jsons) 
+		{
+			string output = "{\n\t\"content\":\n\t[\n";
+			for (int i = 0; i < jsons.Length; i++) { output += "\t\t" + jsons[i] + ((i < jsons.Length - 1) ? ",\n" : "\n"); }
+			output += "\t]\n}";
+			File.WriteAllText(GameManager.FormatPath(GameSettings.path.savedDroppedItems), output);
+		}
+
+		public static void Load() 
+		{
+			SavedData[] data = JsonUtility.FromJson<ArrayWrapper<SavedData>>(File.ReadAllText(GameSettings.path.savedDroppedItems)).content;
+			for (int i = 0; i < data.Length; i++) 
+			{
+				DroppedItem obj = new DroppedItem(data[i].item, data[i].position, true);
+				obj.gameObject.transform.eulerAngles = new Vector3(0f, (float)GameManager.random.Next(0, 180), 0f);
+				obj.GenerateMesh();
+				obj.Update();
+			}
+		}
+
+		[Serializable]
+		public struct SavedData 
+		{
+			public Item item;
+			public Vector3 position;
+
+			public SavedData(Item item, Vector3 position) 
+			{
+				this.item = item;
+				this.position = position;
+			}
 		}
 	}
 
@@ -195,6 +305,7 @@ namespace Minecraft
 
 		public void Update() 
 		{
+			if (item.ammount == 0) { item.id = "air-block"; }
 			text.SetText((!item.IsEmpty && item.ammount > 1) ? Convert.ToString(item.ammount) : "");
 
 			Vector2byte coords = GameManager.itemProperties[GameManager.GetItemTypeById(item.id)].textureCoords;
@@ -249,8 +360,8 @@ namespace Minecraft
 	[Serializable]
 	public class Item 
 	{
-		public string id { set; get; }
-		public uint ammount { set; get; }
+		public string id;
+		public uint ammount;
 
 		public override string ToString() { return id + ": " + Convert.ToString(ammount); }
 		public override int GetHashCode() { return (int)id.GetHashCode() + (int)ammount; }
@@ -382,6 +493,13 @@ namespace Minecraft
 		FirstPerson,
 		Back,
 		Front
+	}
+
+	[Serializable]
+	public struct ArrayWrapper<T> 
+	{
+		public T[] content;
+		public ArrayWrapper(T[] content) { this.content = content; }
 	}
 
 	// public struct StringStruct 

@@ -1,0 +1,52 @@
+{
+    "sound": 
+    {
+        "musicVolume": 1,
+        "muteMusic": false,
+        "soundVolume": 1,
+        "muteSound": false
+    },
+    "graphics": 
+    {
+        "FOV": 60,
+        "GUIScale": 3,
+        "renderDistance": 2,
+        "maxFPS": 60
+    },
+    "controlls": 
+    {
+        "scrollSensitivity": 20,
+        "sensitivity": { "x": 5, "y": 5 },
+        "invertMouse": false,
+        "autoJump": false,
+        "keyCodes": 
+        {
+            "Jump": 32,
+            "Sneak": 304,
+            "Sprint": 306,
+            "MoveForward": 119,
+            "MoveBackwards": 115,
+            "MoveLeft": 97,
+            "MoveRight": 100,
+            "Attack": 323,
+            "PickBlock": 325,
+            "UseItem": 324,
+            "DropSelectedItem": 113,
+            "HotbarSlot1": 49,
+            "HotbarSlot2": 50,
+            "HotbarSlot3": 51,
+            "HotbarSlot4": 52,
+            "HotbarSlot5": 53,
+            "HotbarSlot6": 54,
+            "HotbarSlot7": 55,
+            "HotbarSlot8": 56,
+            "HotbarSlot9": 57,
+            "ToggleInventory": 101,
+            "SwapItemWithOffhand": 102,
+            "TakeScreenshot": 283,
+            "TogglePerspective": 286,
+            "ToggleDebugView": 284,
+            "OpenChat": 116
+        }
+    }
+}

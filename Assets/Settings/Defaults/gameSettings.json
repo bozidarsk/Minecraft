@@ -1,0 +1,74 @@
+{
+    "player": 
+    {
+        "walkingSpeed": 4.316999912261963,
+        "sprintingSpeed": 5.612100124359131,
+        "sneakingSpeed": 1.4390000104904175,
+        "jumpSpeed": 10,
+        "jumpHeight": 1.25,
+        "reachingDistance": 5,
+        "rotationLimit": { "x": 70, "y": 180 },
+        "maxStackSize": 64,
+        "queuedMessagesLength": 10
+    },
+    "postProcessing": 
+    {
+        "fogColor": 
+        {
+            "r": 1,
+            "g": 1,
+            "b": 1,
+            "a": 1
+        },
+        "fogDensity": 0,
+        "fogOffset": 0,
+        "exposure": 1,
+        "temperature": 0,
+        "tint": 0,
+        "contrast": 1,
+        "brightness": 0,
+        "colorFiltering": 1,
+        "saturation": 1,
+        "gamma": 1
+    },
+    "world": 
+    {
+        "name": "Dev",
+        "seed": 69,
+        "gravity": { "x": 0, "y": -9.800000190734864, "z": 0 },
+        "chunkSize": 16,
+        "chunkHeight": 256
+    },
+    "terrain": 
+    {
+        "biomes": 
+        [
+            {
+                "id": "plains-biome",
+                "seaLevel": 65,
+                "dirtDepth": 5
+            }
+        ]
+    },
+    "path": 
+    {
+        "voxelTextures": "$(DefaultTextures)/voxel.png",
+        "itemTextures": "$(DefaultTextures)/item.png",
+        "liquidTextures": "$(DefaultTextures)/liquid.png",
+        "textureEffects": "$(DefaultTextures)/textureEffects",
+        "voxelProperties": "$(DefaultProperties)/voxel.json",
+        "itemProperties": "$(DefaultProperties)/item.json",
+        "craftingProperties": "$(DefaultProperties)/crafting.json",
+        "enchantmentProperties": "$(DefaultProperties)/enchantment.json",
+        "chunkShader": "Minecraft/Chunk",
+        "postProcessingShader": "Minecraft/PostProcessing",
+        "droppedItemShader": "Minecraft/DroppedItem",
+        "playerShader": "Minecraft/Player",
+        "liquidShader": "Minecraft/Liquid",
+        "savedChunks": "$(WorldData)/chunks.json",
+        "savedPlayers": "$(WorldData)/players.json",
+        "savedInteractables": "$(WorldData)/interactables.json",
+        "savedEntities": "$(WorldData)/entities.json",
+        "savedDroppedItems": "$(WorldData)/droppedItems.json"
+    }
+}

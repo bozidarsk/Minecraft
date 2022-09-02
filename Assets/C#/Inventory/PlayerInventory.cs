@@ -11,13 +11,13 @@ namespace Minecraft
 		public GameObject hotbarSelector;
 		public GameObject offhand;
 		[HideInInspector] public int buttonIndex = 0;
+		public bool IsOpen { private set; get; }
 
-		private bool isOpen = false;
 		private InventorySlot[] hotbarSlots;
 		private InventorySlot offhandSlot;
 		private int handOnHotbar;
 
-		private void AddSlots() 
+		public void InitializeSlots() 
 		{
 			RectTransform[] transforms = hotbarSelector.transform.parent.gameObject.GetComponentsInChildren<RectTransform>().Where(x => x.name.Contains("Hotbar Slot")).ToArray();
 			for (int i = 0; i < transforms.Length; i++) { hotbarSlots[i] = new InventorySlot(transforms[i].gameObject, null, null, this, null); }
@@ -65,8 +65,8 @@ namespace Minecraft
 			slots = new List<InventorySlot>(46);
 			hotbarSlots = new InventorySlot[9];
 
-			AddSlots();
-			gui.SetActive(isOpen);
+			InitializeSlots();
+			gui.SetActive(IsOpen);
 
 			description = cursorSlot.gameObject.GetComponentsInChildren<RectTransform>().Where(x => x.name == "Description").ToArray()[0];
 			descriptionText = description.gameObject.GetComponentsInChildren<TMPro.TextMeshProUGUI>().ToArray()[0];
@@ -89,7 +89,7 @@ namespace Minecraft
 			if (!offhandSlot.item.IsEmpty) { offhandSlot.gameObject.SetActive(true); offhandSlot.Update(); }
 			else { offhandSlot.gameObject.SetActive(false); }
 
-			if (isOpen) 
+			if (IsOpen) 
 			{
 				Vector2 mousePosition = Input.mousePosition;
 				Vector3[] corners = new Vector3[4];
@@ -103,7 +103,7 @@ namespace Minecraft
 				);
 			}
 
-			if (!isOpen && !player.chat.IsOpen) 
+			if (!IsOpen && !player.chat.IsOpen) 
 			{
 				if (Input.GetKeyDown(player.playerSettings.controlls.keyCodes.HotbarSlot1)) { handOnHotbar = 0; }
 				if (Input.GetKeyDown(player.playerSettings.controlls.keyCodes.HotbarSlot2)) { handOnHotbar = 1; }
@@ -143,14 +143,13 @@ namespace Minecraft
 			gui.transform.localScale = Vector3.one * player.playerSettings.graphics.GUIScale;
 		}
 
-		public string GetHandItemId() { return slots[slotStartIndex["Hotbar"] + handOnHotbar].item.id; }
+		public InventorySlot GetHandSlot() { return slots[slotStartIndex["Hotbar"] + handOnHotbar]; }
 
-		public bool IsOpen { get { return isOpen; } }
 		public void Toggle() 
 		{
-			isOpen = !isOpen;
-			gui.SetActive(isOpen);
-			if (!isOpen) { return; }
+			IsOpen = !IsOpen;
+			gui.SetActive(IsOpen);
+			if (!IsOpen) { return; }
 
 			player.DropItem(slots[slotStartIndex["CraftingResult"]].item);
 			slots[slotStartIndex["CraftingResult"]].item = new Item("air-block", 0);
