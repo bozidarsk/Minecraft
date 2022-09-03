@@ -35,7 +35,7 @@ namespace Minecraft
 
 			for (int y = 0; y < ChunkHeight; y++) 
 			{
-				if (y >= 10) { break; }
+				// if (y >= 10) { break; }
 				bool skip = false;
 				for (int z = 0; z < ChunkSize; z++) 
 				{
@@ -44,19 +44,19 @@ namespace Minecraft
 						if (skip) { skip = false; continue; }
 						string id = "air-block";
 
-						if (y < 10) { id = "stone-block"; }
+						// if (y < 10) { id = "stone-block"; }
 
-						// Settings.Biome biome = TerrainGenerator.GetBiomeById("plains-biome");
-						// float result = Noise.Perlin.Value2D(
-						// 	new Vector2((float)x + position.x, (float)z + position.z),
-						// 	biome.heightNoise
-						// );
+						Settings.Biome biome = TerrainManager.GetBiomeById("plains-biome");
+						float result = Noise.Perlin.Value2D(
+							new Vector2((float)x + position.x, (float)z + position.z),
+							biome.heightNoise
+						);
 
-						// int h = (int)Mathf.Lerp(biome.height.min, biome.height.max, result);
+						int h = (int)Mathf.Lerp(biome.height.min, biome.height.max, result);
 
-						// skip = y > h;
-						// if (!skip) { id = "stone-block"; }
-						// if (h < biome.seaLevel) { id = "water-liquid"; }
+						skip = y > h;
+						if (!skip) { id = "stone-block"; }
+						if (h < biome.seaLevel) { id = "water-liquid"; }
 
 						uint type = GameManager.GetVoxelTypeById(id);
 						VoxelProperty property = GameManager.voxelProperties[type];
@@ -263,7 +263,7 @@ namespace Minecraft
 
 		public void SetVoxelLight(uint light, int x, int y, int z) 
 		{
-			try { voxels[GetVoxelIndex(x, y, z)] = (voxels[GetVoxelIndex(x, y, z)] & 0xfff0ffff) + ((light << 16) & 0xf); }
+			try { voxels[GetVoxelIndex(x, y, z)] = (voxels[GetVoxelIndex(x, y, z)] & 0xfff0ffff) + ((light & 0xf) << 16); }
 			catch {}
 		}
 
@@ -475,14 +475,14 @@ namespace Minecraft
 
 			filter.mesh = objectMesh.mesh;
 
-			// SetVoxelLight(15, 0, 0, 0);
-			// SetVoxelLight(10, 1, 0, 0);
-			// SetVoxelLight(5, 2, 0, 0);
+			SetVoxelLight(15, 0, 0, 0);
+			SetVoxelLight(10, 1, 0, 0);
+			SetVoxelLight(5, 2, 0, 0);
 
-			// ComputeBuffer buffer = new ComputeBuffer(ChunkSize * ChunkHeight * ChunkSize, sizeof(uint));
-			// buffer.SetData(voxels);
-			// renderer.material.SetBuffer("voxels", buffer);
-			// buffer.Release();
+			ComputeBuffer buffer = new ComputeBuffer(ChunkSize * ChunkHeight * ChunkSize, sizeof(uint));
+			buffer.SetData(voxels);
+			renderer.material.SetBuffer("voxels", buffer);
+			buffer.Release();
 			
 			for (int i = 0; i < liquidMeshes.Count; i++) { liquidMeshes[i].Update(); }
 		}
@@ -602,8 +602,8 @@ namespace Minecraft
 			this.position = this.gameObject.transform.position;
 			this.name = this.gameObject.name;
 
-			this.filter = (MeshFilter)this.gameObject.AddComponent(typeof(MeshFilter));
-			this.renderer = (MeshRenderer)this.gameObject.AddComponent(typeof(MeshRenderer));
+			this.filter = this.gameObject.AddComponent<MeshFilter>();
+			this.renderer = this.gameObject.AddComponent<MeshRenderer>();
 			renderer.material = GameSettings.materials.chunk;
 			renderer.material.SetTexture("_MainTex", GameSettings.textures.voxel);
 			renderer.material.SetInt("chunkSize", ChunkSize);

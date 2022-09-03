@@ -26,8 +26,11 @@ namespace Minecraft
 		public static Settings.Textures textures;
 		public static Settings.Materials materials;
 		public static Settings.Path path;
+		private static string file;
 
-		public static void Initialize(GameSettingsObject gameSettings) 
+		public static void Reload() { GameSettings.Load(file); }
+		public static void Load(string file = "$(DefaultData)/gameSettings.json") { GameSettings.file = file; GameSettings.Load(JsonUtility.FromJson<GameSettingsObject>(File.ReadAllText(GameManager.FormatPath(file)))); }
+		public static void Load(GameSettingsObject gameSettings) 
 		{
 			GameSettings.player = gameSettings.player;
 			GameSettings.postProcessing = gameSettings.postProcessing;

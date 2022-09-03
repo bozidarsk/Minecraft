@@ -56,29 +56,20 @@
                 return o;
             }
 
-            // Buffer<uint> voxels;
             uint chunkHeight;
             uint chunkSize;
+            Buffer<uint> voxels;
 
             sampler2D _MainTex;
-            float4 _LightColor0;
 
-            // uint GetVoxelIndex(uint3 position) { return position.x + (position.z * chunkSize) + (position.y * chunkSize * chunkSize); }
-            // uint GetVoxelType(uint3 position) { return voxels[GetVoxelIndex(position)] & 0xffff; }
-            // uint GetVoxelLight(uint3 position) { return (voxels[GetVoxelIndex(position)] >> 16) & 0xf; }
+            uint GetVoxelIndex(uint3 position) { return position.x + (position.z * chunkSize) + (position.y * chunkSize * chunkSize); }
+            uint GetVoxelType(uint3 position) { return voxels[GetVoxelIndex(position)] & 0xffff; }
+            uint GetVoxelLight(uint3 position) { return (voxels[GetVoxelIndex(position)] >> 16) & 0xf; }
 
             float4 frag (v2f IN) : SV_Target
             {
                 float4 color = tex2D(_MainTex, IN.uv);
-
                 if (color.a <= 0) { clip(-1); }
-
-                // return color;
-                float value = saturate(dot(_WorldSpaceLightPos0.xyz, IN.normal));
-                value = saturate(value + 0.4);
-
-                color.rgb *= value;
-                // return float4(saturate((dot(_WorldSpaceLightPos0.xyz, IN.normal).xxxx * 0.3) + (color * 0.6)).rgb, color.a);
 
                 uint3 voxelPosition = uint3(
                     floor(IN.position.x - 0.001),
@@ -86,9 +77,11 @@
                     floor(IN.position.z - 0.001)
                 );
 
+                float voxelLight = (float)GetVoxelLight(voxelPosition) / 15.0;
+                float sunLight = saturate(dot(_WorldSpaceLightPos0.xyz, IN.normal));
+                sunLight = saturate(sunLight + 0.4);
 
-                // float light = (float)GetVoxelLight(voxelPosition) / 15.0;
-                // color.rgb *= light;
+                color.rgb *= saturate(sunLight + voxelLight);
                 return saturate(color);
             }
 

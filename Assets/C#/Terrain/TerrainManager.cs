@@ -23,12 +23,6 @@ namespace Minecraft
 			TerrainManager.chunks = new List<Chunk>();
 		}
 
-		// void Start() 
-		// {
-		// 	StartCoroutine(TerrainManager.GenerateChunks());
-		// 	// chunks.Add(new Chunk(new Vector3(0f, 0f, 0f), TerrainManager.instance.gameObject.transform));
-		// }
-
 		void Update() 
 		{
 			for (int z = -(int)PlayerSettings.graphics.renderDistance / 2; z <= PlayerSettings.graphics.renderDistance / 2; z++) 
@@ -36,24 +30,25 @@ namespace Minecraft
 				for (int x = -(int)PlayerSettings.graphics.renderDistance / 2; x <= PlayerSettings.graphics.renderDistance / 2; x++) 
 				{
 					Vector3 position = Player.instance.transform.position + new Vector3((float)x * Chunk.ChunkSize, 0f, (float)z * Chunk.ChunkSize);
-					Chunk chunk = TerrainManager.GetChunkFromPosition(position, true, true);
+					Chunk chunk = TerrainManager.GetChunkFromPosition(position, true);
+					chunk.IsActive = true;
 				}
 			}
 
-			for (int i = 0; i < chunks.Count; i++) 
+			for (int i = 0; i < TerrainManager.chunks.Count; i++) 
 			{
 				Vector3 position = new Vector3(Player.instance.transform.position.x, 0f, Player.instance.transform.position.z);
 				Vector3 offset = new Vector3(Chunk.ChunkSize / 2f, 0f, Chunk.ChunkSize / 2f);
 
-				if (Math2.Distance(position, chunks[i].position + offset) > PlayerSettings.graphics.renderDistance * Chunk.ChunkSize) 
-				{ chunks[i].IsActive = false; }
+				if (Math2.Distance(position, TerrainManager.chunks[i].position + offset) > PlayerSettings.graphics.renderDistance * Chunk.ChunkSize) 
+				{ TerrainManager.chunks[i].IsActive = false; }
 
-				if (Math2.Distance(Player.instance.transform.position, chunks[i].position + offset) > PlayerSettings.graphics.discardDistance * Chunk.ChunkSize) 
-				{ GameObject.Destroy(chunks[i].gameObject); chunks.RemoveAt(chunks[i].IndexInList(chunks)); }
+				if (Math2.Distance(Player.instance.transform.position, TerrainManager.chunks[i].position + offset) > PlayerSettings.graphics.discardDistance * Chunk.ChunkSize) 
+				{ GameObject.Destroy(TerrainManager.chunks[i].gameObject); TerrainManager.chunks.RemoveAt(TerrainManager.chunks[i].IndexInList(TerrainManager.chunks)); }
 			}
 		}
 
-		public static Chunk GetChunkFromPosition(Vector3 position, bool createIfNull = false, bool enableIfFound = false) 
+		public static Chunk GetChunkFromPosition(Vector3 position, bool createIfNull = false) 
 		{
 			position /= Chunk.ChunkSize;
 			position.x = Math2.Floor(position.x);
@@ -61,15 +56,7 @@ namespace Minecraft
 			position *= Chunk.ChunkSize;
 			position.y = 0f;
 
-			for (int i = 0; i < chunks.Count; i++) 
-			{
-				if (chunks[i].position == position) 
-				{
-					if (enableIfFound) { chunks[i].IsActive = true; }
-					return chunks[i];
-				}
-			}
-
+			for (int i = 0; i < chunks.Count; i++) { if (chunks[i].position == position) { return chunks[i]; } }
 			if (createIfNull) { chunks.Add(new Chunk(position, TerrainManager.instance.gameObject.transform)); }
 			return (createIfNull) ? chunks[chunks.Count - 1] : null;
 		}

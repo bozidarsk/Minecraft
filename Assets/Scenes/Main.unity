@@ -17728,49 +17728,6 @@ MonoBehaviour:
     armR: {fileID: 1659403198}
     legL: {fileID: 1929544947}
     legR: {fileID: 1531035303}
-  playerSettings:
-    sound:
-      musicVolume: 0
-      muteMusic: 0
-      soundVolume: 0
-      muteSound: 0
-    graphics:
-      FOV: 0
-      GUIScale: 0
-      renderDistance: 0
-      maxFPS: 0
-    controlls:
-      scrollSensitivity: 0
-      sensitivity: {x: 0, y: 0}
-      invertMouse: 0
-      autoJump: 0
-      keyCodes:
-        Jump: 0
-        Sneak: 0
-        Sprint: 0
-        MoveForward: 0
-        MoveBackwards: 0
-        MoveLeft: 0
-        MoveRight: 0
-        Attack: 0
-        PickBlock: 0
-        UseItem: 0
-        DropSelectedItem: 0
-        HotbarSlot1: 0
-        HotbarSlot2: 0
-        HotbarSlot3: 0
-        HotbarSlot4: 0
-        HotbarSlot5: 0
-        HotbarSlot6: 0
-        HotbarSlot7: 0
-        HotbarSlot8: 0
-        HotbarSlot9: 0
-        ToggleInventory: 0
-        SwapItemWithOffhand: 0
-        TakeScreenshot: 0
-        TogglePerspective: 0
-        ToggleDebugView: 0
-        OpenChat: 0
   cameraPerspective: 0
   inventory: {fileID: 0}
   postProcessing: {fileID: 0}

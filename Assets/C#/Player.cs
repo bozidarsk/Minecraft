@@ -48,12 +48,12 @@ namespace Minecraft
 			obj.Update();
 		}
 
-		void Awake() { Player.Initialize(JsonUtility.FromJson<PlayerSettingsObject>(File.ReadAllText(GameManager.FormatPath(playerSettingsPath))), this); }
-		public static void Initialize(PlayerSettingsObject playerSettings, Player instance) 
+		void Awake() { Player.Initialize(this); }
+		public static void Initialize(Player instance) 
 		{
 			Player.instance = instance;
 			// Player.instance.playerSettings = playerSettings;
-			PlayerSettings.Initialize(playerSettings);
+			PlayerSettings.Load(instance.playerSettingsPath);
 		}
 
 		void Start() 

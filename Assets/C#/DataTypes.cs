@@ -169,18 +169,18 @@ namespace Minecraft
 			this.gameObject.transform.eulerAngles = Vector3.zero;
 			this.gameObject.transform.localScale = Vector3.one * 0.3f;
 
-			DroppedItemController controller = (DroppedItemController)this.gameObject.AddComponent(typeof(DroppedItemController));
+			DroppedItemController controller = (DroppedItemController)this.gameObject.AddComponent<DroppedItemController>();
 			controller.useCooldown = useCooldown;
 			controller.droppedItem = this;
-			controller.movementController = (MovementController)this.gameObject.AddComponent(typeof(MovementController));
+			controller.movementController = (MovementController)this.gameObject.AddComponent<MovementController>();
 			controller.movementController.Initialize(
 				this.gameObject.transform,
 				-GameSettings.world.gravity.normalized * (0.3f * 0.5f)
 			);
 
-			this.renderer = (MeshRenderer)this.gameObject.AddComponent(typeof(MeshRenderer));
-			this.filter = (MeshFilter)this.gameObject.AddComponent(typeof(MeshFilter));
-			this.collider = (MeshCollider)this.gameObject.AddComponent(typeof(MeshCollider));
+			this.renderer = (MeshRenderer)this.gameObject.AddComponent<MeshRenderer>();
+			this.filter = (MeshFilter)this.gameObject.AddComponent<MeshFilter>();
+			this.collider = (MeshCollider)this.gameObject.AddComponent<MeshCollider>();
 
 			GameObject colliderObject = new GameObject("collider");
 			colliderObject.transform.SetParent(this.gameObject.transform);
@@ -188,11 +188,11 @@ namespace Minecraft
 			colliderObject.transform.eulerAngles = Vector3.zero;
 			colliderObject.transform.localScale = Vector3.one;
 			colliderObject.layer = 14;
-			SphereCollider sphere = (SphereCollider)colliderObject.AddComponent(typeof(SphereCollider));
+			SphereCollider sphere = (SphereCollider)colliderObject.AddComponent<SphereCollider>();
 			sphere.center = new Vector3(0f, -0.707f, 0f);
 			sphere.radius = 0.2f;
 
-			this.body = ((Rigidbody)this.gameObject.AddComponent(typeof(Rigidbody)));
+			this.body = ((Rigidbody)this.gameObject.AddComponent<Rigidbody>());
 			this.body.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
 			this.body.isKinematic = true;
 			this.body.angularDrag = 0.02f;
@@ -280,9 +280,9 @@ namespace Minecraft
 			this.gameObject.transform.position = parent.position;
 			this.gameObject.transform.eulerAngles = Vector3.zero;
 			this.gameObject.transform.localScale = Vector3.one;
-			this.renderer = (MeshRenderer)this.gameObject.AddComponent(typeof(MeshRenderer));
-			this.filter = (MeshFilter)this.gameObject.AddComponent(typeof(MeshFilter));
-			this.collider = (MeshCollider)this.gameObject.AddComponent(typeof(MeshCollider));
+			this.renderer = (MeshRenderer)this.gameObject.AddComponent<MeshRenderer>();
+			this.filter = (MeshFilter)this.gameObject.AddComponent<MeshFilter>();
+			this.collider = (MeshCollider)this.gameObject.AddComponent<MeshCollider>();
 
 			this.vertices = new List<Vector3>();
 			this.triangles = new List<int>();

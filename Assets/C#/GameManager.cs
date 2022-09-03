@@ -23,9 +23,9 @@ namespace Minecraft
 		void Awake() { GameManager.Initialize(this); }
 		public static void Initialize(GameManager instance) 
 		{
+			GameSettings.Load("$(DefaultData)/gameSettings.json");
 			GameManager.instance = instance;
 
-			GameSettings.Initialize(JsonUtility.FromJson<GameSettingsObject>(File.ReadAllText(GameManager.FormatPath("$(DefaultData)/gameSettings.json"))));
 			if (!Directory.Exists(GameSettings.path.GameData)) { Directory.CreateDirectory(GameSettings.path.GameData); }
 			if (!Directory.Exists(GameSettings.path.GameSaves)) { Directory.CreateDirectory(GameSettings.path.GameSaves); }
 			if (!Directory.Exists(GameSettings.path.WorldData)) { Directory.CreateDirectory(GameSettings.path.WorldData); }
