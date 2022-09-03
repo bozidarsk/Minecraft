@@ -35,18 +35,36 @@
     {
         "name": "Dev",
         "seed": 69,
-        "gravity": { "x": 0, "y": -9.800000190734864, "z": 0 },
+        "gravity": { "x": 0, "y": -9.8, "z": 0 },
         "chunkSize": 16,
         "chunkHeight": 256
     },
     "terrain": 
     {
+        "biomeMapNoise": 
+        {
+            "persistance": 1,
+            "lacunarity": 1,
+            "scale": 15,
+            "octaves": 10,
+            "offset": { "x": 0, "y": 0 }
+        },
         "biomes": 
         [
             {
                 "id": "plains-biome",
                 "seaLevel": 65,
-                "dirtDepth": 5
+                "surfaceDepth": 5,
+                "height": { "min": 20, "max": 95 },
+                "range": { "min": 0, "max": 1 },
+                "heightNoise": 
+                {
+                    "persistance": 4.2,
+                    "lacunarity": -5.4,
+                    "scale": 34.5,
+                    "octaves": 2,
+                    "offset": { "x": 0, "y": 0 }
+                }
             }
         ]
     },

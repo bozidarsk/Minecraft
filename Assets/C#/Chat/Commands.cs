@@ -69,17 +69,17 @@ namespace Minecraft
 		{
 			public static void Clear(dynamic[] args) 
 			{
-				GameManager.GetPlayerByName(args[0]).inventory.Clear();
+				Player.instance.inventory.Clear();
 			}
 
 			public static void Remove(dynamic[] args) 
 			{
-				GameManager.GetPlayerByName(args[0]).inventory.TryRemoveItem(new Item(args[1], args[2]));
+				Player.instance.inventory.TryRemoveItem(new Item(args[1], args[2]));
 			}
 
 			public static void Give(dynamic[] args) 
 			{
-				GameManager.GetPlayerByName(args[0]).inventory.TryAddItem(new Item(args[1], args[2]));
+				Player.instance.inventory.TryAddItem(new Item(args[1], args[2]));
 			}
 
 			public static void Place(dynamic[] args) 
@@ -89,13 +89,13 @@ namespace Minecraft
 
 			public static void SetTextureEffect(dynamic[] args) 
 			{
-				Player player = GameManager.GetPlayerByName(args[0]);
+				Player player = Player.instance;
 				player.postProcessing.SetTextureEffect(GameManager.textureEffects[args[1]]);
 			}
 
 			public static void RemoveTextureEffect(dynamic[] args) 
 			{
-				GameManager.GetPlayerByName(args[0]).postProcessing.RemoveTextureEffect();
+				Player.instance.postProcessing.RemoveTextureEffect();
 			}
 		}
 	}

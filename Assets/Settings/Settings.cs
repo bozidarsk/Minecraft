@@ -8,11 +8,31 @@ namespace Minecraft
 	public static class Settings 
 	{
 		[Serializable]
+		public struct PerlinNoise 
+		{
+			public float persistance;
+			public float lacunarity;
+			public float scale;
+			public uint octaves;
+			public Vector2 offset;
+		}
+
+		[Serializable]
 		public struct Biome 
 		{
 			public string id;
 			public uint seaLevel;
-			public uint dirtDepth;
+			public uint surfaceDepth;
+			public RangeUInt height;
+			public Range range;
+			public PerlinNoise heightNoise;
+		}
+
+		[Serializable]
+		public struct Terrain 
+		{
+			public PerlinNoise biomeMapNoise;
+			public Biome[] biomes;
 		}
 
 		[Serializable]
@@ -55,17 +75,6 @@ namespace Minecraft
 		}
 
 		[Serializable]
-		public struct Noise 
-		{
-			public int maxHeight;
-			public float persistance;
-			public float lacunarity;
-			public float scale;
-			public uint octaves;
-			public Vector2 offset;
-		}
-
-		[Serializable]
 		public struct PostProcessing 
 		{
 			public Color fogColor;
@@ -79,17 +88,6 @@ namespace Minecraft
 		    public float colorFiltering;
 		    public float saturation;
 		    public float gamma;
-		}
-
-		[Serializable]
-		public struct Terrain 
-		{
-			public Biome[] biomes;
-
-			public Biome GetBiomeById(string id) 
-			{ for (uint i = 0; i < biomes.Length; i++) 
-				{ if (biomes[i].id == id) { return biomes[i]; } 
-			} return GetBiomeById("plains-biome"); }
 		}
 
 		[Serializable]
@@ -203,8 +201,9 @@ namespace Minecraft
 		{
 			public float FOV;
 			public float GUIScale;
-			public int renderDistance;
-			public int maxFPS;
+			public uint discardDistance;
+			public uint renderDistance;
+			public uint maxFPS;
 		}
 	}
 }

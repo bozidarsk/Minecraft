@@ -10,7 +10,8 @@
     {
         "FOV": 60,
         "GUIScale": 3,
-        "renderDistance": 2,
+        "discardDistance": 32,
+        "renderDistance": 4,
         "maxFPS": 60
     },
     "controlls": 

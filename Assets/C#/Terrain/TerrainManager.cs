@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using UnityEngine;
 using Utils;
 
@@ -22,28 +23,60 @@ namespace Minecraft
 			TerrainManager.chunks = new List<Chunk>();
 		}
 
-		void Start() 
+		// void Start() 
+		// {
+		// 	StartCoroutine(TerrainManager.GenerateChunks());
+		// 	// chunks.Add(new Chunk(new Vector3(0f, 0f, 0f), TerrainManager.instance.gameObject.transform));
+		// }
+
+		void Update() 
 		{
-			StartCoroutine(TerrainManager.GenerateChunks());
-			// chunks.Add(new Chunk(new Vector3(0f, 0f, 0f), TerrainManager.instance.gameObject.transform));
+			for (int z = -(int)PlayerSettings.graphics.renderDistance / 2; z <= PlayerSettings.graphics.renderDistance / 2; z++) 
+			{
+				for (int x = -(int)PlayerSettings.graphics.renderDistance / 2; x <= PlayerSettings.graphics.renderDistance / 2; x++) 
+				{
+					Vector3 position = Player.instance.transform.position + new Vector3((float)x * Chunk.ChunkSize, 0f, (float)z * Chunk.ChunkSize);
+					Chunk chunk = TerrainManager.GetChunkFromPosition(position, true, true);
+				}
+			}
+
+			for (int i = 0; i < chunks.Count; i++) 
+			{
+				Vector3 position = new Vector3(Player.instance.transform.position.x, 0f, Player.instance.transform.position.z);
+				Vector3 offset = new Vector3(Chunk.ChunkSize / 2f, 0f, Chunk.ChunkSize / 2f);
+
+				if (Math2.Distance(position, chunks[i].position + offset) > PlayerSettings.graphics.renderDistance * Chunk.ChunkSize) 
+				{ chunks[i].IsActive = false; }
+
+				if (Math2.Distance(Player.instance.transform.position, chunks[i].position + offset) > PlayerSettings.graphics.discardDistance * Chunk.ChunkSize) 
+				{ GameObject.Destroy(chunks[i].gameObject); chunks.RemoveAt(chunks[i].IndexInList(chunks)); }
+			}
 		}
 
-		public static Chunk GetChunkFromPosition(Vector3 position, bool createIfNull = false) 
+		public static Chunk GetChunkFromPosition(Vector3 position, bool createIfNull = false, bool enableIfFound = false) 
 		{
-			position /= GameSettings.world.chunkSize;
+			position /= Chunk.ChunkSize;
 			position.x = Math2.Floor(position.x);
 			position.z = Math2.Floor(position.z);
-			position *= GameSettings.world.chunkSize;
+			position *= Chunk.ChunkSize;
 			position.y = 0f;
 
-			for (int i = 0; i < chunks.Count; i++) { if (chunks[i].position == position) { return chunks[i]; } }
+			for (int i = 0; i < chunks.Count; i++) 
+			{
+				if (chunks[i].position == position) 
+				{
+					if (enableIfFound) { chunks[i].IsActive = true; }
+					return chunks[i];
+				}
+			}
+
 			if (createIfNull) { chunks.Add(new Chunk(position, TerrainManager.instance.gameObject.transform)); }
 			return (createIfNull) ? chunks[chunks.Count - 1] : null;
 		}
 
 		public static void AddVoxel(uint type, int x, int y, int z) 
 		{
-			float size = (float)GameSettings.world.chunkSize;
+			float size = (float)Chunk.ChunkSize;
 			Chunk currentChunk = GetChunkFromPosition(new Vector3((float)x, (float)y, (float)z));
 			if (currentChunk == null) { return; }
 
@@ -59,7 +92,7 @@ namespace Minecraft
 
 		public static void RemoveVoxel(int x, int y, int z, bool saveType) 
 		{
-			float size = (float)GameSettings.world.chunkSize;
+			float size = (float)Chunk.ChunkSize;
 			Chunk currentChunk = GetChunkFromPosition(new Vector3((float)x, (float)y, (float)z));
 			if (currentChunk == null) { return; }
 
@@ -73,14 +106,28 @@ namespace Minecraft
 			currentChunk.Update();
 		}
 
+		public static Settings.Biome GetBiomeFromPosition(Vector3 position) 
+		{
+			float noise = Noise.Perlin.Value2D(new Vector2(position.x, position.z), GameSettings.terrain.biomeMapNoise);
+			for (int i = 0; i < GameSettings.terrain.biomes.Length; i++) 
+			{ if (noise >= GameSettings.terrain.biomes[i].range.min && noise <= GameSettings.terrain.biomes[i].range.max) 
+				{ return GameSettings.terrain.biomes[i]; } }
+			return default;
+		}
+
+		public static Settings.Biome GetBiomeById(string id) 
+		{ for (uint i = 0; i < GameSettings.terrain.biomes.Length; i++) 
+			{ if (GameSettings.terrain.biomes[i].id == id) { return GameSettings.terrain.biomes[i]; } 
+		} return default; }
+
 		private static IEnumerator GenerateChunks() 
 		{
-			float size = GameSettings.world.chunkSize;
+			float size = Chunk.ChunkSize;
 			TerrainManager.DoneGenerating = false;
 
-			for (int z = 0; z < 2; z++) 
+			for (int z = 0; z < 5; z++) 
 			{
-				for (int x = 0; x < 2; x++) 
+				for (int x = 0; x < 5; x++) 
 				{
 					Vector3 position = new Vector3((float)x * size, 0f, (float)z * size);
 					TerrainManager.chunks.Add(new Chunk(position, TerrainManager.instance.gameObject.transform));

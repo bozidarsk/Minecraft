@@ -34,24 +34,20 @@ namespace Minecraft
 			GameSettings.world = gameSettings.world;
 			GameSettings.terrain = gameSettings.terrain;
 			GameSettings.path = gameSettings.path;
-			PNG image;
 
-			image = new PNG(File.ReadAllBytes(GameManager.FormatPath(GameSettings.path.voxelTextures)));
-			GameSettings.textures.voxel = new Texture2D(image.Width, image.Height);
+			GameSettings.textures.voxel = new Texture2D(1, 1);
 			ImageConversion.LoadImage(GameSettings.textures.voxel, File.ReadAllBytes(GameManager.FormatPath(GameSettings.path.voxelTextures)), false);
 			GameManager.InitializeTexture(ref GameSettings.textures.voxel);
 			GameSettings.textures.voxelWidth = GameSettings.textures.voxel.width;
 			GameSettings.textures.voxelHeight = GameSettings.textures.voxel.height;
 
-			image = new PNG(File.ReadAllBytes(GameManager.FormatPath(GameSettings.path.itemTextures)));
-			GameSettings.textures.item = new Texture2D(image.Width, image.Height);
+			GameSettings.textures.item = new Texture2D(1, 1);
 			ImageConversion.LoadImage(GameSettings.textures.item, File.ReadAllBytes(GameManager.FormatPath(GameSettings.path.itemTextures)), false);
 			GameManager.InitializeTexture(ref GameSettings.textures.item);
 			GameSettings.textures.itemWidth = GameSettings.textures.item.width;
 			GameSettings.textures.itemHeight = GameSettings.textures.item.height;
 
-			image = new PNG(File.ReadAllBytes(GameManager.FormatPath(GameSettings.path.liquidTextures)));
-			GameSettings.textures.liquid = new Texture2D(image.Width, image.Height);
+			GameSettings.textures.liquid = new Texture2D(1, 1);
 			ImageConversion.LoadImage(GameSettings.textures.liquid, File.ReadAllBytes(GameManager.FormatPath(GameSettings.path.liquidTextures)), false);
 			GameManager.InitializeTexture(ref GameSettings.textures.liquid);
 			GameSettings.textures.liquidWidth = GameSettings.textures.liquid.width;

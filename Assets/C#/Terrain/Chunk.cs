@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,9 +10,9 @@ namespace Minecraft
 {
 	public class Chunk 
 	{
-		public GameObject gameObject { get; }
-		public Vector3 position { get { return gameObject.transform.position; } }
-		public string name { get { return gameObject.name; } }
+		public GameObject gameObject { private set; get; }
+		public Vector3 position { private set; get; }
+		public string name { private set; get; }
 		public static int ChunkSize { get { return GameSettings.world.chunkSize; } }
 		public static int ChunkHeight { get { return GameSettings.world.chunkHeight; } }
 		public bool IsActive { set { gameObject.SetActive(value); } get { return gameObject.activeSelf; } }
@@ -31,18 +30,33 @@ namespace Minecraft
 
 		private void GenerateVoxels() 
 		{
+			System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
+			watch.Start();
+
 			for (int y = 0; y < ChunkHeight; y++) 
 			{
+				if (y >= 10) { break; }
+				bool skip = false;
 				for (int z = 0; z < ChunkSize; z++) 
 				{
 					for (int x = 0; x < ChunkSize; x++) 
 					{
+						if (skip) { skip = false; continue; }
 						string id = "air-block";
 
-						if (y < 25) { id = "stone-block"; }
+						if (y < 10) { id = "stone-block"; }
 
-						// if (y < Noise.Perlin2D(new Vector2(x, y), GameSettings.terrain.shapeNoise) * 256f) 
-						// { id = "stone-block"; }
+						// Settings.Biome biome = TerrainGenerator.GetBiomeById("plains-biome");
+						// float result = Noise.Perlin.Value2D(
+						// 	new Vector2((float)x + position.x, (float)z + position.z),
+						// 	biome.heightNoise
+						// );
+
+						// int h = (int)Mathf.Lerp(biome.height.min, biome.height.max, result);
+
+						// skip = y > h;
+						// if (!skip) { id = "stone-block"; }
+						// if (h < biome.seaLevel) { id = "water-liquid"; }
 
 						uint type = GameManager.GetVoxelTypeById(id);
 						VoxelProperty property = GameManager.voxelProperties[type];
@@ -50,12 +64,14 @@ namespace Minecraft
 					}
 				}
 			}
+
+			watch.Stop();
+			// Console.Log(watch.ElapsedMilliseconds);
 		}
 
-		/*
-		private void GenerateVoxels() 
+		private void GenerateMesh() 
 		{
-			int h = 15;
+			for (int i = 0; i < liquidMeshes.Count; i++) { liquidMeshes[i].Clear(); }
 
 			for (int y = 0; y < ChunkHeight; y++) 
 			{
@@ -63,32 +79,11 @@ namespace Minecraft
 				{
 					for (int x = 0; x < ChunkSize; x++) 
 					{
-						if (y < h) 
-						{
-							uint type = 
-							(y < h - GameSettings.terrain.dirtDepth)
-							? GameManager.GetVoxelTypeById("stone-block")
-							: GameManager.GetVoxelTypeById("dirt-block");
-							SetVoxelType(type, x, y, z);
-						}
-						else { SetVoxelType(GameManager.GetVoxelTypeById("air-block"), x, y, z); }
-
-						if (GetVoxelType(x, y - 1, z) == GameManager.GetVoxelTypeById("dirt-block") && 
-							(GetVoxelType(x, y, z) == GameManager.GetVoxelTypeById("air-block"))
-						) { SetVoxelType(GameManager.GetVoxelTypeById("grass-block"), x, y - 1, z); }
-
-						if (GetVoxelType(x, y - 1, z) == GameManager.GetVoxelTypeById("grass-block") && 
-							x > 5 && x < 10 && z > 5 && z < 10
-						) { SetVoxelType(GameManager.GetVoxelTypeById("water-liquid"), x, y - 1, z); }
-
-						// if (GetVoxelType(x, y - 1, z) == GameManager.GetVoxelTypeById("grass-block") && 
-						// 	(GetVoxelType(x, y, z) == GameManager.GetVoxelTypeById("air-block"))
-						// ) { SetVoxelType(GameManager.GetVoxelTypeById("grass-quads"), x, y, z); }
+						AddVoxel(GetVoxelType(x, y, z), x, y, z, Matrix4x4.identity);
 					}
 				}
 			}
 		}
-		*/
 
 		private bool CanDrawFace(int x, int y, int z, VoxelFace face) 
 		{
@@ -108,7 +103,7 @@ namespace Minecraft
 		private void DrawBlock(Vector3 offset, VoxelProperty property, Matrix4x4 matrix) 
 		{
 			List<int> triangles = new List<int>(12);
-			for (int face = 0; face < blockVertices.GetLength(0); face++)
+			for (int face = 0; face < 6; face++)
 			{
 				if (!CanDrawFace((int)offset.x, (int)offset.y, (int)offset.z, (VoxelFace)face)) { continue; }
 
@@ -247,23 +242,6 @@ namespace Minecraft
 			voxelTriangles[(int)offset.x, (int)offset.y, (int)offset.z] = triangles.ToArray();
 		}
 
-		private void GenerateMesh() 
-		{
-			for (int i = 0; i < liquidMeshes.Count; i++) 
-			{ liquidMeshes[i].Clear(); }
-
-			for (int y = 0; y < ChunkHeight; y++) 
-			{
-				for (int z = 0; z < ChunkSize; z++) 
-				{
-					for (int x = 0; x < ChunkSize; x++) 
-					{
-						AddVoxel(GetVoxelType(x, y, z), x, y, z, Matrix4x4.identity);
-					}
-				}
-			}
-		}
-
 		public static int GetVoxelIndex(int x, int y, int z) { return x + (z * ChunkSize) + (y * ChunkSize * ChunkSize); }
 
 		public Chunk GetOutsideChunk(int x, int y, int z) 
@@ -361,7 +339,7 @@ namespace Minecraft
 			voxelTriangles[x, y, z] = null;
 		}
 
-		[Obsolete("It's not working.")]
+		[System.Obsolete("It's not working.")]
 		public void RemoveFace(int x, int y, int z, VoxelFace face) 
 		{
 			if (x < 0 || x >= ChunkSize || 
@@ -538,11 +516,12 @@ namespace Minecraft
 			return coords + offset;
 		}
 
-		public bool ContainsInList(List<Chunk> list) 
+		public bool ContainsInList(List<Chunk> list) { return this.IndexInList(list) >= 0; }
+		public int IndexInList(List<Chunk> list) 
 		{
 			for (int i = 0; i < list.Count; i++) 
-			{ if (this.gameObject.name == list[i].gameObject.name) { return true; } }
-			return false;
+			{ if (this.gameObject.name == list[i].gameObject.name) { return i; } }
+			return -1;
 		}
 
 		/* Add delay based on mining speed, force, etc. */
@@ -620,6 +599,8 @@ namespace Minecraft
 			this.gameObject.transform.eulerAngles = Vector3.zero;
 			this.gameObject.transform.localScale = Vector3.one;
 			this.gameObject.tag = "Chunk";
+			this.position = this.gameObject.transform.position;
+			this.name = this.gameObject.name;
 
 			this.filter = (MeshFilter)this.gameObject.AddComponent(typeof(MeshFilter));
 			this.renderer = (MeshRenderer)this.gameObject.AddComponent(typeof(MeshRenderer));

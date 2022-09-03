@@ -44,7 +44,7 @@ namespace Minecraft
 				(mouse.x < corners[3].x && mouse.y > corners[3].y)
 			) {
 				float maxScroll = ChatManager.MessagesCount * 18.5185185f;
-				chatBoxTransform.offsetMin += new Vector2(0f, -Input.mouseScrollDelta.y * player.playerSettings.controlls.scrollSensitivity);
+				chatBoxTransform.offsetMin += new Vector2(0f, -Input.mouseScrollDelta.y * PlayerSettings.controlls.scrollSensitivity);
 				if (chatBoxTransform.offsetMin.y > 0f) { chatBoxTransform.offsetMin = Vector2.zero; }
 				if (chatBoxTransform.offsetMin.y < -maxScroll) { chatBoxTransform.offsetMin = Vector2.up * -maxScroll; }
 			}

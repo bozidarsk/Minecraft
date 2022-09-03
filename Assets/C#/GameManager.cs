@@ -17,7 +17,7 @@ namespace Minecraft
 		public static ItemProperty[] itemProperties;
 		public static CraftingProperty[] craftingProperties;
 		public static EnchantmentProperty[] enchantmentProperties;
-		public static Player[] players;
+		// public static List<Player> players;
 		public static System.Random random;
 
 		void Awake() { GameManager.Initialize(this); }
@@ -42,7 +42,8 @@ namespace Minecraft
 			GameManager.itemProperties = JsonUtility.FromJson<ArrayWrapper<ItemProperty>>(File.ReadAllText(GameManager.FormatPath(GameSettings.path.itemProperties))).content;
 			GameManager.craftingProperties = JsonUtility.FromJson<ArrayWrapper<CraftingProperty>>(File.ReadAllText(GameManager.FormatPath(GameSettings.path.craftingProperties))).content;
 			GameManager.enchantmentProperties = JsonUtility.FromJson<ArrayWrapper<EnchantmentProperty>>(File.ReadAllText(GameManager.FormatPath(GameSettings.path.enchantmentProperties))).content;
-			GameManager.players = GameObject.FindGameObjectsWithTag("Player").Select(x => x.GetComponent<Player>()).ToArray();
+			// GameManager.players = new List<Player>();
+			// GameManager.players = GameObject.FindGameObjectsWithTag("Player").Select(x => x.GetComponent<Player>()).ToList();
 
 			string[] files = Directory.GetFiles(GameManager.FormatPath(GameSettings.path.textureEffects), "*.png");
 			for (int i = 0; i < files.Length; i++) 
@@ -75,6 +76,26 @@ namespace Minecraft
 			// 	if (change == UnityEditor.PlayModeStateChange.ExitingPlayMode) { GameManager.SaveGame(); }
 			// };
 			// #endif
+
+			int size = GameSettings.world.chunkSize * 2;
+			float[,] map = Noise.Perlin.Map2D(
+				size,
+				size,
+				GameSettings.terrain.biomeMapNoise
+			);
+			Color[] colors = new Color[size * size];
+			for (int y = 0; y < size; y++) 
+			{
+				for (int x = 0; x < size; x++) 
+				{
+					// map[x, y] = Noise.Perlin.Value2D(new Vector2(x, y), GameSettings.terrain.biomeMapNoise);
+					colors[x + (y * size)] = new Color(map[x, y], map[x, y], map[x, y], 1f);
+				}
+			}
+			Texture2D tex = new Texture2D(size, size);
+			tex.SetPixels(colors);
+			tex.Apply();
+			File.WriteAllBytes("Assets/out.png", tex.EncodeToPNG());
 		}
 
 		// #if !UNITY_EDITOR
@@ -90,12 +111,6 @@ namespace Minecraft
 		{
 			texture.filterMode = FilterMode.Point;
 			texture.wrapMode = TextureWrapMode.Clamp;
-		}
-
-		public static Player GetPlayerByName(string name) 
-		{
-			try { return GameManager.players.Where(x => x.name == name).ToArray()[0]; }
-			catch { return null; }
 		}
 
 		public static void SaveGame() 

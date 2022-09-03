@@ -186,7 +186,7 @@ namespace Minecraft
 			}
 			else { description.gameObject.SetActive(false); }
 
-			if (Input.GetKey(player.playerSettings.controlls.keyCodes.DropSelectedItem)) 
+			if (Input.GetKey(PlayerSettings.controlls.keyCodes.DropSelectedItem)) 
 			{
 				InventorySlot slot = slots[index];
 				DropFromSlot(in slot);

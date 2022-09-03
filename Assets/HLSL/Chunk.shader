@@ -61,6 +61,7 @@
             uint chunkSize;
 
             sampler2D _MainTex;
+            float4 _LightColor0;
 
             // uint GetVoxelIndex(uint3 position) { return position.x + (position.z * chunkSize) + (position.y * chunkSize * chunkSize); }
             // uint GetVoxelType(uint3 position) { return voxels[GetVoxelIndex(position)] & 0xffff; }
@@ -72,24 +73,23 @@
 
                 if (color.a <= 0) { clip(-1); }
 
-                // uint3 voxelPosition = uint3(
-                //     floor(IN.position.x - 0.001),
-                //     floor(IN.position.y - 0.001),
-                //     floor(IN.position.z - 0.001)
-                // );
+                // return color;
+                float value = saturate(dot(_WorldSpaceLightPos0.xyz, IN.normal));
+                value = saturate(value + 0.4);
 
-                // // return color;
-                // color = float4(
-                //     (voxelPosition.x % 2 == 0),
-                //     (voxelPosition.y % 2 == 0),
-                //     (voxelPosition.z % 2 == 0),
-                //     1
-                // );
+                color.rgb *= value;
+                // return float4(saturate((dot(_WorldSpaceLightPos0.xyz, IN.normal).xxxx * 0.3) + (color * 0.6)).rgb, color.a);
+
+                uint3 voxelPosition = uint3(
+                    floor(IN.position.x - 0.001),
+                    floor(IN.position.y - 0.001),
+                    floor(IN.position.z - 0.001)
+                );
+
 
                 // float light = (float)GetVoxelLight(voxelPosition) / 15.0;
-
                 // color.rgb *= light;
-                return color;
+                return saturate(color);
             }
 
             ENDCG

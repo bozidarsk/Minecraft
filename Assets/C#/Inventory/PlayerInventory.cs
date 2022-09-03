@@ -105,17 +105,17 @@ namespace Minecraft
 
 			if (!IsOpen && !player.chat.IsOpen) 
 			{
-				if (Input.GetKeyDown(player.playerSettings.controlls.keyCodes.HotbarSlot1)) { handOnHotbar = 0; }
-				if (Input.GetKeyDown(player.playerSettings.controlls.keyCodes.HotbarSlot2)) { handOnHotbar = 1; }
-				if (Input.GetKeyDown(player.playerSettings.controlls.keyCodes.HotbarSlot3)) { handOnHotbar = 2; }
-				if (Input.GetKeyDown(player.playerSettings.controlls.keyCodes.HotbarSlot4)) { handOnHotbar = 3; }
-				if (Input.GetKeyDown(player.playerSettings.controlls.keyCodes.HotbarSlot5)) { handOnHotbar = 4; }
-				if (Input.GetKeyDown(player.playerSettings.controlls.keyCodes.HotbarSlot6)) { handOnHotbar = 5; }
-				if (Input.GetKeyDown(player.playerSettings.controlls.keyCodes.HotbarSlot7)) { handOnHotbar = 6; }
-				if (Input.GetKeyDown(player.playerSettings.controlls.keyCodes.HotbarSlot8)) { handOnHotbar = 7; }
-				if (Input.GetKeyDown(player.playerSettings.controlls.keyCodes.HotbarSlot9)) { handOnHotbar = 8; }
+				if (Input.GetKeyDown(PlayerSettings.controlls.keyCodes.HotbarSlot1)) { handOnHotbar = 0; }
+				if (Input.GetKeyDown(PlayerSettings.controlls.keyCodes.HotbarSlot2)) { handOnHotbar = 1; }
+				if (Input.GetKeyDown(PlayerSettings.controlls.keyCodes.HotbarSlot3)) { handOnHotbar = 2; }
+				if (Input.GetKeyDown(PlayerSettings.controlls.keyCodes.HotbarSlot4)) { handOnHotbar = 3; }
+				if (Input.GetKeyDown(PlayerSettings.controlls.keyCodes.HotbarSlot5)) { handOnHotbar = 4; }
+				if (Input.GetKeyDown(PlayerSettings.controlls.keyCodes.HotbarSlot6)) { handOnHotbar = 5; }
+				if (Input.GetKeyDown(PlayerSettings.controlls.keyCodes.HotbarSlot7)) { handOnHotbar = 6; }
+				if (Input.GetKeyDown(PlayerSettings.controlls.keyCodes.HotbarSlot8)) { handOnHotbar = 7; }
+				if (Input.GetKeyDown(PlayerSettings.controlls.keyCodes.HotbarSlot9)) { handOnHotbar = 8; }
 
-				if (Input.GetKeyDown(player.playerSettings.controlls.keyCodes.SwapItemWithOffhand)) 
+				if (Input.GetKeyDown(PlayerSettings.controlls.keyCodes.SwapItemWithOffhand)) 
 				{
 					Item tmp = offhandSlot.item;
 					offhandSlot.item = slots[slotStartIndex["Hotbar"] + handOnHotbar].item;
@@ -125,7 +125,7 @@ namespace Minecraft
 					slots[slotStartIndex["Offhand"]].Update();
 				}
 
-				if (Input.GetKey(player.playerSettings.controlls.keyCodes.DropSelectedItem)) 
+				if (Input.GetKey(PlayerSettings.controlls.keyCodes.DropSelectedItem)) 
 				{
 					InventorySlot slot = slots[slotStartIndex["Hotbar"] + handOnHotbar];
 					DropFromSlot(in slot);
@@ -133,14 +133,14 @@ namespace Minecraft
 				}
 
 				hotbarSelector.transform.localPosition = new Vector3(handOnHotbar * 14f - 64f, 0f, 0f);
-				hotbarSelector.transform.parent.localScale = Vector3.one * (player.playerSettings.graphics.GUIScale + 1);
+				hotbarSelector.transform.parent.localScale = Vector3.one * (PlayerSettings.graphics.GUIScale + 1);
 				return;
 			}
 
-			if (Input.GetKey(player.playerSettings.controlls.keyCodes.DropSelectedItem)) { DropFromSlot(in cursorSlot); }
+			if (Input.GetKey(PlayerSettings.controlls.keyCodes.DropSelectedItem)) { DropFromSlot(in cursorSlot); }
 			cursorSlot.gameObject.transform.position = Input.mousePosition;
 
-			gui.transform.localScale = Vector3.one * player.playerSettings.graphics.GUIScale;
+			gui.transform.localScale = Vector3.one * PlayerSettings.graphics.GUIScale;
 		}
 
 		public InventorySlot GetHandSlot() { return slots[slotStartIndex["Hotbar"] + handOnHotbar]; }

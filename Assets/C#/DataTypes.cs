@@ -553,6 +553,27 @@ namespace Minecraft
 	}
 
 	[Serializable]
+	public struct Range 
+	{
+		[Range(0f, 1f)] public float min;
+		[Range(0f, 1f)] public float max;
+	}
+
+	[Serializable]
+	public struct RangeInt 
+	{
+		public int min;
+		public int max;
+	}
+
+	[Serializable]
+	public struct RangeUInt 
+	{
+		public uint min;
+		public uint max;
+	}
+
+	[Serializable]
 	public struct Vector3bool 
 	{
 		public bool x;

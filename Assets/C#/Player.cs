@@ -13,7 +13,7 @@ namespace Minecraft
 		public string playerSettingsPath;
 		public Transform playerCenter;
 		public Armature armature;
-		[HideInInspector] public PlayerSettingsObject playerSettings;
+		// [HideInInspector] public PlayerSettingsObject playerSettings;
 		[HideInInspector] public CameraPerspective cameraPerspective;
 		[HideInInspector] public PlayerInventory inventory;
 		[HideInInspector] public PostProcessing postProcessing;
@@ -26,6 +26,7 @@ namespace Minecraft
 		[HideInInspector] public int food = 9;
 		public bool canUseCommands { private set; get; }
 		public bool IsGrounded { get { return !movementController.CanApplyGravity(GameSettings.world.gravity); } }
+		public static Player instance;
 
 		private System.Random random;
 		private MovementController movementController;
@@ -47,7 +48,14 @@ namespace Minecraft
 			obj.Update();
 		}
 
-		void Awake() { playerSettings = JsonUtility.FromJson<PlayerSettingsObject>(File.ReadAllText(GameManager.FormatPath(playerSettingsPath))); }
+		void Awake() { Player.Initialize(JsonUtility.FromJson<PlayerSettingsObject>(File.ReadAllText(GameManager.FormatPath(playerSettingsPath))), this); }
+		public static void Initialize(PlayerSettingsObject playerSettings, Player instance) 
+		{
+			Player.instance = instance;
+			// Player.instance.playerSettings = playerSettings;
+			PlayerSettings.Initialize(playerSettings);
+		}
+
 		void Start() 
 		{
 			chat = gameObject.GetComponent<ChatController>();
@@ -76,25 +84,25 @@ namespace Minecraft
 
 		void Update() 
 		{
-			if (Input.GetKeyDown(playerSettings.controlls.keyCodes.TogglePerspective)) 
+			if (Input.GetKeyDown(PlayerSettings.controlls.keyCodes.TogglePerspective)) 
 			{ cameraPerspective = ++cameraPerspective; if ((int)cameraPerspective >= 3) { cameraPerspective = 0; } }
 
-			if (!chat.IsOpen && Input.GetKeyDown(playerSettings.controlls.keyCodes.ToggleInventory)) 
+			if (!chat.IsOpen && Input.GetKeyDown(PlayerSettings.controlls.keyCodes.ToggleInventory)) 
 			{ inventory.Toggle(); }
 
 			if (inventory.IsOpen && Input.GetKeyDown(KeyCode.Escape)) 
 			{ inventory.Toggle(); }
 
-			if (!inventory.IsOpen && !chat.IsOpen && Input.GetKeyDown(playerSettings.controlls.keyCodes.OpenChat)) 
+			if (!inventory.IsOpen && !chat.IsOpen && Input.GetKeyDown(PlayerSettings.controlls.keyCodes.OpenChat)) 
 			{ chat.IsOpen = true; }
 
 			if (chat.IsOpen && Input.GetKeyDown(KeyCode.Escape)) 
 			{ chat.IsOpen = false; }
 
 			int mouseButtons = 0 | 
-			((Input.GetKeyDown(playerSettings.controlls.keyCodes.Attack)) ? 1 : 0) << 0 | 
-			((Input.GetKeyDown(playerSettings.controlls.keyCodes.UseItem)) ? 1 : 0) << 1 | 
-			((Input.GetKeyDown(playerSettings.controlls.keyCodes.PickBlock)) ? 1 : 0) << 2;
+			((Input.GetKeyDown(PlayerSettings.controlls.keyCodes.Attack)) ? 1 : 0) << 0 | 
+			((Input.GetKeyDown(PlayerSettings.controlls.keyCodes.UseItem)) ? 1 : 0) << 1 | 
+			((Input.GetKeyDown(PlayerSettings.controlls.keyCodes.PickBlock)) ? 1 : 0) << 2;
 
 			if (Tools.GetAnyBit(mouseButtons)) 
 			{
@@ -119,12 +127,12 @@ namespace Minecraft
 			if (inventory.IsOpen || chat.IsOpen) { return; }
 
 			float v = 0f;
-			if (Input.GetKey(playerSettings.controlls.keyCodes.Sneak)) { v = GameSettings.player.sneakingSpeed; }
-			else if (Input.GetKey(playerSettings.controlls.keyCodes.Sprint)) { v = GameSettings.player.sprintingSpeed; }
+			if (Input.GetKey(PlayerSettings.controlls.keyCodes.Sneak)) { v = GameSettings.player.sneakingSpeed; }
+			else if (Input.GetKey(PlayerSettings.controlls.keyCodes.Sprint)) { v = GameSettings.player.sprintingSpeed; }
 			else { v = GameSettings.player.walkingSpeed; }
 
-			if (Input.GetKey(playerSettings.controlls.keyCodes.Jump) && IsGrounded) { isJumping = true; jumpedHeight = 0f; }
-			// if (Input.GetKeyUp(playerSettings.controlls.keyCodes.Jump)) { isJumping = false; jumpedHeight = 0f; }
+			if (Input.GetKey(PlayerSettings.controlls.keyCodes.Jump) && IsGrounded) { isJumping = true; jumpedHeight = 0f; }
+			// if (Input.GetKeyUp(PlayerSettings.controlls.keyCodes.Jump)) { isJumping = false; jumpedHeight = 0f; }
 
 			if (isJumping && jumpedHeight < GameSettings.player.jumpHeight) 
 			{
@@ -133,10 +141,10 @@ namespace Minecraft
 				else { isJumping = false; jumpedHeight = 0f; }
 			}
 
-			if (Input.GetKey(playerSettings.controlls.keyCodes.MoveForward)) { movementController.Move(gameObject.transform.forward * v * t); }
-			if (Input.GetKey(playerSettings.controlls.keyCodes.MoveBackwards)) { movementController.Move(-gameObject.transform.forward * v * t); }
-			if (Input.GetKey(playerSettings.controlls.keyCodes.MoveLeft)) { movementController.Move(-gameObject.transform.right * v * t); }
-			if (Input.GetKey(playerSettings.controlls.keyCodes.MoveRight)) { movementController.Move(gameObject.transform.right * v * t); }
+			if (Input.GetKey(PlayerSettings.controlls.keyCodes.MoveForward)) { movementController.Move(gameObject.transform.forward * v * t); }
+			if (Input.GetKey(PlayerSettings.controlls.keyCodes.MoveBackwards)) { movementController.Move(-gameObject.transform.forward * v * t); }
+			if (Input.GetKey(PlayerSettings.controlls.keyCodes.MoveLeft)) { movementController.Move(-gameObject.transform.right * v * t); }
+			if (Input.GetKey(PlayerSettings.controlls.keyCodes.MoveRight)) { movementController.Move(gameObject.transform.right * v * t); }
 		}
 
 		void OnTriggerEnter(Collider collider) 
