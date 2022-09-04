@@ -37,6 +37,7 @@ namespace Minecraft
         public void RemoveTextureEffect() { material.SetInt("_UseEffect", 0); }
         public void SetTextureEffect(Texture2D texture) 
         {
+            GameManager.InitializeTexture(ref texture);
             material.SetTexture("_Effect", texture);
             material.SetInt("_UseEffect", 1);
         }

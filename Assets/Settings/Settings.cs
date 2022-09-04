@@ -43,6 +43,7 @@ namespace Minecraft
 			public string itemTextures;
 			public string liquidTextures;
 			public string textureEffects;
+			public string destroyStageTextures;
 
 			[Header("Properties")]
 			public string voxelProperties;
@@ -112,18 +113,16 @@ namespace Minecraft
 			public Vector2 rotationLimit;
 			public uint maxStackSize;
 			public uint queuedMessagesLength;
+			public uint destroyStageLength;
 		}
 
 		public struct Textures 
 		{
 			public Texture2D voxel;
-			public Texture2D item;
 			public Texture2D liquid;
 
 			[HideInInspector] public int voxelWidth;
 			[HideInInspector] public int voxelHeight;
-			[HideInInspector] public int itemWidth;
-			[HideInInspector] public int itemHeight;
 			[HideInInspector] public int liquidWidth;
 			[HideInInspector] public int liquidHeight;
 		}

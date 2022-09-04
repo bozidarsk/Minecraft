@@ -11,6 +11,7 @@ namespace Minecraft
 	public class Player : MonoBehaviour
 	{
 		public string playerSettingsPath;
+		public DestroyStage destroyStage;
 		public Transform playerCenter;
 		public Armature armature;
 		// [HideInInspector] public PlayerSettingsObject playerSettings;
@@ -24,6 +25,7 @@ namespace Minecraft
 		[HideInInspector] public float xp = 0f;
 		[HideInInspector] public int health = 9;
 		[HideInInspector] public int food = 9;
+		[HideInInspector] public bool isInteractingWithTerrain;
 		public bool canUseCommands { private set; get; }
 		public bool IsGrounded { get { return !movementController.CanApplyGravity(GameSettings.world.gravity); } }
 		public static Player instance;
@@ -66,14 +68,14 @@ namespace Minecraft
 			id = gameObject.name + "-player";
 			color = 0x007f7fff; // rrggbbaa
 			canUseCommands = true;
+			isInteractingWithTerrain = false;
 
 			Material material = GameSettings.materials.player;
-			Texture2D texture = new Texture2D(516, 258);
+			Texture2D texture = new Texture2D(1, 1);
 
 			try { ImageConversion.LoadImage(texture, File.ReadAllBytes("Assets/Objects/player/Skins/" + id + ".png"), false); }
 			catch { ImageConversion.LoadImage(texture, File.ReadAllBytes(GameManager.FormatPath("$(DefaultTextures)/skins/default.png")), false); }
-			texture.filterMode = FilterMode.Point;
-			texture.wrapMode = TextureWrapMode.Clamp;
+			GameManager.InitializeTexture(ref texture);
 
 			((SkinnedMeshRenderer)gameObject.GetComponentInChildren(typeof(SkinnedMeshRenderer))).material = material;
 			material.SetTexture("_MainTex", texture);
@@ -100,20 +102,23 @@ namespace Minecraft
 			{ chat.IsOpen = false; }
 
 			int mouseButtons = 0 | 
-			((Input.GetKeyDown(PlayerSettings.controlls.keyCodes.Attack)) ? 1 : 0) << 0 | 
-			((Input.GetKeyDown(PlayerSettings.controlls.keyCodes.UseItem)) ? 1 : 0) << 1 | 
-			((Input.GetKeyDown(PlayerSettings.controlls.keyCodes.PickBlock)) ? 1 : 0) << 2;
+			((Input.GetKey(PlayerSettings.controlls.keyCodes.Attack)) ? 1 : 0) << 0 | 
+			((Input.GetKey(PlayerSettings.controlls.keyCodes.UseItem)) ? 1 : 0) << 1 | 
+			((Input.GetKey(PlayerSettings.controlls.keyCodes.PickBlock)) ? 1 : 0) << 2;
 
-			if (Tools.GetAnyBit(mouseButtons)) 
+			if (Tools.GetAnyBit(mouseButtons) && !inventory.IsOpen && !chat.IsOpen && !isInteractingWithTerrain) 
 			{
-				if (VoxelHit.Check(armature.head.transform.position, -armature.head.transform.right * GameSettings.player.reachingDistance, this, out voxelHit) && !inventory.IsOpen && !chat.IsOpen) 
+				if (VoxelHit.Check(armature.head.transform.position, -armature.head.transform.right * GameSettings.player.reachingDistance, this, out voxelHit)) 
 				{
-					if (mouseButtons >> 0 == 1) { voxelHit.chunk.OnPlayerRemoveVoxel(this, voxelHit); }
-					if (mouseButtons >> 2 == 1) { voxelHit.chunk.OnPlayerPickVoxel(this, voxelHit); }
-					if (mouseButtons >> 1 == 1) { voxelHit.chunk.OnPlayerPlaceVoxel(this, voxelHit); }
+					if (mouseButtons >> 0 == 1) { voxelHit.chunk.PlayerRemoveVoxel(this, voxelHit); }
+					if (mouseButtons >> 2 == 1) { voxelHit.chunk.PlayerPickVoxel(this, voxelHit); }
+					if (mouseButtons >> 1 == 1) 
+					{
+						if (Input.GetKeyDown(PlayerSettings.controlls.keyCodes.UseItem)) { voxelHit.chunk.PlayerPlaceVoxel(this, voxelHit); }
+						/* drink, eat... */
+					}
 				}
 			}
-
 
 			Cursor.lockState = (inventory.IsOpen || chat.IsOpen) ? CursorLockMode.None : CursorLockMode.Locked;
 			Cursor.visible = inventory.IsOpen || chat.IsOpen;
@@ -155,8 +160,8 @@ namespace Minecraft
 					postProcessing.SetTextureEffect(GameManager.textureEffects["underwater"]);
 					break;
 				case "DroppedItem":
-					collider.name = collider.name.Replace(":", "");
-					Item item = new Item(collider.name.Split()[0], Convert.ToUInt32(collider.name.Split()[1]));
+					collider.name = collider.name.Replace("%:", "").Replace(",", "");
+					Item item = new Item(collider.name.Split()[0], Convert.ToUInt32(collider.name.Split()[2]), float.Parse(collider.name.Split()[1]));
 
 					item.ammount = inventory.TryAddItem(item);
 					if (item.ammount == 0) { Destroy(collider.gameObject); return; }

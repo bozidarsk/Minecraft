@@ -81,6 +81,10 @@ namespace Minecraft
 
 		public void GenerateMesh() 
 		{
+			vertices = new List<Vector3>();
+			triangles = new List<int>();
+			uvs = new List<Vector2>();
+
 			if (item.id.EndsWith("-block")) 
 			{
 				Vector3 offset = Vector3.one / -2f;
@@ -128,21 +132,25 @@ namespace Minecraft
 
 				Add(0, 1, 2, 2, 3, 0);
 
-				Vector2byte coords = GameManager.itemProperties[GameManager.GetItemTypeById(item.id + "-item")].textureCoords;
-				float coordsy = ((float)GameSettings.textures.item.height / 16f) - (float)coords.y - 1;
-				float uvx = (16f * (float)coords.x) / (float)GameSettings.textures.item.width;
-				float uvy = (16f * coordsy) / (float)GameSettings.textures.item.height;
-				float uvsizex = 16f / (float)GameSettings.textures.item.width;
-				float uvsizey = 16f / (float)GameSettings.textures.item.height;
+				// Vector2byte coords = GameManager.itemProperties[GameManager.GetItemTypeById(item.id + "-item")].textureCoords;
+				// float coordsy = ((float)GameSettings.textures.item.height / 16f) - (float)coords.y - 1;
+				// float uvx = (16f * (float)coords.x) / (float)GameSettings.textures.item.width;
+				// float uvy = (16f * coordsy) / (float)GameSettings.textures.item.height;
+				// float uvsizex = 16f / (float)GameSettings.textures.item.width;
+				// float uvsizey = 16f / (float)GameSettings.textures.item.height;
 
-				Add(
-					new Vector2(uvx, uvy),
-					new Vector2(uvx + uvsizex, uvy),
-					new Vector2(uvx + uvsizex, uvy + uvsizey),
-					new Vector2(uvx, uvy + uvsizey)
-				);
+				// Add(
+				// 	new Vector2(uvx, uvy),
+				// 	new Vector2(uvx + uvsizex, uvy),
+				// 	new Vector2(uvx + uvsizex, uvy + uvsizey),
+				// 	new Vector2(uvx, uvy + uvsizey)
+				// );
 
-				renderer.material.SetTexture("_MainTex", GameSettings.textures.item);
+				Texture2D texture = new Texture2D(1, 1);
+				try { ImageConversion.LoadImage(texture, File.ReadAllBytes(GameManager.FormatPath(GameSettings.path.itemTextures + "/" + item.id + ".png")), false); }
+				catch { ImageConversion.LoadImage(texture, File.ReadAllBytes(GameManager.FormatPath(GameSettings.path.itemTextures + "/undefined-" + (item.id.EndsWith("-block") ? "block" : "item") + ".png")), false); }
+				GameManager.InitializeTexture(ref texture);
+				renderer.material.SetTexture("_MainTex", texture);
 			}
 		}
 
@@ -308,14 +316,19 @@ namespace Minecraft
 			if (item.ammount == 0) { item.id = "air-block"; }
 			text.SetText((!item.IsEmpty && item.ammount > 1) ? Convert.ToString(item.ammount) : "");
 
-			Vector2byte coords = GameManager.itemProperties[GameManager.GetItemTypeById(item.id)].textureCoords;
-			float coordsy = ((float)GameSettings.textures.item.height / 16f) - (float)coords.y - 1;
-			float uvx = (16f * (float)coords.x) / (float)GameSettings.textures.item.width;
-			float uvy = (16f * coordsy) / (float)GameSettings.textures.item.height;
-			float uvsizex = 16f / (float)GameSettings.textures.item.width;
-			float uvsizey = 16f / (float)GameSettings.textures.item.height;
+			// Vector2byte coords = GameManager.itemProperties[GameManager.GetItemTypeById(item.id)].textureCoords;
+			// float coordsy = ((float)GameSettings.textures.item.height / 16f) - (float)coords.y - 1;
+			// float uvx = (16f * (float)coords.x) / (float)GameSettings.textures.item.width;
+			// float uvy = (16f * coordsy) / (float)GameSettings.textures.item.height;
+			// float uvsizex = 16f / (float)GameSettings.textures.item.width;
+			// float uvsizey = 16f / (float)GameSettings.textures.item.height;
 
-			icon.uvRect = new Rect(uvx, uvy, uvsizex, uvsizey);
+			// icon.uvRect = new Rect(uvx, uvy, uvsizex, uvsizey);
+
+			Texture2D texture = new Texture2D(1, 1);
+			try { ImageConversion.LoadImage(texture, File.ReadAllBytes(GameManager.FormatPath(GameSettings.path.itemTextures + "/" + item.id + ".png")), false); }
+			catch { ImageConversion.LoadImage(texture, File.ReadAllBytes(GameManager.FormatPath(GameSettings.path.itemTextures + "/undefined-" + (item.id.EndsWith("-block") ? "block" : "item") + ".png")), false); }
+			icon.texture = texture;
 		}
 
 		public void ClearFilters() { filters = null; }
@@ -362,8 +375,9 @@ namespace Minecraft
 	{
 		public string id;
 		public uint ammount;
+		public float durability; // % 0-100
 
-		public override string ToString() { return id + ": " + Convert.ToString(ammount); }
+		public override string ToString() { return id + ", " + Convert.ToString(durability) + "%: " + Convert.ToString(ammount); }
 		public override int GetHashCode() { return (int)id.GetHashCode() + (int)ammount; }
 		public bool IsEmpty { get { { return id == null || id == "air-block" || id == "air-item" || id == "" || ammount <= 0; } } }
 
@@ -371,6 +385,14 @@ namespace Minecraft
 		{
 			this.id = id;
 			this.ammount = ammount;
+			this.durability = 100f;
+		}
+
+		public Item(string id, uint ammount, float durability) 
+		{
+			this.id = id;
+			this.ammount = ammount;
+			this.durability = durability;
 		}
 	}
 

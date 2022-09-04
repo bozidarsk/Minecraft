@@ -524,11 +524,47 @@ namespace Minecraft
 			return -1;
 		}
 
-		/* Add delay based on mining speed, force, etc. */
-		public void OnPlayerRemoveVoxel(Player player, VoxelHit hit) 
+		public void PlayerRemoveVoxel(Player player, VoxelHit hit) { GameManager.instance.StartCoroutine(RemovingVoxel(player, hit)); }
+		private IEnumerator RemovingVoxel(Player player, VoxelHit hit) 
 		{
+			if (player.isInteractingWithTerrain) { yield break; }
+			player.isInteractingWithTerrain = true;
+
+			bool isHand = false;
+			ToolProperty toolProperty = GameManager.GetItemPropertyById(player.inventory.GetHandItem().id).toolProperty;
+			if (toolProperty == null) 
+			{
+				toolProperty.miningSpeed = 1f;
+				toolProperty.miningForce = 1f;
+				isHand = true;
+			}
+
 			if (!ContainsInList(TerrainManager.modifiedChunks)) { TerrainManager.modifiedChunks.Add(this); }
 			Vector3Int position = GetVoxelPositionFromPoint(hit.point);
+			player.destroyStage.SetPosition(this.position + position);
+
+			bool exit = false;
+			float time = toolProperty.miningSpeed * hit.property.hardness;
+			for (uint stage = 0; stage < GameSettings.player.destroyStageLength; stage++) 
+			{
+				if (VoxelHit.Check(player.armature.head.transform.position, -player.armature.head.transform.right * GameSettings.player.reachingDistance, player, out VoxelHit newHit)) 
+				{ if (GetVoxelPositionFromPoint(newHit.point) != position) { exit = true; break; } }
+
+				if (Input.GetKeyUp(PlayerSettings.controlls.keyCodes.Attack)) 
+				{ exit = true; break; }
+
+				player.destroyStage.SetStage(stage);
+				yield return new WaitForSeconds(time / (float)GameSettings.player.destroyStageLength);
+			}
+
+			player.destroyStage.Clear();
+			if (exit) { player.isInteractingWithTerrain = false; yield break; }
+
+			if (!isHand) 
+			{
+				player.inventory.GetHandSlot().item.durability -= 1f / (float)toolProperty.durability;
+				player.inventory.GetHandSlot().Update();
+			}
 
 			RemoveVoxel(position.x, position.y, position.z, false);
 			for (int face = 0; face < 6; face++) 
@@ -545,25 +581,40 @@ namespace Minecraft
 
 			Vector3 offset = (Vector3.one * 0.5f) + gameObject.transform.position;
 			player.DropItem(new Item(hit.property.dropItem, 1), new Vector3((float)position.x, (float)position.y, (float)position.z) + offset);
+
+			player.isInteractingWithTerrain = false;
 		}
 
-		/* Request the player to swap a slot with a hit id with the current hand slot. */
-		public void OnPlayerPickVoxel(Player player, VoxelHit hit) 
+		public void PlayerPickVoxel(Player player, VoxelHit hit) 
 		{
-			Console.Log("Picking: " + hit.property.id);
+			if (player.isInteractingWithTerrain) { return; }
+			player.isInteractingWithTerrain = true;
+
+			int index = player.inventory.IndexOfItem(new Item(hit.property.id, 1));
+			if (index < 0) { player.isInteractingWithTerrain = false; return; }
+
+			Item handItem = player.inventory.GetHandItem();
+			player.inventory.SetHandItem(player.inventory.slots[index].item);
+			player.inventory.slots[index].item = handItem;
+			player.inventory.slots[index].Update();
+
+			player.isInteractingWithTerrain = false;
 		}
 
-		/* Get item from the current hand slot. */
 		/* Check if you can place on the hit block. */
 		/* Check for avaliable rotations from the property. */
-		public void OnPlayerPlaceVoxel(Player player, VoxelHit hit) 
+		/* Check if it is overlaping with other entities / players. */
+		public void PlayerPlaceVoxel(Player player, VoxelHit hit) 
 		{
+			if (player.isInteractingWithTerrain) { return; }
+			player.isInteractingWithTerrain = true;
+
 			if (!ContainsInList(TerrainManager.modifiedChunks)) { TerrainManager.modifiedChunks.Add(this); }
 
 			Vector3Int position = GetVoxelPositionFromPoint(hit.previousHit.point);
 			InventorySlot slot = player.inventory.GetHandSlot();
 
-			if (slot.item.IsEmpty) { return; }
+			if (slot.item.IsEmpty) { player.isInteractingWithTerrain = false; return; }
 			uint type = GameManager.GetVoxelTypeById(slot.item.id);
 			slot.item.ammount--;
 			slot.Update();
@@ -582,6 +633,7 @@ namespace Minecraft
 			}
 
 			hit.chunk.Update();
+			player.isInteractingWithTerrain = false;
 		}
 
 		public Chunk(Vector3 position, Transform parent, uint[] voxels = null) 
@@ -632,10 +684,10 @@ namespace Minecraft
 			{ new Vector3(1f, 0f, 0f), new Vector3(1f, 0f, 1f), new Vector3(1f, 1f, 1f), new Vector3(1f, 1f, 0f) },
 			{ new Vector3(0f, 0f, 1f), new Vector3(0f, 0f, 0f), new Vector3(0f, 1f, 0f), new Vector3(0f, 1f, 1f) },
 			{ new Vector3(1f, 0f, 1f), new Vector3(0f, 0f, 1f), new Vector3(0f, 1f, 1f), new Vector3(1f, 1f, 1f) },
-			{ new Vector3(0f, 0f, 0f), new Vector3(1f, 0f, 0f), new Vector3(1f, 1f, 0f), new Vector3(0f, 1f, 0f) },
+			{ new Vector3(0f, 0f, 0f), new Vector3(1f, 0f, 0f), new Vector3(1f, 1f, 0f), new Vector3(0f, 1f, 0f) }
 		};
 
-		public	static readonly Vector3[] quadsVertices = 
+		public static readonly Vector3[] quadsVertices = 
 		{
 			new Vector3(0f, 0f, 0f),
 			new Vector3(1f, 0f, 1f),

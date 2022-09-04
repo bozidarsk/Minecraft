@@ -9,7 +9,8 @@
         "reachingDistance": 5,
         "rotationLimit": { "x": 70, "y": 180 },
         "maxStackSize": 64,
-        "queuedMessagesLength": 10
+        "queuedMessagesLength": 10,
+        "destroyStageLength": 10
     },
     "postProcessing": 
     {
@@ -71,9 +72,10 @@
     "path": 
     {
         "voxelTextures": "$(DefaultTextures)/voxel.png",
-        "itemTextures": "$(DefaultTextures)/item.png",
+        "itemTextures": "$(DefaultTextures)/items",
         "liquidTextures": "$(DefaultTextures)/liquid.png",
         "textureEffects": "$(DefaultTextures)/textureEffects",
+        "destroyStageTextures": "$(DefaultTextures)/destroy",
         "voxelProperties": "$(DefaultProperties)/voxel.json",
         "itemProperties": "$(DefaultProperties)/item.json",
         "craftingProperties": "$(DefaultProperties)/crafting.json",

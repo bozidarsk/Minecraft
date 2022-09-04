@@ -2,12 +2,12 @@
 	"properties": 
 	[
 		{
-			"resultItem": { "id": "undefined-item", "ammount": 1 },
+			"resultItem": { "id": "undefined-item", "ammount": 1, "durability": 100 },
 			"recipe": 
 			[
-				[ { "id": "dirt-block", "ammount": 1 }, { "id": "dirt-block", "ammount": 1 }, { "id": "dirt-block", "ammount": 1 } ],
-				[ { "id": "dirt-block", "ammount": 1 }, { "id": "dirt-block", "ammount": 1 }, { "id": "dirt-block", "ammount": 1 } ],
-				[ { "id": "dirt-block", "ammount": 1 }, { "id": "dirt-block", "ammount": 1 }, { "id": "dirt-block", "ammount": 1 } ]
+				[ { "id": "dirt-block", "ammount": 1, "durability": 100 }, { "id": "dirt-block", "ammount": 1, "durability": 100 }, { "id": "dirt-block", "ammount": 1, "durability": 100 } ],
+				[ { "id": "dirt-block", "ammount": 1, "durability": 100 }, { "id": "dirt-block", "ammount": 1, "durability": 100 }, { "id": "dirt-block", "ammount": 1, "durability": 100 } ],
+				[ { "id": "dirt-block", "ammount": 1, "durability": 100 }, { "id": "dirt-block", "ammount": 1, "durability": 100 }, { "id": "dirt-block", "ammount": 1, "durability": 100 } ]
 			]
 		}
 	]

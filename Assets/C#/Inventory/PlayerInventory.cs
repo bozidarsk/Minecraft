@@ -144,6 +144,8 @@ namespace Minecraft
 		}
 
 		public InventorySlot GetHandSlot() { return slots[slotStartIndex["Hotbar"] + handOnHotbar]; }
+		public void SetHandItem(Item item) { GetHandSlot().item = item; GetHandSlot().Update(); }
+		public Item GetHandItem() { return GetHandSlot().item; }
 
 		public void Toggle() 
 		{

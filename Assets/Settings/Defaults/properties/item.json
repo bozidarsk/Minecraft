@@ -5,7 +5,6 @@
 			"id": "air-block",
 			"description": null,
 			"descriptionSize": { "x": 0, "y": 0 },
-			"textureCoords": { "x": 0, "y": 0 },
 			"stackSize": 64,
 			"allowedEnchantments": [],
 			"enchantments": [],
@@ -16,7 +15,6 @@
 			"id": "undefined-block",
 			"description": "This is an undefined block.",
 			"descriptionSize": { "x": 90, "y": 0 },
-			"textureCoords": { "x": 1, "y": 0 },
 			"stackSize": 64,
 			"allowedEnchantments": [],
 			"enchantments": [],
@@ -27,11 +25,26 @@
 			"id": "undefined-item",
 			"description": "This is an undefined item.",
 			"descriptionSize": { "x": 90, "y": 0 },
-			"textureCoords": { "x": 1, "y": 0 },
 			"stackSize": 64,
 			"allowedEnchantments": [],
 			"enchantments": [],
 			"toolProperty": null,
+			"armourPropert": null
+		},
+		{
+			"id": "iron-pickaxe-item",
+			"description": "",
+			"descriptionSize": { "x": 50, "y": 0 },
+			"stackSize": 1,
+			"allowedEnchantments": [],
+			"enchantments": [],
+			"toolProperty": 
+			{
+				"damage": 1.4,
+				"durability": 250,
+				"miningSpeed": 0.267,
+				"miningForce": 4.5
+			},
 			"armourPropert": null
 		}
 	]

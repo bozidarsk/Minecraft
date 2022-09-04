@@ -305,17 +305,30 @@ namespace Minecraft
 
 		public void Clear() 
 		{
-			throw new System.NotImplementedException();
+			for (int i = 0; i < slots.Count; i++) { slots[i].item = new Item("air-block", 1); slots[i].Update(); }
+			cursorSlot.item = new Item("air-block", 1);
+			cursorSlot.Update();
 		}
 
-		protected bool HasItem(Item item) 
+		public int IndexOfItem(Item item) 
+		{
+			for (int i = slotStartIndex["Inventory"]; i < slotStartIndex["Inventory"] + (9*3); i++) 
+			{ if (slots[i].item.id == item.id && slots[i].item.ammount >= item.ammount) { return i; } }
+
+			for (int i = slotStartIndex["Hotbar"]; i < slotStartIndex["Hotbar"] + 9; i++) 
+			{ if (slots[i].item.id == item.id && slots[i].item.ammount >= item.ammount) { return i; } }
+
+			return -1;
+		}
+
+		public bool ContainsItem(Item item) 
 		{
 			uint ammount = 0;
 
-			for (int i = slotStartIndex["Hotbar"]; i < slotStartIndex["Hotbar"] + 9; i++) 
+			for (int i = slotStartIndex["Inventory"]; i < slotStartIndex["Inventory"] + (9*3); i++) 
 			{ if (slots[i].item.id == item.id) { ammount += slots[i].item.ammount; } }
 
-			for (int i = slotStartIndex["Inventory"]; i < slotStartIndex["Inventory"] + (9*3); i++) 
+			for (int i = slotStartIndex["Hotbar"]; i < slotStartIndex["Hotbar"] + 9; i++) 
 			{ if (slots[i].item.id == item.id) { ammount += slots[i].item.ammount; } }
 
 			return ammount >= item.ammount;

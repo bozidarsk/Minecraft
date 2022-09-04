@@ -44,12 +44,6 @@ namespace Minecraft
 			GameSettings.textures.voxelWidth = GameSettings.textures.voxel.width;
 			GameSettings.textures.voxelHeight = GameSettings.textures.voxel.height;
 
-			GameSettings.textures.item = new Texture2D(1, 1);
-			ImageConversion.LoadImage(GameSettings.textures.item, File.ReadAllBytes(GameManager.FormatPath(GameSettings.path.itemTextures)), false);
-			GameManager.InitializeTexture(ref GameSettings.textures.item);
-			GameSettings.textures.itemWidth = GameSettings.textures.item.width;
-			GameSettings.textures.itemHeight = GameSettings.textures.item.height;
-
 			GameSettings.textures.liquid = new Texture2D(1, 1);
 			ImageConversion.LoadImage(GameSettings.textures.liquid, File.ReadAllBytes(GameManager.FormatPath(GameSettings.path.liquidTextures)), false);
 			GameManager.InitializeTexture(ref GameSettings.textures.liquid);
