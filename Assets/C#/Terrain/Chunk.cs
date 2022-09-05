@@ -313,30 +313,46 @@ namespace Minecraft
 				property.id == "air-block"
 			) { return; }
 
-			if (!saveType) { SetVoxelType(GameManager.GetVoxelTypeById("air-block"), x, y, z); }
-
 			int i = GetTriangleIndexFromPosition(x, y, z);
 			objectMesh.triangles.RemoveRange(i, voxelTriangles[x, y, z].Length);
 
 			/* if saveType is false remove all vertices and uvs for this voxel */
 			/* when adding a new voxel first check if this position already has vertices or uvs, and reuse them */
+			if (saveType) { voxelTriangles[x, y, z] = null; return; }
+			else { SetVoxelType(GameManager.GetVoxelTypeById("air-block"), x, y, z); }
 
-			// for (; i < objectMesh.triangles.Count; i++) 
-			// { objectMesh.triangles[i] -= voxelTriangles[x, y, z].Length; }
+			int removedVerticesLength = 0;
+			List<Vector3> vertices = new List<Vector3>(objectMesh.vertices.Count);
+			List<Vector2> uvs = new List<Vector2>(objectMesh.uvs.Count);
+			for (int v = 0; v < objectMesh.vertices.Count; v++) 
+			{
+				if (System.Array.IndexOf(voxelTriangles[x, y, z], v) >= 0) { removedVerticesLength++; continue; }
+				vertices.Add((objectMesh.vertices[v]));
+				uvs.Add((objectMesh.uvs[v]));
+			}
 
-			// List<Vector3> vertices = new List<Vector3>(objectMesh.vertices.Count - voxelTriangles[x, y, z].Length);
-			// List<Vector2> uvs = new List<Vector2>(objectMesh.uvs.Count - voxelTriangles[x, y, z].Length);
-			// for (i = 0; i < objectMesh.vertices.Count; i++) 
-			// {
-			// 	if (Array.IndexOf(voxelTriangles[x, y, z], i) >= 0) { continue; }
-			// 	vertices.Add((objectMesh.vertices[i]));
-			// 	uvs.Add((objectMesh.uvs[i]));
-			// }
-
-			// objectMesh.vertices = vertices;
-			// objectMesh.uvs = uvs;
+			for (; i < objectMesh.triangles.Count; i++) 
+			{ objectMesh.triangles[i] -= removedVerticesLength; }
 
 			voxelTriangles[x, y, z] = null;
+			for (; y < ChunkHeight; y++) 
+			{
+				for (; z < ChunkSize; z++) 
+				{
+					for (; x < ChunkSize; x++) 
+					{
+						if (voxelTriangles[x, y, z] == null) { continue; }
+						for (i = 0; i < voxelTriangles[x, y, z].Length; i++) { voxelTriangles[x, y, z][i] -= removedVerticesLength; }
+					}
+
+					x = 0;
+				}
+
+				z = 0;
+			}
+
+			objectMesh.vertices = vertices;
+			objectMesh.uvs = uvs;
 		}
 
 		[System.Obsolete("It's not working.")]

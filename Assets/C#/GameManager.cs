@@ -203,7 +203,7 @@ namespace Minecraft
 			}
 
 			path = path.Replace("/", "\\").Replace("\\\\", "\\");
-			return path;
+			return (path.Contains("$(")) ? GameManager.FormatPath(path) : path;
 		}
 	}
 }

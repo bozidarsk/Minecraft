@@ -44,6 +44,7 @@ namespace Minecraft
 			public string liquidTextures;
 			public string textureEffects;
 			public string destroyStageTextures;
+			public string skins;
 
 			[Header("Properties")]
 			public string voxelProperties;
@@ -73,6 +74,7 @@ namespace Minecraft
 			public string DefaultData { get { return "Assets/Settings/Defaults"; } }
 			public string DefaultProperties { get { return DefaultData + "\\properties"; } }
 			public string DefaultTextures { get { return DefaultData + "\\textures"; } }
+			public string Skins { get { return skins; } }
 		}
 
 		[Serializable]

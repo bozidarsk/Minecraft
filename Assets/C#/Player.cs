@@ -20,7 +20,6 @@ namespace Minecraft
 		[HideInInspector] public PostProcessing postProcessing;
 		[HideInInspector] public ChatController chat;
 		[HideInInspector] public uint color = 0xffffffff; // rrggbbaa
-		[HideInInspector] public string id = "default-player";
 		[HideInInspector] public float level = 0f;
 		[HideInInspector] public float xp = 0f;
 		[HideInInspector] public int health = 9;
@@ -65,7 +64,6 @@ namespace Minecraft
 
 			random = new System.Random((int)gameObject.name.GetHashCode());
 			inventory = gameObject.GetComponent<PlayerInventory>();
-			id = gameObject.name + "-player";
 			color = 0x007f7fff; // rrggbbaa
 			canUseCommands = true;
 			isInteractingWithTerrain = false;
@@ -73,7 +71,7 @@ namespace Minecraft
 			Material material = GameSettings.materials.player;
 			Texture2D texture = new Texture2D(1, 1);
 
-			try { ImageConversion.LoadImage(texture, File.ReadAllBytes("Assets/Objects/player/Skins/" + id + ".png"), false); }
+			try { ImageConversion.LoadImage(texture, File.ReadAllBytes(GameManager.FormatPath("$(Skins)/" + name + ".png")), false); }
 			catch { ImageConversion.LoadImage(texture, File.ReadAllBytes(GameManager.FormatPath("$(DefaultTextures)/skins/default.png")), false); }
 			GameManager.InitializeTexture(ref texture);
 
@@ -106,6 +104,7 @@ namespace Minecraft
 			((Input.GetKey(PlayerSettings.controlls.keyCodes.UseItem)) ? 1 : 0) << 1 | 
 			((Input.GetKey(PlayerSettings.controlls.keyCodes.PickBlock)) ? 1 : 0) << 2;
 
+			if (!Tools.GetAnyBit(mouseButtons)) { isInteractingWithTerrain = false; }
 			if (Tools.GetAnyBit(mouseButtons) && !inventory.IsOpen && !chat.IsOpen && !isInteractingWithTerrain) 
 			{
 				if (VoxelHit.Check(armature.head.transform.position, -armature.head.transform.right * GameSettings.player.reachingDistance, this, out voxelHit)) 

@@ -76,6 +76,7 @@
         "liquidTextures": "$(DefaultTextures)/liquid.png",
         "textureEffects": "$(DefaultTextures)/textureEffects",
         "destroyStageTextures": "$(DefaultTextures)/destroy",
+        "skins": "$(DefaultTextures)/skins",
         "voxelProperties": "$(DefaultProperties)/voxel.json",
         "itemProperties": "$(DefaultProperties)/item.json",
         "craftingProperties": "$(DefaultProperties)/crafting.json",
