@@ -142,7 +142,7 @@ namespace Minecraft
 			if (isJumping && jumpedHeight < GameSettings.player.jumpHeight) 
 			{
 				Vector3 movement = gameObject.transform.up * GameSettings.player.jumpSpeed * t;
-				if (movementController.Move(movement)) { jumpedHeight += Math2.Length(movement); }
+				if (movementController.Move(movement)) { jumpedHeight += Math.Length(movement); }
 				else { isJumping = false; jumpedHeight = 0f; }
 			}
 

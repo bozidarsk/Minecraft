@@ -475,7 +475,7 @@ namespace Minecraft
 			Vector3 dir = direction * 0.1f;
 			Vector3 point = dir;
 
-			for (float step = 1f; Math2.Length(point) < Math2.Length(direction); step += 1f) 
+			for (float step = 1f; Math.Length(point) < Math.Length(direction); step += 1f) 
 			{
 				voxelHit.chunk = TerrainManager.GetChunkFromPosition(origin + point);
 				if (voxelHit.chunk == null) { point = dir * step; continue; }
@@ -486,7 +486,7 @@ namespace Minecraft
 				{
 					voxelHit.point = origin + point;
 					voxelHit.normal = -direction.normalized;
-					voxelHit.distance = Math2.Length(point);
+					voxelHit.distance = Math.Length(point);
 					voxelHit.property = property;
 					voxelHit.face = Chunk.GetFaceFromNormal(voxelHit.normal);
 					return true;
@@ -496,7 +496,7 @@ namespace Minecraft
 					voxelHit.previousHit.chunk = voxelHit.chunk;
 					voxelHit.previousHit.point = origin + point;
 					voxelHit.previousHit.normal = -direction.normalized;
-					voxelHit.previousHit.distance = Math2.Length(point);
+					voxelHit.previousHit.distance = Math.Length(point);
 					voxelHit.previousHit.property = property;
 					voxelHit.previousHit.face = Chunk.GetFaceFromNormal(voxelHit.previousHit.normal);
 					voxelHit.previousHit.previousHit = null;

@@ -313,9 +313,9 @@ namespace Minecraft
 				mesh.Add(voxelTriangles[x, y, z][i] - index);
 				mesh.Add(objectMesh.uvs[voxelTriangles[x, y, z][i]]);
 				mesh.Add(new Vector3(
-					Math2.InverseLerp((float)x, (float)x + 1f, objectMesh.vertices[voxelTriangles[x, y, z][i]].x),
-					Math2.InverseLerp((float)y, (float)y + 1f, objectMesh.vertices[voxelTriangles[x, y, z][i]].y),
-					Math2.InverseLerp((float)z, (float)z + 1f, objectMesh.vertices[voxelTriangles[x, y, z][i]].z)
+					Math.InverseLerp((float)x, (float)x + 1f, objectMesh.vertices[voxelTriangles[x, y, z][i]].x),
+					Math.InverseLerp((float)y, (float)y + 1f, objectMesh.vertices[voxelTriangles[x, y, z][i]].y),
+					Math.InverseLerp((float)z, (float)z + 1f, objectMesh.vertices[voxelTriangles[x, y, z][i]].z)
 				));
 			}
 
@@ -519,9 +519,9 @@ namespace Minecraft
 
 		public static VoxelFace GetFaceFromNormal(Vector3 normal) 
 		{
-			if (Math2.Abs(normal.y) > 0.707f) { return (normal.y < 0f) ? VoxelFace.Down : VoxelFace.Up; }
-			if (Math2.Abs(normal.x) > 0.707f) { return (normal.x < 0f) ? VoxelFace.Left : VoxelFace.Right; }
-			if (Math2.Abs(normal.z) > 0.707f) { return (normal.z < 0f) ? VoxelFace.Back : VoxelFace.Forward; }
+			if (Math.Abs(normal.y) > 0.707f) { return (normal.y < 0f) ? VoxelFace.Down : VoxelFace.Up; }
+			if (Math.Abs(normal.x) > 0.707f) { return (normal.x < 0f) ? VoxelFace.Left : VoxelFace.Right; }
+			if (Math.Abs(normal.z) > 0.707f) { return (normal.z < 0f) ? VoxelFace.Back : VoxelFace.Forward; }
 
 			return VoxelFace.Down;
 		}
@@ -706,7 +706,7 @@ namespace Minecraft
 			Vector3 scale = property.scale;
 
 			Vector3 unitY = GetNormalFromFace(GetFaceFromNormal(hit.normal)).normalized * scale.y;
-			if (!property.enableRotation.z) { unitY.x = 0f; unitY.y = Math2.Abs(++unitY.y); unitY = unitY.normalized * scale.y; }
+			if (!property.enableRotation.z) { unitY.x = 0f; unitY.y = Math.Abs(++unitY.y); unitY = unitY.normalized * scale.y; }
 			if (!property.enableRotation.x) { unitY.z = 0f; unitY.y++; unitY = unitY.normalized * scale.y; }
 
 			Vector3 tmp = new Vector3(unitY.y, -unitY.x, 0f).normalized;
@@ -714,21 +714,21 @@ namespace Minecraft
 			{
 				tmp,
 				-tmp,
-				Math2.Cross(tmp, unitY).normalized,
-				Math2.Cross(unitY, tmp).normalized
+				Math.Cross(tmp, unitY).normalized,
+				Math.Cross(unitY, tmp).normalized
 			};
 
 			int index = 0;
 			float dist = float.MaxValue;
 			for (int i = 0; i < dirs.Length && property.enableRotation.y; i++) 
 			{
-				float distance = Math2.Distance(hit.normal, dirs[i]);
+				float distance = Math.Distance(hit.normal, dirs[i]);
 				if (distance <= dist) { dist = distance; index = i; }
 			}
 
 			// Vector3 unitX = new Vector3(unitY.y, -unitY.x, 0f).normalized * scale.x;
 			Vector3 unitX = dirs[index] * scale.x;
-			Vector3 unitZ = Math2.Cross(unitX, unitY).normalized * scale.z;
+			Vector3 unitZ = Math.Cross(unitX, unitY).normalized * scale.z;
 
 			matrices[position.x, position.y, position.z].SetColumn(0, new Vector4(unitX.x, unitX.y, unitX.z, 0f));
 			matrices[position.x, position.y, position.z].SetColumn(1, new Vector4(unitY.x, unitY.y, unitY.z, 0f));

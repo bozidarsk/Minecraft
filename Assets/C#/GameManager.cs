@@ -6,6 +6,8 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 
+using Utils.Json;
+
 namespace Minecraft 
 {
 	public class GameManager : MonoBehaviour
@@ -40,10 +42,17 @@ namespace Minecraft
 			GameManager.modelMeshes = new Dictionary<string, ObjectMesh>();
 			GameManager.singleTextureModelMeshes = new Dictionary<string, ObjectMesh>();
 			GameManager.textureEffects = new Dictionary<string, Texture2D>();
-			GameManager.voxelProperties = JsonUtility.FromJson<ArrayWrapper<VoxelProperty>>(File.ReadAllText(GameManager.FormatPath(GameSettings.path.voxelProperties))).content;
-			GameManager.itemProperties = JsonUtility.FromJson<ArrayWrapper<ItemProperty>>(File.ReadAllText(GameManager.FormatPath(GameSettings.path.itemProperties))).content;
-			GameManager.craftingProperties = JsonUtility.FromJson<ArrayWrapper<CraftingProperty>>(File.ReadAllText(GameManager.FormatPath(GameSettings.path.craftingProperties))).content;
-			GameManager.enchantmentProperties = JsonUtility.FromJson<ArrayWrapper<EnchantmentProperty>>(File.ReadAllText(GameManager.FormatPath(GameSettings.path.enchantmentProperties))).content;
+
+			// GameManager.voxelProperties = JsonUtility.FromJson<ArrayWrapper<VoxelProperty>>(File.ReadAllText(GameManager.FormatPath(GameSettings.path.voxelProperties))).content;
+			// GameManager.itemProperties = JsonUtility.FromJson<ArrayWrapper<ItemProperty>>(File.ReadAllText(GameManager.FormatPath(GameSettings.path.itemProperties))).content;
+			// GameManager.craftingProperties = JsonUtility.FromJson<ArrayWrapper<CraftingProperty>>(File.ReadAllText(GameManager.FormatPath(GameSettings.path.craftingProperties))).content;
+			// GameManager.enchantmentProperties = JsonUtility.FromJson<ArrayWrapper<EnchantmentProperty>>(File.ReadAllText(GameManager.FormatPath(GameSettings.path.enchantmentProperties))).content;
+
+			GameManager.voxelProperties = Json.FromJson<ArrayWrapper<VoxelProperty>>(File.ReadAllText(GameManager.FormatPath(GameSettings.path.voxelProperties))).content;
+			GameManager.itemProperties = Json.FromJson<ArrayWrapper<ItemProperty>>(File.ReadAllText(GameManager.FormatPath(GameSettings.path.itemProperties))).content;
+			GameManager.craftingProperties = Json.FromJson<ArrayWrapper<CraftingProperty>>(File.ReadAllText(GameManager.FormatPath(GameSettings.path.craftingProperties))).content;
+			GameManager.enchantmentProperties = Json.FromJson<ArrayWrapper<EnchantmentProperty>>(File.ReadAllText(GameManager.FormatPath(GameSettings.path.enchantmentProperties))).content;
+
 			// GameManager.players = new List<Player>();
 			// GameManager.players = GameObject.FindGameObjectsWithTag("Player").Select(x => x.GetComponent<Player>()).ToList();
 
@@ -179,7 +188,7 @@ namespace Minecraft
 
 					path = path.Insert(i, (Tools.HasMember(typeof(Settings.Path), "System.String get_" + expression + "()"))
 						? typeof(Settings.Path).GetProperty(expression).GetValue(GameSettings.path, null).ToString()
-						: Calculator.Solve(expression)
+						: Utils.Calculators.BasicCalculator.Solve(expression)
 					);
 				}
 			}

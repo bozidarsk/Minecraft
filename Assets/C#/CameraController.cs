@@ -48,7 +48,7 @@ namespace Minecraft
 				Input.GetKey(PlayerSettings.controlls.keyCodes.MoveRight)
 			) 
 			{
-				float angle = 90f * Math2.Dot(player.armature.head.transform.forward, player.gameObject.transform.forward);
+				float angle = 90f * Math.Dot(player.armature.head.transform.forward, player.gameObject.transform.forward);
 				player.gameObject.transform.eulerAngles += new Vector3(0f, -angle, 0f);
 				player.armature.head.transform.eulerAngles += new Vector3(0f, +angle, 0f);
 			}

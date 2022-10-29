@@ -128,7 +128,7 @@ namespace Minecraft
 			public static dynamic RemoveTextureEffect(dynamic[] args) { GameManager.GetPlayerByName(args[0]).instance.postProcessing.RemoveTextureEffect(); return null; }
 			public static dynamic SizeOf(dynamic[] args) { return Tools.SizeOf(Type.GetType(args[0])); }
 			public static dynamic SaveGame(dynamic[] args) { GameManager.SaveGame(); return null; }
-			public static dynamic Calc(dynamic[] args) { return Calculator.Solve(args[0]); }
+			public static dynamic Calc(dynamic[] args) { return Utils.Calculators.BasicCalculator.Solve(args[0]); }
 		}
 	}
 }

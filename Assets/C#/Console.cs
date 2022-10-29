@@ -5,6 +5,10 @@ using System.Text;
 using System.Linq;
 using UnityEngine;
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 namespace Minecraft 
 {
 	/* https://docs.microsoft.com/en-us/windows/console/console-functions */
@@ -50,8 +54,8 @@ namespace Minecraft
 		public static void Initialize() 
 		{
 			#if UNITY_EDITOR
-			UnityEditor.EditorApplication.playModeStateChanged += (UnityEditor.PlayModeStateChange change) => 
-			{ if (change == UnityEditor.PlayModeStateChange.ExitingPlayMode) { Detach(); } };
+			EditorApplication.playModeStateChanged += (PlayModeStateChange change) => 
+			{ if (change == PlayModeStateChange.ExitingPlayMode) { Detach(); } };
 			#else
 			Application.logMessageReceived += RedirectedLogs;
 			#endif
@@ -96,7 +100,7 @@ namespace Minecraft
 		{
 			SetActive(true);
 			#if UNITY_EDITOR
-			UnityEditor.EditorApplication.isPlaying = false;
+			EditorApplication.isPlaying = false;
 			#else
 			Environment.Exit(1);
 			#endif
@@ -172,7 +176,7 @@ namespace Minecraft
 			#endif
 		}
 
-		public static void Write(string input) 
+		private static void Write(string input) 
 		{
 			fixed (byte* chars = &Encoding.ASCII.GetBytes(input + "\x0000")[0]) 
 			{

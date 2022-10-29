@@ -40,10 +40,10 @@ namespace Minecraft
 				Vector3 position = new Vector3(Player.instance.transform.position.x, 0f, Player.instance.transform.position.z);
 				Vector3 offset = new Vector3(Chunk.ChunkSize / 2f, 0f, Chunk.ChunkSize / 2f);
 
-				if (Math2.Distance(position, TerrainManager.chunks[i].position + offset) > PlayerSettings.graphics.renderDistance * Chunk.ChunkSize) 
+				if (Math.Distance(position, TerrainManager.chunks[i].position + offset) > PlayerSettings.graphics.renderDistance * Chunk.ChunkSize) 
 				{ TerrainManager.chunks[i].IsActive = false; }
 
-				if (Math2.Distance(Player.instance.transform.position, TerrainManager.chunks[i].position + offset) > PlayerSettings.graphics.discardDistance * Chunk.ChunkSize) 
+				if (Math.Distance(Player.instance.transform.position, TerrainManager.chunks[i].position + offset) > PlayerSettings.graphics.discardDistance * Chunk.ChunkSize) 
 				{ GameObject.Destroy(TerrainManager.chunks[i].gameObject); TerrainManager.chunks.RemoveAt(TerrainManager.chunks[i].IndexInList(TerrainManager.chunks)); }
 			}
 		}
@@ -51,8 +51,8 @@ namespace Minecraft
 		public static Chunk GetChunkFromPosition(Vector3 position, bool createIfNull = false) 
 		{
 			position /= Chunk.ChunkSize;
-			position.x = Math2.Floor(position.x);
-			position.z = Math2.Floor(position.z);
+			position.x = Math.Floor(position.x);
+			position.z = Math.Floor(position.z);
 			position *= Chunk.ChunkSize;
 			position.y = 0f;
 
@@ -68,9 +68,9 @@ namespace Minecraft
 			if (currentChunk == null) { return; }
 
 			Vector3Int voxelPosition = new Vector3Int(
-				(int)(Math2.GetDecimal(x) * size),
+				(int)(Math.GetDecimal(x) * size),
 				y,
-				(int)(Math2.GetDecimal(z) * size)
+				(int)(Math.GetDecimal(z) * size)
 			);
 
 			currentChunk.AddVoxel(type, voxelPosition.x, voxelPosition.y, voxelPosition.z);
@@ -84,9 +84,9 @@ namespace Minecraft
 			if (currentChunk == null) { return; }
 
 			Vector3Int voxelPosition = new Vector3Int(
-				(int)(Math2.GetDecimal(x) * size),
+				(int)(Math.GetDecimal(x) * size),
 				y,
-				(int)(Math2.GetDecimal(z) * size)
+				(int)(Math.GetDecimal(z) * size)
 			);
 
 			currentChunk.RemoveVoxel(voxelPosition.x, voxelPosition.y, voxelPosition.z, saveType);
