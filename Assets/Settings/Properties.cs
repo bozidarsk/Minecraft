@@ -6,11 +6,7 @@ using UnityEngine;
 namespace Minecraft 
 {
 	[Serializable]
-	public struct PropertyArray<T> 
-	{ public T[] properties; }
-
-	[Serializable]
-	public struct CraftingProperty 
+	public class CraftingProperty 
 	{
 		public Item resultItem;
 		public Item[,] recipe;
@@ -19,7 +15,7 @@ namespace Minecraft
 	}
 
 	[Serializable]
-	public struct VoxelProperty 
+	public class VoxelProperty 
 	{
 		public string id;
 		public string dropItem;
@@ -30,6 +26,8 @@ namespace Minecraft
 		public float hardness;
 		public float movementSpeedMultiplier;
 		public float xp;
+		public Vector3 offset;
+		public Vector3 scale;
 		public bool useCollision;
 		public bool indestructible;
 		public Vector3bool enableRotation;
@@ -61,7 +59,7 @@ namespace Minecraft
 	}
 
 	[Serializable]
-	public struct ItemProperty 
+	public class ItemProperty 
 	{
 		public string id;
 		public string description;
@@ -76,7 +74,7 @@ namespace Minecraft
 	}
 
 	[Serializable]
-	public struct EnchantmentProperty 
+	public class EnchantmentProperty 
 	{
 		public string id;
 		public string shader;

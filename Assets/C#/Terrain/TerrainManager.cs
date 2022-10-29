@@ -73,7 +73,7 @@ namespace Minecraft
 				(int)(Math2.GetDecimal(z) * size)
 			);
 
-			currentChunk.AddVoxel(type, voxelPosition.x, voxelPosition.y, voxelPosition.z, Matrix4x4.identity);
+			currentChunk.AddVoxel(type, voxelPosition.x, voxelPosition.y, voxelPosition.z);
 			currentChunk.Update();
 		}
 

@@ -17210,11 +17210,11 @@ MonoBehaviour:
   postProcessing: {fileID: 0}
   chat: {fileID: 0}
   color: 0
-  id: 
   level: 0
   xp: 0
   health: 9
   food: 9
+  isInteractingWithTerrain: 0
 --- !u!65 &1727088666
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -19391,8 +19391,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1973811180}
   - component: {fileID: 1973811179}
-  - component: {fileID: 1973811181}
   - component: {fileID: 1973811182}
+  - component: {fileID: 1973811181}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: GameController
@@ -19438,6 +19438,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32de25cedeb77074798198deb8b20297, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  messagePrefab: {fileID: 5881092942680010175, guid: 0c44d3f0b9108e54abc6b1384fecae7e,
+    type: 3}
+  chatQueue: {fileID: 1415167674}
 --- !u!114 &1973811182
 MonoBehaviour:
   m_ObjectHideFlags: 0

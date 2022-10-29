@@ -19,11 +19,12 @@ namespace Minecraft
 
 		private uint[] voxels; // 00empty 0_light __type __type
 		private int[,,][] voxelTriangles;
+		private Matrix4x4[,,] matrices;
 		private bool canUpdate;
 
+		private ObjectMesh objectMesh;
 		private MeshRenderer renderer;
 		private MeshFilter filter;
-		private ObjectMesh objectMesh;
 
 		private List<dynamic[]> liquidsToGenerate;
 		private List<ChunkMesh> liquidMeshes;
@@ -79,7 +80,7 @@ namespace Minecraft
 				{
 					for (int x = 0; x < ChunkSize; x++) 
 					{
-						AddVoxel(GetVoxelType(x, y, z), x, y, z, Matrix4x4.identity);
+						AddVoxel(GetVoxelType(x, y, z), x, y, z);
 					}
 				}
 			}
@@ -90,9 +91,7 @@ namespace Minecraft
 			bool isThisALiquid = GameManager.voxelProperties[GetVoxelType(x, y, z)].id.EndsWith("-liquid");
 			AddFaceToPosition(ref x, ref y, ref z, face);
 
-			if (x < 0 || x >= ChunkSize || 
-				y < 0 || y >= ChunkHeight || 
-				z < 0 || z >= ChunkSize || 
+			if (IsOutOfBounds(x, y, z) || 
 				(!isThisALiquid && GameManager.voxelProperties[GetVoxelType(x, y, z)].id.EndsWith("-liquid"))
 			) { return true; }
 
@@ -100,19 +99,16 @@ namespace Minecraft
 			return !property.usingFullFace[(int)OpositeFace(face)];
 		}
 
-		private void DrawBlock(Vector3 offset, VoxelProperty property, Matrix4x4 matrix) 
+		private void DrawBlock(Vector3Int position, VoxelProperty property, Matrix4x4 matrix) 
 		{
-			List<int> triangles = new List<int>(12);
+			Vector3 offset = -Vector3.one / 2f;
+			List<int> triangles = new List<int>(36);
 			for (int face = 0; face < 6; face++)
 			{
-				if (!CanDrawFace((int)offset.x, (int)offset.y, (int)offset.z, (VoxelFace)face)) { continue; }
+				if (!CanDrawFace(position.x, position.y, position.z, (VoxelFace)face)) { continue; }
 
-				objectMesh.Add(
-					matrix.MultiplyPoint3x4(blockVertices[face, 0] + offset),
-					matrix.MultiplyPoint3x4(blockVertices[face, 1] + offset),
-					matrix.MultiplyPoint3x4(blockVertices[face, 2] + offset),
-					matrix.MultiplyPoint3x4(blockVertices[face, 3] + offset)
-				);
+				for (int v = 0; v < 4; v++) 
+				{ objectMesh.Add((matrix.MultiplyPoint3x4(ConstMeshData.blockVertices[face][v] + offset) - offset) + property.offset); }
 
 				Vector2byte coords = property.textureCoords[face];
 				float coordsy = ((float)GameSettings.textures.voxelHeight / 16f) - (float)coords.y - 1;
@@ -128,28 +124,21 @@ namespace Minecraft
 					new Vector2(uvx, uvy + uvsizey)
 				);
 
-				int index = objectMesh.vertexCount - 4;
-				int[] tris = { index + 0, index + 3, index + 1, index + 1, index + 3, index + 2 };
+				int[] tris = ConstMeshData.blockTriangles(objectMesh.vertexCount - 1);
 				Tools.CullTriangles(ref tris, property.cull);
 				objectMesh.Add(tris);
 				triangles.AddRange(tris);
 			}
 
-			voxelTriangles[(int)offset.x, (int)offset.y, (int)offset.z] = triangles.ToArray();
+			voxelTriangles[position.x, position.y, position.z] = triangles.ToArray();
 		}
 
-		private void DrawQuads(Vector3 offset, VoxelProperty property, Matrix4x4 matrix) 
+		private void DrawQuads(Vector3Int position, VoxelProperty property, Matrix4x4 matrix) 
 		{
-			objectMesh.Add(
-				matrix.MultiplyPoint3x4(quadsVertices[0] + offset),
-				matrix.MultiplyPoint3x4(quadsVertices[1] + offset),
-				matrix.MultiplyPoint3x4(quadsVertices[2] + offset),
-				matrix.MultiplyPoint3x4(quadsVertices[3] + offset),
-				matrix.MultiplyPoint3x4(quadsVertices[4] + offset),
-				matrix.MultiplyPoint3x4(quadsVertices[5] + offset),
-				matrix.MultiplyPoint3x4(quadsVertices[6] + offset),
-				matrix.MultiplyPoint3x4(quadsVertices[7] + offset)
-			);
+			Vector3 offset = -Vector3.one / 2f;
+
+			for (int v = 0; v < ConstMeshData.quadsVertices.Length; v++) 
+			{ objectMesh.Add((matrix.MultiplyPoint3x4(ConstMeshData.quadsVertices[v] + offset) - offset) + property.offset); }
 
 			Vector2byte coords = property.textureCoords[0];
 			float coordsy = ((float)GameSettings.textures.voxelHeight / 16f) - (float)coords.y - 1;
@@ -169,36 +158,64 @@ namespace Minecraft
 				new Vector2(uvx, uvy)
 			);
 
-			int[] triangles = 
-			{
-				0, 1, 2, 2, 3, 0,
-				4, 5, 6, 6, 7, 4
-			};
-
+			int[] triangles = ConstMeshData.quadsTriangles;
 			Tools.CullTriangles(ref triangles, property.cull);
 			objectMesh.Add(triangles);
-			voxelTriangles[(int)offset.x, (int)offset.y, (int)offset.z] = triangles;
+			voxelTriangles[position.x, position.y, position.z] = triangles;
 		}
 
-		private void DrawModel(Vector3 offset, VoxelProperty property, Matrix4x4 matrix) 
+		private bool DrawModel(Vector3Int position, VoxelProperty property, Matrix4x4 matrix) 
 		{
-			Mesh mesh = GameManager.modelMeshes[property.id];
+			Vector3 offset = -Vector3.one / 2f;
 
-			for (int i = 0; i < mesh.vertices.Length; i++) 
-			{ objectMesh.Add(matrix.MultiplyPoint3x4(mesh.vertices[i])); }
+			ObjectMesh mesh;
+			try { mesh = GameManager.modelMeshes[property.id]; }
+			catch { return false; }
 
-			int[] tris = mesh.triangles;
+			for (int i = 0; i < mesh.vertices.Count; i++) 
+			{ objectMesh.Add((matrix.MultiplyPoint3x4(mesh.vertices[i] + offset) - offset) + property.offset); }
+
+			int index = objectMesh.vertexCount;
+			int[] tris = mesh.triangles.Select(x => x + index).ToArray();
 			Tools.CullTriangles(ref tris, property.cull);
 			objectMesh.Add(tris);
-			objectMesh.Add(mesh.uv);
+			objectMesh.Add(mesh.uvs.ToArray());
 
-			voxelTriangles[(int)offset.x, (int)offset.y, (int)offset.z] = tris;
+			voxelTriangles[position.x, position.y, position.z] = tris;
+			return true;
 		}
 
-		private void DrawLiquid(Vector3 offset, VoxelProperty property, Matrix4x4 matrix) 
+		private bool DrawSingleTexureModel(Vector3Int position, VoxelProperty property, Matrix4x4 matrix) 
+		{
+			string[] tokens = property.id.Split('-');
+			Vector3 offset = -Vector3.one / 2f;
+
+			ObjectMesh mesh;
+			try { mesh = GameManager.singleTextureModelMeshes["-" + tokens[tokens.Length - 1]]; }
+			catch { return false; }
+
+			for (int i = 0; i < mesh.vertices.Count; i++) 
+			{ objectMesh.Add((matrix.MultiplyPoint3x4(mesh.vertices[i] + offset) - offset) + property.offset); }
+
+			int index = objectMesh.vertexCount - mesh.vertexCount;
+			int[] tris = mesh.triangles.Select(x => x + index).ToArray();
+			Tools.CullTriangles(ref tris, property.cull);
+			objectMesh.Add(tris);
+
+			Vector2 scale = new Vector2(16f / (float)GameSettings.textures.voxelWidth, 16f / (float)GameSettings.textures.voxelHeight);
+			Vector2 coords = new Vector2((float)property.textureCoords[0].x * scale.x, (float)(property.textureCoords[0].y + 1) * scale.y);
+			coords.y = 1f - coords.y;
+			objectMesh.Add(mesh.uvs.Select(x => new Vector2((x.x * scale.x) + coords.x, (x.y * scale.y) + coords.y)).ToArray());
+
+			voxelTriangles[position.x, position.y, position.z] = tris;
+			return true;
+		}
+
+		private void DrawLiquid(Vector3Int position, VoxelProperty property, Matrix4x4 matrix) 
 		{
 			int i = 0;
-			List<int> triangles = new List<int>(12);
+			Vector3 offset = -Vector3.one / 2f;
+			List<int> triangles = new List<int>(36);
 			for (; i < liquidMeshes.Count; i++) { if (liquidMeshes[i].name == property.id) { break; } }
 			if (i >= liquidMeshes.Count) 
 			{
@@ -211,16 +228,12 @@ namespace Minecraft
 				liquidMeshes[i].collider.isTrigger = true;
 			}
 
-			for (VoxelFace face = 0; (int)face < 6; face = (VoxelFace)((int)face + 1)) 
+			for (int face = 0; face < 6; face++) 
 			{
-				if (!CanDrawFace((int)offset.x, (int)offset.y, (int)offset.z, face)) { continue; }
+				if (!CanDrawFace(position.x, position.y, position.z, (VoxelFace)face)) { continue; }
 
-				liquidMeshes[i].Add(new Vector3[] {
-					matrix.MultiplyPoint3x4(blockVertices[(int)face, 0] + offset),
-					matrix.MultiplyPoint3x4(blockVertices[(int)face, 1] + offset),
-					matrix.MultiplyPoint3x4(blockVertices[(int)face, 2] + offset),
-					matrix.MultiplyPoint3x4(blockVertices[(int)face, 3] + offset)
-				});
+				for (int v = 0; v < 4; v++) 
+				{ liquidMeshes[i].Add((matrix.MultiplyPoint3x4(ConstMeshData.blockVertices[face][v] + offset) - offset) + property.offset); }
 
 				float uvx = 32f / (float)GameSettings.textures.liquidWidth;
 				float uvy = 1f - (32f / (float)GameSettings.textures.liquidHeight);
@@ -232,17 +245,25 @@ namespace Minecraft
 					new Vector2(0f, 1f)
 				});
 
-				int index = liquidMeshes[i].vertexCount - 4;
-				int[] tris = { index + 0, index + 3, index + 1, index + 1, index + 3, index + 2 };
+				int[] tris = ConstMeshData.blockTriangles(liquidMeshes[i].vertexCount - 1);
 				Tools.CullTriangles(ref tris, property.cull);
 				liquidMeshes[i].Add(tris);
 				triangles.AddRange(tris);
 			}
 
-			voxelTriangles[(int)offset.x, (int)offset.y, (int)offset.z] = triangles.ToArray();
+			voxelTriangles[position.x, position.y, position.z] = triangles.ToArray();
 		}
 
 		public static int GetVoxelIndex(int x, int y, int z) { return x + (z * ChunkSize) + (y * ChunkSize * ChunkSize); }
+
+		public static Matrix4x4 GetDefaultVoxelMatrix(int x, int y, int z) 
+		{
+			return Matrix4x4.TRS(
+				new Vector3((float)x, (float)y, (float)z),
+				Quaternion.Euler(0f, 0f, 0f),
+				Vector3.one
+			);
+		}
 
 		public Chunk GetOutsideChunk(int x, int y, int z) 
 		{
@@ -279,31 +300,48 @@ namespace Minecraft
 			catch { return 0xf; }
 		}
 
-		public void AddVoxel(uint type, int x, int y, int z, Matrix4x4 matrix) 
+		[System.Obsolete("Might not work.")]
+		public ObjectMesh GetMeshFromVoxel(int x, int y, int z) 
 		{
-			if (x < 0 || x >= ChunkSize || 
-				y < 0 || y >= ChunkHeight || 
-				z < 0 || z >= ChunkSize
-			) { return; }
+			if (IsOutOfBounds(x, y, z)) { return null; }
 
-			SetVoxelType(type, x, y, z);
-			if (GameManager.voxelProperties[type].id == "air-block") { return; }
+			ObjectMesh mesh = new ObjectMesh();
+			int index = GetTriangleIndexFromPosition(x, y, z);
+
+			for (int i = 0; i < voxelTriangles[x, y, z].Length; i++) 
+			{
+				mesh.Add(voxelTriangles[x, y, z][i] - index);
+				mesh.Add(objectMesh.uvs[voxelTriangles[x, y, z][i]]);
+				mesh.Add(new Vector3(
+					Math2.InverseLerp((float)x, (float)x + 1f, objectMesh.vertices[voxelTriangles[x, y, z][i]].x),
+					Math2.InverseLerp((float)y, (float)y + 1f, objectMesh.vertices[voxelTriangles[x, y, z][i]].y),
+					Math2.InverseLerp((float)z, (float)z + 1f, objectMesh.vertices[voxelTriangles[x, y, z][i]].z)
+				));
+			}
+
+			return mesh;
+		}
+
+		public void AddVoxel(uint type, int x, int y, int z) 
+		{
+			if (IsOutOfBounds(x, y, z)) { return; }
 
 			VoxelProperty property = GameManager.voxelProperties[type];
-			Vector3 offset = new Vector3((float)x, (float)y, (float)z);
+			if (property.id == "air-block") { return; }
 
-			if (property.id.EndsWith("-block")) { DrawBlock(offset, property, matrix); return; }
-			if (property.id.EndsWith("-quads")) { DrawQuads(offset, property, matrix); return; }
-			if (property.id.EndsWith("-liquid")) { liquidsToGenerate.Add(new dynamic[] { offset, property, matrix }); return; }
-			if (property.id.EndsWith("-model")) { DrawModel(offset, property, matrix); return; }
+			Vector3Int position = new Vector3Int(x, y, z);
+			Matrix4x4 matrix = (matrices[x, y, z] == null) ? GetDefaultVoxelMatrix(x, y, z) : matrices[x, y, z];
+
+			if (property.id.EndsWith("-block")) { DrawBlock(position, property, matrix); SetVoxelType(type, x, y, z); return; }
+			if (property.id.EndsWith("-quads")) { DrawQuads(position, property, matrix); SetVoxelType(type, x, y, z); return; }
+			if (property.id.EndsWith("-liquid")) { liquidsToGenerate.Add(new dynamic[] { position, property, matrix }); SetVoxelType(type, x, y, z); return; }
+			if (property.id.EndsWith("-model") && DrawModel(position, property, matrix)) { SetVoxelType(type, x, y, z); return; }
+			if (DrawSingleTexureModel(position, property, matrix)) { SetVoxelType(type, x, y, z); return; }
 		}
 
 		public void RemoveVoxel(int x, int y, int z, bool saveType) 
 		{
-			if (x < 0 || x >= ChunkSize || 
-				y < 0 || y >= ChunkHeight || 
-				z < 0 || z >= ChunkSize
-			) { return; }
+			if (IsOutOfBounds(x, y, z)) { return; }
 
 			VoxelProperty property = GameManager.voxelProperties[GetVoxelType(x, y, z)];
 
@@ -313,13 +351,16 @@ namespace Minecraft
 				property.id == "air-block"
 			) { return; }
 
+
 			int i = GetTriangleIndexFromPosition(x, y, z);
+
 			objectMesh.triangles.RemoveRange(i, voxelTriangles[x, y, z].Length);
+			if (!saveType) { SetVoxelType(GameManager.GetVoxelTypeById("air-block"), x, y, z); matrices[x, y, z] = GetDefaultVoxelMatrix(x, y, z); }
+			voxelTriangles[x, y, z] = null;
+			return;
 
 			/* if saveType is false remove all vertices and uvs for this voxel */
 			/* when adding a new voxel first check if this position already has vertices or uvs, and reuse them */
-			if (saveType) { voxelTriangles[x, y, z] = null; return; }
-			else { SetVoxelType(GameManager.GetVoxelTypeById("air-block"), x, y, z); }
 
 			int removedVerticesLength = 0;
 			List<Vector3> vertices = new List<Vector3>(objectMesh.vertices.Count);
@@ -334,6 +375,7 @@ namespace Minecraft
 			for (; i < objectMesh.triangles.Count; i++) 
 			{ objectMesh.triangles[i] -= removedVerticesLength; }
 
+			matrices[x, y, z] = GetDefaultVoxelMatrix(x, y, z);
 			voxelTriangles[x, y, z] = null;
 			for (; y < ChunkHeight; y++) 
 			{
@@ -358,10 +400,7 @@ namespace Minecraft
 		[System.Obsolete("It's not working.")]
 		public void RemoveFace(int x, int y, int z, VoxelFace face) 
 		{
-			if (x < 0 || x >= ChunkSize || 
-				y < 0 || y >= ChunkHeight || 
-				z < 0 || z >= ChunkSize
-			) { return; }
+			if (IsOutOfBounds(x, y, z)) { return; }
 
 			VoxelProperty property = GameManager.voxelProperties[GetVoxelType(x, y, z)];
 
@@ -389,8 +428,7 @@ namespace Minecraft
 		{
 			for (int i = 0; i < objectMesh.triangles.Count; i++) 
 			{
-				if (objectMesh.triangles[i] != voxelTriangles[x, y, z][0]) 
-				{ continue; }
+				if (objectMesh.triangles[i] != voxelTriangles[x, y, z][0]) { continue; }
 
 				int t = 0;
 				while (t < voxelTriangles[x, y, z].Length) 
@@ -403,6 +441,14 @@ namespace Minecraft
 			}
 
 			return -1;
+		}
+
+		public static bool IsOutOfBounds(int x, int y, int z) 
+		{
+			return
+			x < 0 || x >= ChunkSize || 
+			y < 0 || y >= ChunkHeight || 
+			z < 0 || z >= ChunkSize;
 		}
 
 		public static VoxelFace GetFaceFromTriangleIndex(List<Vector3> vertices, List<int> triangles, Vector3 voxel, int index) 
@@ -430,10 +476,10 @@ namespace Minecraft
 					y--;
 					break;
 				case VoxelFace.Left:
-					x++;
+					x--;
 					break;
 				case VoxelFace.Right:
-					x--;
+					x++;
 					break;
 				case VoxelFace.Forward:
 					z++;
@@ -448,6 +494,27 @@ namespace Minecraft
 		{
 			if ((int)face % 2 == 0) { return (VoxelFace)((int)face + 1); }
 			else { return (VoxelFace)((int)face - 1); }
+		}
+
+		public static Vector3 GetNormalFromFace(VoxelFace face) 
+		{
+			switch (face) 
+			{
+				case VoxelFace.Up:
+					return Vector3.up;
+				case VoxelFace.Down:
+					return -Vector3.up;
+				case VoxelFace.Left:
+					return -Vector3.right;
+				case VoxelFace.Right:
+					return Vector3.right;
+				case VoxelFace.Forward:
+					return Vector3.forward;
+				case VoxelFace.Back:
+					return -Vector3.forward;
+			}
+
+			return Vector3.up;
 		}
 
 		public static VoxelFace GetFaceFromNormal(Vector3 normal) 
@@ -470,12 +537,7 @@ namespace Minecraft
 		public uint GetAdjacentVoxelType(int x, int y, int z, VoxelFace face) 
 		{
 			AddFaceToPosition(ref x, ref y, ref z, face);
-
-			if (x < 0 || x >= ChunkSize || 
-				y < 0 || y >= ChunkHeight || 
-				z < 0 || z >= ChunkSize
-			) { return GameManager.GetVoxelTypeById("air-block"); }
-
+			if (IsOutOfBounds(x, y, z)) { return GameManager.GetVoxelTypeById("air-block"); }
 			return GetVoxelType(x, y, z);
 		}
 
@@ -495,7 +557,7 @@ namespace Minecraft
 			SetVoxelLight(10, 1, 0, 0);
 			SetVoxelLight(5, 2, 0, 0);
 
-			ComputeBuffer buffer = new ComputeBuffer(ChunkSize * ChunkHeight * ChunkSize, sizeof(uint));
+			ComputeBuffer buffer = new ComputeBuffer(voxels.Length, sizeof(uint));
 			buffer.SetData(voxels);
 			renderer.material.SetBuffer("voxels", buffer);
 			buffer.Release();
@@ -547,9 +609,12 @@ namespace Minecraft
 			player.isInteractingWithTerrain = true;
 
 			bool isHand = false;
-			ToolProperty toolProperty = GameManager.GetItemPropertyById(player.inventory.GetHandItem().id).toolProperty;
+			ToolProperty toolProperty;
+			try { toolProperty = GameManager.GetItemPropertyById(player.inventory.GetHandItem().id).toolProperty; }
+			catch { toolProperty = null; }
 			if (toolProperty == null) 
 			{
+				toolProperty = new ToolProperty();
 				toolProperty.miningSpeed = 1f;
 				toolProperty.miningForce = 1f;
 				isHand = true;
@@ -561,6 +626,7 @@ namespace Minecraft
 
 			bool exit = false;
 			float time = toolProperty.miningSpeed * hit.property.hardness;
+
 			for (uint stage = 0; stage < GameSettings.player.destroyStageLength; stage++) 
 			{
 				if (VoxelHit.Check(player.armature.head.transform.position, -player.armature.head.transform.right * GameSettings.player.reachingDistance, player, out VoxelHit newHit)) 
@@ -590,7 +656,7 @@ namespace Minecraft
 				int z = position.z;
 				AddFaceToPosition(ref x, ref y, ref z, (VoxelFace)face);
 				RemoveVoxel(x, y, z, true);
-				AddVoxel(GetVoxelType(x, y, z), x, y, z, Matrix4x4.identity);
+				AddVoxel(GetVoxelType(x, y, z), x, y, z);
 			}
 
 			hit.chunk.Update();
@@ -617,7 +683,6 @@ namespace Minecraft
 			player.isInteractingWithTerrain = false;
 		}
 
-		/* Check if you can place on the hit block. */
 		/* Check for avaliable rotations from the property. */
 		/* Check if it is overlaping with other entities / players. */
 		public void PlayerPlaceVoxel(Player player, VoxelHit hit) 
@@ -630,14 +695,47 @@ namespace Minecraft
 			Vector3Int position = GetVoxelPositionFromPoint(hit.previousHit.point);
 			InventorySlot slot = player.inventory.GetHandSlot();
 
-			if (slot.item.IsEmpty) { player.isInteractingWithTerrain = false; return; }
+			if (slot.item.IsEmpty || IsOutOfBounds(position.x, position.y, position.z)) 
+			{ player.isInteractingWithTerrain = false; return; }
+
 			uint type = GameManager.GetVoxelTypeById(slot.item.id);
 			slot.item.ammount--;
 			slot.Update();
 
 			VoxelProperty property = GameManager.voxelProperties[type];
-			AddVoxel(type, position.x, position.y, position.z, Matrix4x4.identity);
+			Vector3 scale = property.scale;
 
+			Vector3 unitY = GetNormalFromFace(GetFaceFromNormal(hit.normal)).normalized * scale.y;
+			if (!property.enableRotation.z) { unitY.x = 0f; unitY.y = Math2.Abs(++unitY.y); unitY = unitY.normalized * scale.y; }
+			if (!property.enableRotation.x) { unitY.z = 0f; unitY.y++; unitY = unitY.normalized * scale.y; }
+
+			Vector3 tmp = new Vector3(unitY.y, -unitY.x, 0f).normalized;
+			Vector3[] dirs = 
+			{
+				tmp,
+				-tmp,
+				Math2.Cross(tmp, unitY).normalized,
+				Math2.Cross(unitY, tmp).normalized
+			};
+
+			int index = 0;
+			float dist = float.MaxValue;
+			for (int i = 0; i < dirs.Length && property.enableRotation.y; i++) 
+			{
+				float distance = Math2.Distance(hit.normal, dirs[i]);
+				if (distance <= dist) { dist = distance; index = i; }
+			}
+
+			// Vector3 unitX = new Vector3(unitY.y, -unitY.x, 0f).normalized * scale.x;
+			Vector3 unitX = dirs[index] * scale.x;
+			Vector3 unitZ = Math2.Cross(unitX, unitY).normalized * scale.z;
+
+			matrices[position.x, position.y, position.z].SetColumn(0, new Vector4(unitX.x, unitX.y, unitX.z, 0f));
+			matrices[position.x, position.y, position.z].SetColumn(1, new Vector4(unitY.x, unitY.y, unitY.z, 0f));
+			matrices[position.x, position.y, position.z].SetColumn(2, new Vector4(unitZ.x, unitZ.y, unitZ.z, 0f));
+			matrices[position.x, position.y, position.z].SetColumn(3, new Vector4(position.x, position.y, position.z, 1f));
+
+			AddVoxel(type, position.x, position.y, position.z);
 			for (int face = 0; face < 6; face++) 
 			{
 				int x = position.x;
@@ -645,80 +743,65 @@ namespace Minecraft
 				int z = position.z;
 				AddFaceToPosition(ref x, ref y, ref z, (VoxelFace)face);
 				RemoveVoxel(x, y, z, true);
-				AddVoxel(GetVoxelType(x, y, z), x, y, z, Matrix4x4.identity);
+				AddVoxel(GetVoxelType(x, y, z), x, y, z);
 			}
 
 			hit.chunk.Update();
 			player.isInteractingWithTerrain = false;
 		}
 
-		public Chunk(Vector3 position, Transform parent, uint[] voxels = null) 
+		public Chunk(Vector3 position, Transform parent, uint[] voxels = null, Matrix4x4[,,] matrices = null) 
 		{
 			this.liquidMeshes = new List<ChunkMesh>();
 			this.liquidsToGenerate = new List<dynamic[]>();
 			this.voxelTriangles = new int[ChunkSize, ChunkHeight, ChunkSize][];
 			this.voxels = (voxels == null) ? (new uint[ChunkSize * ChunkHeight * ChunkSize]) : voxels;
+			this.matrices = (matrices == null) ? (new Matrix4x4[ChunkSize, ChunkHeight, ChunkSize]) : matrices;
 			this.objectMesh = new ObjectMesh();
 			this.canUpdate = false;
-
+			
 			this.gameObject = new GameObject(position.ToString());
 			this.gameObject.transform.SetParent(parent);
 			this.gameObject.transform.position = position;
 			this.gameObject.transform.eulerAngles = Vector3.zero;
 			this.gameObject.transform.localScale = Vector3.one;
 			this.gameObject.tag = "Chunk";
+			this.gameObject.isStatic = true;
 			this.position = this.gameObject.transform.position;
 			this.name = this.gameObject.name;
 
 			this.filter = this.gameObject.AddComponent<MeshFilter>();
 			this.renderer = this.gameObject.AddComponent<MeshRenderer>();
-			renderer.material = GameSettings.materials.chunk;
-			renderer.material.SetTexture("_MainTex", GameSettings.textures.voxel);
-			renderer.material.SetInt("chunkSize", ChunkSize);
-			renderer.material.SetInt("chunkHeight", ChunkHeight);
+			this.renderer.material = GameSettings.materials.chunk;
+			this.renderer.material.SetTexture("_MainTex", GameSettings.textures.voxel);
+			this.renderer.material.SetInt("chunkSize", ChunkSize);
+			this.renderer.material.SetInt("chunkHeight", ChunkHeight);
 
-			this.Generate();
-		}
-
-		public void Generate() 
-		{
-			GameManager.instance.StartCoroutine(this.Update(false));
 			new Thread(new ThreadStart(() => 
 				{
-					canUpdate = false;
-					GenerateVoxels();
-					GenerateMesh();
-					canUpdate = true;
+					for (int y = 0; y < ChunkHeight && matrices == null; y++) 
+					{
+						for (int z = 0; z < ChunkSize; z++) 
+						{
+							for (int x = 0; x < ChunkSize; x++) 
+							{
+								this.matrices[x, y, z] = GetDefaultVoxelMatrix(x, y, z);
+							}
+						}
+					}
+
+					this.GenerateVoxels();
+					this.GenerateMesh();
+					this.canUpdate = true;
 				}
 			)).Start();
+			GameManager.instance.StartCoroutine(this.Update(false));
 		}
-
-		public static readonly Vector3[,] blockVertices = 
-		{
-			{ new Vector3(0f, 1f, 0f), new Vector3(1f, 1f, 0f), new Vector3(1f, 1f, 1f), new Vector3(0f, 1f, 1f) },
-			{ new Vector3(0f, 0f, 0f), new Vector3(0f, 0f, 1f), new Vector3(1f, 0f, 1f), new Vector3(1f, 0f, 0f) },
-			{ new Vector3(1f, 0f, 0f), new Vector3(1f, 0f, 1f), new Vector3(1f, 1f, 1f), new Vector3(1f, 1f, 0f) },
-			{ new Vector3(0f, 0f, 1f), new Vector3(0f, 0f, 0f), new Vector3(0f, 1f, 0f), new Vector3(0f, 1f, 1f) },
-			{ new Vector3(1f, 0f, 1f), new Vector3(0f, 0f, 1f), new Vector3(0f, 1f, 1f), new Vector3(1f, 1f, 1f) },
-			{ new Vector3(0f, 0f, 0f), new Vector3(1f, 0f, 0f), new Vector3(1f, 1f, 0f), new Vector3(0f, 1f, 0f) }
-		};
-
-		public static readonly Vector3[] quadsVertices = 
-		{
-			new Vector3(0f, 0f, 0f),
-			new Vector3(1f, 0f, 1f),
-			new Vector3(1f, 1f, 1f),
-			new Vector3(0f, 1f, 0f),
-			new Vector3(1f, 0f, 0f),
-			new Vector3(1f, 1f, 0f),
-			new Vector3(0f, 1f, 1f),
-			new Vector3(0f, 0f, 1f)
-		};
 
 		public string ToJson() 
 		{
-			SavedData data = new SavedData(this.position, this.voxels);
-			string json = JsonUtility.ToJson(data);
+			SavedData data = new SavedData(this.position, this.voxels, this.matrices);
+			string json = JsonUtility.ToJson(data, true);
 			json.Remove(json.IndexOf("{"), 1);
 			json.Remove(json.LastIndexOf("}"), 1);
 			return json;
@@ -737,7 +820,7 @@ namespace Minecraft
 			SavedData[] data = JsonUtility.FromJson<ArrayWrapper<SavedData>>(File.ReadAllText(GameSettings.path.savedChunks)).content;
 			for (int i = 0; i < data.Length; i++) 
 			{
-				Chunk obj = new Chunk(data[i].position, TerrainManager.instance.gameObject.transform, data[i].voxels);
+				Chunk obj = new Chunk(data[i].position, TerrainManager.instance.gameObject.transform, data[i].voxels, SavedData.DeserializeMatrices(data[i].matrices));
 				TerrainManager.modifiedChunks.Add(obj);
 				TerrainManager.chunks.Add(obj);
 			}
@@ -748,11 +831,49 @@ namespace Minecraft
 		{
 			public Vector3 position;
 			public uint[] voxels;
+			public Matrix4x4[] matrices;
 
-			public SavedData(Vector3 position, uint[] voxels) 
+			public static Matrix4x4[] SerializeMatrices(Matrix4x4[,,] matrices) 
+			{
+				int index = 0;
+				Matrix4x4[] newMatrices = new Matrix4x4[ChunkSize * ChunkHeight * ChunkSize];
+				for (int y = 0; y < ChunkHeight; y++) 
+				{
+					for (int z = 0; z < ChunkSize; z++) 
+					{
+						for (int x = 0; x < ChunkSize; x++) 
+						{
+							newMatrices[index++] = matrices[x, y, z];
+						}
+					}
+				}
+
+				return newMatrices;
+			}
+
+			public static Matrix4x4[,,] DeserializeMatrices(Matrix4x4[] matrices) 
+			{
+				int index = 0;
+				Matrix4x4[,,] newMatrices = new Matrix4x4[ChunkSize, ChunkHeight, ChunkSize];
+				for (int y = 0; y < ChunkHeight; y++) 
+				{
+					for (int z = 0; z < ChunkSize; z++) 
+					{
+						for (int x = 0; x < ChunkSize; x++) 
+						{
+							newMatrices[x, y, z] = matrices[index++];
+						}
+					}
+				}
+
+				return newMatrices;
+			}
+
+			public SavedData(Vector3 position, uint[] voxels, Matrix4x4[,,] matrices) 
 			{
 				this.position = position;
 				this.voxels = voxels;
+				this.matrices = SavedData.SerializeMatrices(matrices);
 			}
 		}
 	}

@@ -13,7 +13,6 @@ namespace Minecraft
 {
 	public class ObjectMesh 
 	{
-		public int vertexCount { get { return vertices.Count; } }
 		public Mesh mesh 
 		{
 			get 
@@ -29,6 +28,22 @@ namespace Minecraft
 			}
 		}
 
+		public Mesh mesh16 
+		{
+			get 
+			{
+				Mesh mesh = new Mesh();
+				mesh.indexFormat = IndexFormat.UInt16;
+				mesh.vertices = vertices.ToArray();
+				mesh.triangles = triangles.ToArray();
+				mesh.uv = uvs.ToArray();
+				mesh.RecalculateNormals();
+				mesh.Optimize();
+				return mesh;
+			}
+		}
+
+		public int vertexCount { get { return vertices.Count; } }
 		public List<Vector3> vertices;
 		public List<int> triangles;
 		public List<Vector2> uvs;
@@ -43,6 +58,17 @@ namespace Minecraft
 		public void Add(params Vector3[] x) { for (int i = 0; i < x.Length; i++) { vertices.Add(x[i]); } }
 		public void Add(params int[] x) { for (int i = 0; i < x.Length; i++) { triangles.Add(x[i]); } }
 		public void Add(params Vector2[] x) { for (int i = 0; i < x.Length; i++) { uvs.Add(x[i]); } }
+
+		public void Add(params ObjectMesh[] x) 
+		{
+			for (int i = 0; i < x.Length; i++) 
+			{
+				Add(x[i].vertices.ToArray());
+				Add(x[i].triangles.ToArray());
+				Add(x[i].uvs.ToArray());
+			}
+		}
+
 		public void Add(params Mesh[] x) 
 		{
 			for (int i = 0; i < x.Length; i++) 
@@ -58,6 +84,13 @@ namespace Minecraft
 			this.vertices = new List<Vector3>();
 			this.triangles = new List<int>();
 			this.uvs = new List<Vector2>();
+		}
+
+		public ObjectMesh(Vector3[] vertices, int[] triangles, Vector2[] uvs) 
+		{
+			this.vertices = vertices.ToList();
+			this.triangles = triangles.ToList();
+			this.uvs = uvs.ToList();
 		}
 	}
 
@@ -89,10 +122,10 @@ namespace Minecraft
 			{
 				Vector3 offset = Vector3.one / -2f;
 				VoxelProperty property = GameManager.voxelProperties[GameManager.GetVoxelTypeById(item.id)];
-				for (int f = 0; f < Chunk.blockVertices.GetLength(0); f++) 
+				for (int f = 0; f < 6; f++) 
 				{
-					for (int v = 0; v < Chunk.blockVertices.GetLength(1); v++) 
-					{ Add(Chunk.blockVertices[f, v] + offset); }
+					for (int v = 0; v < 4; v++) 
+					{ Add(ConstMeshData.blockVertices[f][v] + offset); }
 
 					int index = vertexCount - 4;
 					Add(index + 0, index + 3, index + 1, index + 1, index + 3, index + 2);
@@ -398,14 +431,16 @@ namespace Minecraft
 
 	public class Command 
 	{	
-		public string args { get; }
-		public string name { get; }
-		public Type[] argTypes { get; }
-		public Action<dynamic[]> Execute { get; }
+		public string args { private set; get; }
+		public string name { private set; get; }
+		public string outputMessage { private set; get; }
+		public Type[] argTypes { private set; get; }
+		public Func<dynamic[], dynamic> Execute { private set; get; }
 
-		public Command(string name, Action<dynamic[]> function, string[] argNames, Type[] argTypes) 
+		public Command(string name, Func<dynamic[], dynamic> function, string[] argNames, Type[] argTypes, string outputMessage) 
 		{
 			this.name = name;
+			this.outputMessage = outputMessage;
 			this.argTypes = argTypes;
 			this.Execute = function;
 

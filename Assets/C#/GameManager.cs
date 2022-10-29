@@ -11,7 +11,8 @@ namespace Minecraft
 	public class GameManager : MonoBehaviour
 	{
 		public static GameManager instance { private set; get; }
-		public static Dictionary<string, Mesh> modelMeshes;
+		public static Dictionary<string, ObjectMesh> modelMeshes;
+		public static Dictionary<string, ObjectMesh> singleTextureModelMeshes;
 		public static Dictionary<string, Texture2D> textureEffects;
 		public static VoxelProperty[] voxelProperties;
 		public static ItemProperty[] itemProperties;
@@ -36,7 +37,8 @@ namespace Minecraft
 			Noise.Initialize(new System.Random(GameSettings.world.seed));
 			GameManager.random = new System.Random(GameSettings.world.seed);
 
-			GameManager.modelMeshes = new Dictionary<string, Mesh>();
+			GameManager.modelMeshes = new Dictionary<string, ObjectMesh>();
+			GameManager.singleTextureModelMeshes = new Dictionary<string, ObjectMesh>();
 			GameManager.textureEffects = new Dictionary<string, Texture2D>();
 			GameManager.voxelProperties = JsonUtility.FromJson<ArrayWrapper<VoxelProperty>>(File.ReadAllText(GameManager.FormatPath(GameSettings.path.voxelProperties))).content;
 			GameManager.itemProperties = JsonUtility.FromJson<ArrayWrapper<ItemProperty>>(File.ReadAllText(GameManager.FormatPath(GameSettings.path.itemProperties))).content;
@@ -77,25 +79,8 @@ namespace Minecraft
 			// };
 			// #endif
 
-			int size = GameSettings.world.chunkSize * 2;
-			float[,] map = Noise.Perlin.Map2D(
-				size,
-				size,
-				GameSettings.terrain.biomeMapNoise
-			);
-			Color[] colors = new Color[size * size];
-			for (int y = 0; y < size; y++) 
-			{
-				for (int x = 0; x < size; x++) 
-				{
-					// map[x, y] = Noise.Perlin.Value2D(new Vector2(x, y), GameSettings.terrain.biomeMapNoise);
-					colors[x + (y * size)] = new Color(map[x, y], map[x, y], map[x, y], 1f);
-				}
-			}
-			Texture2D tex = new Texture2D(size, size);
-			tex.SetPixels(colors);
-			tex.Apply();
-			File.WriteAllBytes("Assets/out.png", tex.EncodeToPNG());
+			singleTextureModelMeshes.Add("-stairs", new ObjectMesh(ConstMeshData.stairsVertices, ConstMeshData.stairsTriangles, ConstMeshData.stairsUvs));
+			singleTextureModelMeshes.Add("-slab", new ObjectMesh(ConstMeshData.slabVertices, ConstMeshData.slabTriangles, ConstMeshData.slabUvs));
 		}
 
 		// #if !UNITY_EDITOR
@@ -133,19 +118,16 @@ namespace Minecraft
 		}
 
 		public static string Encode(string str) { Encode(ref str); return str; }
-		public static void Encode(ref string str) 
-		{
-			byte[] data = Encoding.UTF8.GetBytes(str);
-			for (int i = 0; i < data.Length; i++) { data[i] = (byte)(0xff - data[i]); }
-			str = Encoding.UTF8.GetString(data);
-		}
+		public static void Encode(ref string str) { str = Encoding.UTF8.GetString(Encoding.UTF8.GetBytes(str).Select(x => (byte)(0xff - x)).ToArray()); }
 
 		public static string Decode(string str) { Decode(ref str); return str; }
-		public static void Decode(ref string str) 
+		public static void Decode(ref string str) { str = Encoding.UTF8.GetString(Encoding.UTF8.GetBytes(str).Select(x => (byte)(0xff - x)).ToArray()); }
+
+		public static Player GetPlayerByName(string name) 
 		{
-			byte[] data = Encoding.UTF8.GetBytes(str);
-			for (int i = 0; i < data.Length; i++) { data[i] = (byte)(0xff - data[i]); }
-			str = Encoding.UTF8.GetString(data);
+			return Player.instance;
+			// try { return players.Where(x => x.name == name).ToArray()[0]; }
+			// catch { return null; }
 		}
 
 		public static uint GetVoxelTypeById(string id) 
@@ -156,7 +138,7 @@ namespace Minecraft
 		public static VoxelProperty GetVoxelPropertyById(string id) 
 		{ for (uint i = 0; i < GameManager.voxelProperties.Length; i++) 
 			{ if (GameManager.voxelProperties[i].id == id) { return GameManager.voxelProperties[i]; } 
-		} return GetVoxelPropertyById("undefined-block"); }
+		} return null; }
 
 		public static uint GetItemTypeById(string id) 
 		{ for (uint i = 0; i < GameManager.itemProperties.Length; i++) 
@@ -166,7 +148,7 @@ namespace Minecraft
 		public static ItemProperty GetItemPropertyById(string id) 
 		{ for (uint i = 0; i < GameManager.itemProperties.Length; i++) 
 			{ if (GameManager.itemProperties[i].id == id) { return GameManager.itemProperties[i]; } 
-		} return GetItemPropertyById("undefined-item"); }
+		} return null; }
 
 		public static string FormatPath(string path) 
 		{

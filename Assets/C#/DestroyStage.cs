@@ -1,12 +1,17 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.IO;
 using UnityEngine;
+using Utils;
 
 namespace Minecraft 
 {
 	public class DestroyStage : MonoBehaviour
 	{
+		private Mesh blockMesh;
+		private Mesh quadsMesh;
+
 		private MeshFilter filter;
 		new private MeshRenderer renderer;
 
@@ -14,25 +19,22 @@ namespace Minecraft
 		{
 			filter = gameObject.GetComponent<MeshFilter>();
 			renderer = gameObject.GetComponent<MeshRenderer>();
-			renderer.material = new Material(Shader.Find("Minecraft/Default"));
+			renderer.material = new Material(Shader.Find("Minecraft/DefaultTriplanar"));
+			Clear();
 
-			Mesh mesh = new Mesh();
-			List<Vector3> vertices = new List<Vector3>(6 * 4);
-			List<int> triangles = new List<int>(6 * 6);
-			List<Vector2> uvs = new List<Vector2>(6 * 4);
-
+			ObjectMesh tmp = new ObjectMesh();
 			for (int f = 0; f < 6; f++) 
 			{
-				vertices.AddRange(new Vector3[] 
+				tmp.Add(new Vector3[] 
 					{
-						Chunk.blockVertices[f, 0],
-						Chunk.blockVertices[f, 1],
-						Chunk.blockVertices[f, 2],
-						Chunk.blockVertices[f, 3]
+						ConstMeshData.blockVertices[f][0],
+						ConstMeshData.blockVertices[f][1],
+						ConstMeshData.blockVertices[f][2],
+						ConstMeshData.blockVertices[f][3]
 					}
 				);
 
-				uvs.AddRange(new Vector2[] 
+				tmp.Add(new Vector2[] 
 					{
 						new Vector2(0f, 0f),
 						new Vector2(1f, 0f),
@@ -41,17 +43,29 @@ namespace Minecraft
 					}
 				);
 
-				int index = vertices.Count - 4;
-				triangles.AddRange(new int[] { index + 0, index + 3, index + 1, index + 1, index + 3, index + 2 });
+				int index = tmp.vertexCount - 4;
+				tmp.Add(new int[] { index + 0, index + 3, index + 1, index + 1, index + 3, index + 2 });
 			}
 
-			mesh.vertices = vertices.ToArray();
-			mesh.triangles = triangles.ToArray();
-			mesh.uv = uvs.ToArray();
-			mesh.RecalculateNormals();
-			filter.mesh = mesh;
+			blockMesh = tmp.mesh;
 
-			SetStage(5);
+			tmp = new ObjectMesh();
+			tmp.Add(ConstMeshData.quadsVertices);
+			tmp.Add(ConstMeshData.quadsTriangles);
+			tmp.Add(new Vector2[] 
+				{
+					new Vector2(0f, 0f),
+					new Vector2(1f, 0f),
+					new Vector2(1f, 1f),
+					new Vector2(0f, 1f),
+					new Vector2(1f, 0f),
+					new Vector2(1f, 1f),
+					new Vector2(0f, 1f),
+					new Vector2(0f, 0f)
+				}
+			);
+
+			quadsMesh = tmp.mesh;
 		}
 
 		public void SetPosition(Vector3 position) { gameObject.transform.position = position; }
@@ -68,10 +82,27 @@ namespace Minecraft
 
 		public void SetStage(uint stage) 
 		{
+			Vector3Int position = new Vector3Int(
+				(int)gameObject.transform.position.x,
+				(int)gameObject.transform.position.y,
+				(int)gameObject.transform.position.z
+			);
+			
+			Chunk chunk = TerrainManager.GetChunkFromPosition(gameObject.transform.position);
+			VoxelProperty property = GameManager.voxelProperties[chunk.GetVoxelType(position.x, position.y, position.z)];
+			bool useUvs = true;
+
+			if (property.id.EndsWith("-block")) { filter.mesh = blockMesh; }
+			else if (property.id.EndsWith("-quads")) { filter.mesh = quadsMesh; }
+			else if (property.id.EndsWith("-liquid")) { filter.mesh = blockMesh; }
+			else { filter.mesh = blockMesh; }
+			// else { filter.mesh = chunk.GetMeshFromVoxel(position.x, position.y, position.z).mesh16; useUvs = false; }
+
 			Texture2D texture = new Texture2D(1, 1);
 			try { ImageConversion.LoadImage(texture, File.ReadAllBytes(GameManager.FormatPath(GameSettings.path.destroyStageTextures + "/stage" + stage.ToString() + ".png")), false); }
 			catch { ImageConversion.LoadImage(texture, File.ReadAllBytes(GameManager.FormatPath(GameSettings.path.destroyStageTextures + "/stage0.png")), false); }
 			GameManager.InitializeTexture(ref texture);
+			renderer.material.SetInt("_UseUvs", (useUvs) ? 1 : 0);
 			renderer.material.SetTexture("_MainTex", texture);
 		}
 	}

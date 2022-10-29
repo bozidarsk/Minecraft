@@ -27,6 +27,7 @@ namespace Minecraft
 		[HideInInspector] public bool isInteractingWithTerrain;
 		public bool canUseCommands { private set; get; }
 		public bool IsGrounded { get { return !movementController.CanApplyGravity(GameSettings.world.gravity); } }
+		public string FormatedName { get { return "<" + name + ">"; } } // "<<color=\"#" + Tools.Hex(color, false) + "\">" + name + "</color>> "
 		public static Player instance;
 
 		private System.Random random;

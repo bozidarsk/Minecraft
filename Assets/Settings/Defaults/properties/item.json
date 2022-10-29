@@ -9,7 +9,7 @@
 			"allowedEnchantments": [],
 			"enchantments": [],
 			"toolProperty": null,
-			"armourPropert": null
+			"armourProperty": null
 		},
 		{
 			"id": "undefined-block",
@@ -19,7 +19,7 @@
 			"allowedEnchantments": [],
 			"enchantments": [],
 			"toolProperty": null,
-			"armourPropert": null
+			"armourProperty": null
 		},
 		{
 			"id": "undefined-item",
@@ -29,7 +29,27 @@
 			"allowedEnchantments": [],
 			"enchantments": [],
 			"toolProperty": null,
-			"armourPropert": null
+			"armourProperty": null
+		},
+		{
+			"id": "brick-stairs",
+			"description": "",
+			"descriptionSize": { "x": 35, "y": 0 },
+			"stackSize": 64,
+			"allowedEnchantments": [],
+			"enchantments": [],
+			"toolProperty": null,
+			"armourProperty": null
+		},
+		{
+			"id": "brick-slab",
+			"description": "",
+			"descriptionSize": { "x": 35, "y": 0 },
+			"stackSize": 64,
+			"allowedEnchantments": [],
+			"enchantments": [],
+			"toolProperty": null,
+			"armourProperty": null
 		},
 		{
 			"id": "iron-pickaxe-item",
@@ -45,7 +65,7 @@
 				"miningSpeed": 0.267,
 				"miningForce": 4.5
 			},
-			"armourPropert": null
+			"armourProperty": null
 		}
 	]
 }
