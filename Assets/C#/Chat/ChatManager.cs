@@ -34,11 +34,10 @@ namespace Minecraft
 			}
 		}
 
-		public static void Push(Player player, string request, bool withName = true) 
+		public static void Push(Player player, string request, bool sendToAll = true) 
 		{
-			if (!player.canUseCommands) { return; }
 			if (request[0] == '/') { ExecuteCommand(player, request); return; }
-			string message = ((withName) ? player.FormatedName + " " : "") + request;
+			string message = ((sendToAll) ? player.FormatedName + " " : "") + request;
 
 			Console.Log(message);
 
@@ -51,6 +50,7 @@ namespace Minecraft
 			string[] tokens = request.Split(' ');
 			Command command = Commands.Get(tokens[0]);
 
+			if (command.requireAdmin && !player.isAdmin) { Push(player, "You need to be admin to use this command.", false); }
 			if (command == null) { Push(player, "Command not found: " + tokens[0].Substring(1, tokens[0].Length - 1), false); return; }
 
 			dynamic[] args = new dynamic[command.argTypes.Length];
@@ -67,7 +67,7 @@ namespace Minecraft
 
 			allMessages.Add(player.FormatedName + " " + request);
 			dynamic output = command.Execute(args);
-			if (output != null && command.outputMessage != null) { ChatManager.Push(player, command.outputMessage.Replace("$(result)", output.ToString()), false); }
+			if (output != null && command.outputMessage != null) { Push(player, command.outputMessage.Replace("$(result)", output.ToString()), false); }
 		}
 	}
 }

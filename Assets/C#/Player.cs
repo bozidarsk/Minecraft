@@ -25,9 +25,9 @@ namespace Minecraft
 		[HideInInspector] public int health = 9;
 		[HideInInspector] public int food = 9;
 		[HideInInspector] public bool isInteractingWithTerrain;
-		public bool canUseCommands { private set; get; }
+		[HideInInspector] public bool isAdmin = true;
 		public bool IsGrounded { get { return !movementController.CanApplyGravity(GameSettings.world.gravity); } }
-		public string FormatedName { get { return "<" + name + ">"; } } // "<<color=\"#" + Tools.Hex(color, false) + "\">" + name + "</color>> "
+		public string FormatedName { get { return "<" + name + "> " /*"<<color=\"#" + Tools.Hex(color, false) + "\">" + name + "</color>> "*/; } }
 		public static Player instance;
 
 		private System.Random random;
@@ -66,7 +66,7 @@ namespace Minecraft
 			random = new System.Random((int)gameObject.name.GetHashCode());
 			inventory = gameObject.GetComponent<PlayerInventory>();
 			color = 0x007f7fff; // rrggbbaa
-			canUseCommands = true;
+			isAdmin = true;
 			isInteractingWithTerrain = false;
 
 			Material material = GameSettings.materials.player;
@@ -199,7 +199,7 @@ namespace Minecraft
 		}
 
 		[System.Serializable]
-		public struct SavedData 
+		public class SavedData 
 		{
 			public string name;
 			public int health;

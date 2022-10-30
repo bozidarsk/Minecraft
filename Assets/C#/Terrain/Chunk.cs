@@ -4,7 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using UnityEngine;
+
 using Utils;
+using Utils.Collections;
 
 namespace Minecraft 
 {
@@ -110,7 +112,7 @@ namespace Minecraft
 				for (int v = 0; v < 4; v++) 
 				{ objectMesh.Add((matrix.MultiplyPoint3x4(ConstMeshData.blockVertices[face][v] + offset) - offset) + property.offset); }
 
-				Vector2byte coords = property.textureCoords[face];
+				Vector2<byte> coords = property.textureCoords[face];
 				float coordsy = ((float)GameSettings.textures.voxelHeight / 16f) - (float)coords.y - 1;
 				float uvx = (16f * (float)coords.x) / (float)GameSettings.textures.voxelWidth;
 				float uvy = (16f * coordsy) / (float)GameSettings.textures.voxelHeight;
@@ -140,7 +142,7 @@ namespace Minecraft
 			for (int v = 0; v < ConstMeshData.quadsVertices.Length; v++) 
 			{ objectMesh.Add((matrix.MultiplyPoint3x4(ConstMeshData.quadsVertices[v] + offset) - offset) + property.offset); }
 
-			Vector2byte coords = property.textureCoords[0];
+			Vector2<byte> coords = property.textureCoords[0];
 			float coordsy = ((float)GameSettings.textures.voxelHeight / 16f) - (float)coords.y - 1;
 			float uvx = (16f * (float)coords.x) / (float)GameSettings.textures.voxelWidth;
 			float uvy = (16f * coordsy) / (float)GameSettings.textures.voxelHeight;
@@ -827,7 +829,7 @@ namespace Minecraft
 		}
 
 		[System.Serializable]
-		public struct SavedData 
+		public class SavedData 
 		{
 			public Vector3 position;
 			public uint[] voxels;

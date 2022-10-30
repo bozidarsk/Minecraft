@@ -20,7 +20,7 @@ namespace Minecraft
 		public static ItemProperty[] itemProperties;
 		public static CraftingProperty[] craftingProperties;
 		public static EnchantmentProperty[] enchantmentProperties;
-		// public static List<Player> players;
+		public static List<Player> players;
 		public static System.Random random;
 
 		void Awake() { GameManager.Initialize(this); }
@@ -43,18 +43,14 @@ namespace Minecraft
 			GameManager.singleTextureModelMeshes = new Dictionary<string, ObjectMesh>();
 			GameManager.textureEffects = new Dictionary<string, Texture2D>();
 
-			// GameManager.voxelProperties = JsonUtility.FromJson<ArrayWrapper<VoxelProperty>>(File.ReadAllText(GameManager.FormatPath(GameSettings.path.voxelProperties))).content;
-			// GameManager.itemProperties = JsonUtility.FromJson<ArrayWrapper<ItemProperty>>(File.ReadAllText(GameManager.FormatPath(GameSettings.path.itemProperties))).content;
-			// GameManager.craftingProperties = JsonUtility.FromJson<ArrayWrapper<CraftingProperty>>(File.ReadAllText(GameManager.FormatPath(GameSettings.path.craftingProperties))).content;
-			// GameManager.enchantmentProperties = JsonUtility.FromJson<ArrayWrapper<EnchantmentProperty>>(File.ReadAllText(GameManager.FormatPath(GameSettings.path.enchantmentProperties))).content;
 
-			GameManager.voxelProperties = Json.FromJson<ArrayWrapper<VoxelProperty>>(File.ReadAllText(GameManager.FormatPath(GameSettings.path.voxelProperties))).content;
-			GameManager.itemProperties = Json.FromJson<ArrayWrapper<ItemProperty>>(File.ReadAllText(GameManager.FormatPath(GameSettings.path.itemProperties))).content;
-			GameManager.craftingProperties = Json.FromJson<ArrayWrapper<CraftingProperty>>(File.ReadAllText(GameManager.FormatPath(GameSettings.path.craftingProperties))).content;
-			GameManager.enchantmentProperties = Json.FromJson<ArrayWrapper<EnchantmentProperty>>(File.ReadAllText(GameManager.FormatPath(GameSettings.path.enchantmentProperties))).content;
+			GameManager.voxelProperties = Json.FromJsonFile<ArrayWrapper<VoxelProperty>>(GameManager.FormatPath(GameSettings.path.voxelProperties)).content;
+			GameManager.itemProperties = Json.FromJsonFile<ArrayWrapper<ItemProperty>>(GameManager.FormatPath(GameSettings.path.itemProperties)).content;
+			GameManager.craftingProperties = Json.FromJsonFile<ArrayWrapper<CraftingProperty>>(GameManager.FormatPath(GameSettings.path.craftingProperties)).content;
+			GameManager.enchantmentProperties = Json.FromJsonFile<ArrayWrapper<EnchantmentProperty>>(GameManager.FormatPath(GameSettings.path.enchantmentProperties)).content;
 
-			// GameManager.players = new List<Player>();
-			// GameManager.players = GameObject.FindGameObjectsWithTag("Player").Select(x => x.GetComponent<Player>()).ToList();
+			GameManager.players = new List<Player>();
+			GameManager.players = GameObject.FindGameObjectsWithTag("Player").Select(x => x.GetComponent<Player>()).ToList();
 
 			string[] files = Directory.GetFiles(GameManager.FormatPath(GameSettings.path.textureEffects), "*.png");
 			for (int i = 0; i < files.Length; i++) 
@@ -134,9 +130,8 @@ namespace Minecraft
 
 		public static Player GetPlayerByName(string name) 
 		{
-			return Player.instance;
-			// try { return players.Where(x => x.name == name).ToArray()[0]; }
-			// catch { return null; }
+			try { return players.Where(x => x.name == name).ToArray()[0]; }
+			catch { return null; }
 		}
 
 		public static uint GetVoxelTypeById(string id) 

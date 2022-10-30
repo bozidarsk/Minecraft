@@ -3,17 +3,18 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
+using Utils.Json;
+
 namespace Minecraft 
 {
-	[System.Serializable]
-	public struct GameSettingsObject 
+	public class GameSettingsObject 
 	{
 		public Settings.Player player;
 		public Settings.PostProcessing postProcessing;
 		public Settings.World world;
 		public Settings.Terrain terrain;
-		public Settings.Textures textures;
-		public Settings.Materials materials;
+		[System.NonSerialized] public Settings.Textures textures;
+		[System.NonSerialized] public Settings.Materials materials;
 		public Settings.Path path;
 	}
 
@@ -29,7 +30,7 @@ namespace Minecraft
 		private static string file;
 
 		public static void Reload() { GameSettings.Load(file); }
-		public static void Load(string file = "$(DefaultData)/gameSettings.json") { GameSettings.file = file; GameSettings.Load(JsonUtility.FromJson<GameSettingsObject>(File.ReadAllText(GameManager.FormatPath(file)))); }
+		public static void Load(string file = "$(DefaultData)/gameSettings.json") { GameSettings.file = file; GameSettings.Load(Json.FromJsonFile<GameSettingsObject>(GameManager.FormatPath(file))); }
 		public static void Load(GameSettingsObject gameSettings) 
 		{
 			GameSettings.player = gameSettings.player;
@@ -37,6 +38,9 @@ namespace Minecraft
 			GameSettings.world = gameSettings.world;
 			GameSettings.terrain = gameSettings.terrain;
 			GameSettings.path = gameSettings.path;
+
+			GameSettings.textures = new Settings.Textures();
+			GameSettings.materials = new Settings.Materials();
 
 			GameSettings.textures.voxel = new Texture2D(1, 1);
 			ImageConversion.LoadImage(GameSettings.textures.voxel, File.ReadAllBytes(GameManager.FormatPath(GameSettings.path.voxelTextures)), false);

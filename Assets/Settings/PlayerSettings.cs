@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
+using Utils.Json;
+
 namespace Minecraft 
 {
-	[System.Serializable]
-	public struct PlayerSettingsObject 
+	public class PlayerSettingsObject 
 	{
 		public Settings.Sound sound;
 		public Settings.Graphics graphics;
@@ -21,7 +22,7 @@ namespace Minecraft
 		private static string file;
 
 		public static void Reload() { PlayerSettings.Load(file); }
-		public static void Load(string file = "$(DefaultData)/playerSettings.json") { PlayerSettings.file = file; PlayerSettings.Load(JsonUtility.FromJson<PlayerSettingsObject>(File.ReadAllText(GameManager.FormatPath(file)))); }
+		public static void Load(string file = "$(DefaultData)/playerSettings.json") { PlayerSettings.file = file; PlayerSettings.Load(Json.FromJsonFile<PlayerSettingsObject>(GameManager.FormatPath(file))); }
 		public static void Load(PlayerSettingsObject playerSettings) 
 		{
 			PlayerSettings.sound = playerSettings.sound;

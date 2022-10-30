@@ -3,9 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+using Utils.Collections;
+
 namespace Minecraft 
 {
-	[Serializable]
 	public class CraftingProperty 
 	{
 		public Item resultItem;
@@ -14,7 +15,6 @@ namespace Minecraft
 		public override string ToString() { return JsonUtility.ToJson(this); }
 	}
 
-	[Serializable]
 	public class VoxelProperty 
 	{
 		public string id;
@@ -30,14 +30,13 @@ namespace Minecraft
 		public Vector3 scale;
 		public bool useCollision;
 		public bool indestructible;
-		public Vector3bool enableRotation;
+		public Vector3<bool> enableRotation;
 		public bool[] usingFullFace;
-		public Vector2byte[] textureCoords;
+		public Vector2<byte>[] textureCoords;
 
 		public override string ToString() { return JsonUtility.ToJson(this); }
 	}
 
-	[Serializable]
 	public class ToolProperty 
 	{
 		public float damage;
@@ -48,7 +47,6 @@ namespace Minecraft
 		public override string ToString() { return JsonUtility.ToJson(this); }
 	}
 
-	[Serializable]
 	public class ArmourProperty 
 	{
 		public float protection;
@@ -58,7 +56,6 @@ namespace Minecraft
 		public override string ToString() { return JsonUtility.ToJson(this); }
 	}
 
-	[Serializable]
 	public class ItemProperty 
 	{
 		public string id;
@@ -73,7 +70,6 @@ namespace Minecraft
 		public override string ToString() { return JsonUtility.ToJson(this); }
 	}
 
-	[Serializable]
 	public class EnchantmentProperty 
 	{
 		public string id;

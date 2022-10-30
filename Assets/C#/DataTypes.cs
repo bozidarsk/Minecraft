@@ -6,8 +6,10 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Rendering;
-using Utils;
 using TMPro;
+
+using Utils;
+using Utils.Collections;
 
 namespace Minecraft 
 {
@@ -130,7 +132,7 @@ namespace Minecraft
 					int index = vertexCount - 4;
 					Add(index + 0, index + 3, index + 1, index + 1, index + 3, index + 2);
 
-					Vector2byte coords = property.textureCoords[f];
+					Vector2<byte> coords = property.textureCoords[f];
 					float coordsy = ((float)GameSettings.textures.voxel.height / 16f) - (float)coords.y - 1;
 					float uvx = (16f * (float)coords.x) / (float)GameSettings.textures.voxel.width;
 					float uvy = (16f * coordsy) / (float)GameSettings.textures.voxel.height;
@@ -165,7 +167,7 @@ namespace Minecraft
 
 				Add(0, 1, 2, 2, 3, 0);
 
-				// Vector2byte coords = GameManager.itemProperties[GameManager.GetItemTypeById(item.id + "-item")].textureCoords;
+				// Vector2<byte> coords = GameManager.itemProperties[GameManager.GetItemTypeById(item.id + "-item")].textureCoords;
 				// float coordsy = ((float)GameSettings.textures.item.height / 16f) - (float)coords.y - 1;
 				// float uvx = (16f * (float)coords.x) / (float)GameSettings.textures.item.width;
 				// float uvy = (16f * coordsy) / (float)GameSettings.textures.item.height;
@@ -275,7 +277,7 @@ namespace Minecraft
 		}
 
 		[Serializable]
-		public struct SavedData 
+		public class SavedData 
 		{
 			public Item item;
 			public Vector3 position;
@@ -347,9 +349,9 @@ namespace Minecraft
 		public void Update() 
 		{
 			if (item.ammount == 0) { item.id = "air-block"; }
-			text.SetText((!item.IsEmpty && item.ammount > 1) ? Convert.ToString(item.ammount) : "");
+			text.SetText((!item.IsEmpty && item.ammount > 1) ? item.ammount.ToString() : "");
 
-			// Vector2byte coords = GameManager.itemProperties[GameManager.GetItemTypeById(item.id)].textureCoords;
+			// Vector2<byte> coords = GameManager.itemProperties[GameManager.GetItemTypeById(item.id)].textureCoords;
 			// float coordsy = ((float)GameSettings.textures.item.height / 16f) - (float)coords.y - 1;
 			// float uvx = (16f * (float)coords.x) / (float)GameSettings.textures.item.width;
 			// float uvy = (16f * coordsy) / (float)GameSettings.textures.item.height;
@@ -410,7 +412,7 @@ namespace Minecraft
 		public uint ammount;
 		public float durability; // % 0-100
 
-		public override string ToString() { return id + ", " + Convert.ToString(durability) + "%: " + Convert.ToString(ammount); }
+		public override string ToString() { return id + ", " + durability.ToString() + "%: " + ammount.ToString(); }
 		public override int GetHashCode() { return (int)id.GetHashCode() + (int)ammount; }
 		public bool IsEmpty { get { { return id == null || id == "air-block" || id == "air-item" || id == "" || ammount <= 0; } } }
 
@@ -434,13 +436,15 @@ namespace Minecraft
 		public string args { private set; get; }
 		public string name { private set; get; }
 		public string outputMessage { private set; get; }
+		public bool requireAdmin { private set; get; }
 		public Type[] argTypes { private set; get; }
 		public Func<dynamic[], dynamic> Execute { private set; get; }
 
-		public Command(string name, Func<dynamic[], dynamic> function, string[] argNames, Type[] argTypes, string outputMessage) 
+		public Command(string name, Func<dynamic[], dynamic> function, string[] argNames, Type[] argTypes, string outputMessage, bool requireAdmin) 
 		{
 			this.name = name;
 			this.outputMessage = outputMessage;
+			this.requireAdmin = requireAdmin;
 			this.argTypes = argTypes;
 			this.Execute = function;
 
@@ -525,7 +529,9 @@ namespace Minecraft
 
 	public class ErrorException : Exception 
 	{
+		public ErrorException() : base() {}
 		public ErrorException(string message) : base(message) {}
+		public ErrorException(string message, Exception inner) : base(message, inner) {}
 	}
 
 	public enum Cull 
@@ -552,10 +558,10 @@ namespace Minecraft
 		Front
 	}
 
-	[Serializable]
-	public struct ArrayWrapper<T> 
+	public class ArrayWrapper<T> 
 	{
 		public T[] content;
+		public ArrayWrapper() {}
 		public ArrayWrapper(T[] content) { this.content = content; }
 	}
 
@@ -579,7 +585,7 @@ namespace Minecraft
 	}
 
 	[Serializable]
-	public struct Armature 
+	public class Armature 
 	{
 		public GameObject chest;
 		public GameObject head;
@@ -589,61 +595,29 @@ namespace Minecraft
 		public GameObject legR;
 	}
 
-	[Serializable]
-	public struct Vector2byte 
-	{
-		public byte x;
-		public byte y;
-	}
-
-	[Serializable]
-	public struct Vector2bool 
-	{
-		public bool x;
-		public bool y;
-
-		public Vector2bool(bool x, bool y) 
-		{
-			this.x = x;
-			this.y = y;
-		}
-	}
-
-	[Serializable]
-	public struct Range 
+	public class Range 
 	{
 		[Range(0f, 1f)] public float min;
 		[Range(0f, 1f)] public float max;
 	}
 
-	[Serializable]
-	public struct RangeInt 
+	public class RangeInt 
 	{
 		public int min;
 		public int max;
 	}
 
-	[Serializable]
-	public struct RangeUInt 
+	public class RangeUInt 
 	{
 		public uint min;
 		public uint max;
 	}
 
-	[Serializable]
-	public struct Vector3bool 
-	{
-		public bool x;
-		public bool y;
-		public bool z;
-	}
-
-	[Serializable]
-	public struct Enchantment 
+	public class Enchantment 
 	{
 		public string id;
 		public uint level;
 
-		public override string ToString() { return id + ": " + Convert.ToString(level); }
+		public override string ToString() { return id + ": " + level.ToString(); }
 	}
 }

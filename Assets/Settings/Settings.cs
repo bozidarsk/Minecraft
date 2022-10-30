@@ -7,8 +7,7 @@ namespace Minecraft
 {
 	public static class Settings 
 	{
-		[Serializable]
-		public struct PerlinNoise 
+		public class PerlinNoise 
 		{
 			public float persistance;
 			public float lacunarity;
@@ -17,8 +16,7 @@ namespace Minecraft
 			public Vector2 offset;
 		}
 
-		[Serializable]
-		public struct Biome 
+		public class Biome 
 		{
 			public string id;
 			public uint seaLevel;
@@ -28,15 +26,13 @@ namespace Minecraft
 			public PerlinNoise heightNoise;
 		}
 
-		[Serializable]
-		public struct Terrain 
+		public class Terrain 
 		{
 			public PerlinNoise biomeMapNoise;
 			public Biome[] biomes;
 		}
 
-		[Serializable]
-		public struct Path 
+		public class Path 
 		{
 			[Header("Textures")]
 			public string voxelTextures;
@@ -77,8 +73,7 @@ namespace Minecraft
 			public string Skins { get { return skins; } }
 		}
 
-		[Serializable]
-		public struct PostProcessing 
+		public class PostProcessing 
 		{
 			public Color fogColor;
 		    public float fogDensity;
@@ -93,8 +88,7 @@ namespace Minecraft
 		    public float gamma;
 		}
 
-		[Serializable]
-		public struct World 
+		public class World 
 		{
 			public string name;
 			public int seed;
@@ -103,8 +97,7 @@ namespace Minecraft
 			public int chunkHeight;
 		}
 
-		[Serializable]
-		public struct Player 
+		public class Player 
 		{
 			public float walkingSpeed;
 			public float sprintingSpeed;
@@ -118,7 +111,7 @@ namespace Minecraft
 			public uint destroyStageLength;
 		}
 
-		public struct Textures 
+		public class Textures 
 		{
 			public Texture2D voxel;
 			public Texture2D liquid;
@@ -129,7 +122,7 @@ namespace Minecraft
 			[HideInInspector] public int liquidHeight;
 		}
 
-		public struct Materials 
+		public class Materials 
 		{
 			public Material liquid;
 			public Material chunk;
@@ -140,8 +133,7 @@ namespace Minecraft
 
 		/*******************************************/
 
-		[Serializable]
-		public struct KeyCodes 
+		public class KeyCodes 
 		{
 			[Header("Movement")]
 			public KeyCode Jump;
@@ -178,8 +170,7 @@ namespace Minecraft
 			public KeyCode OpenChat;
 		}
 
-		[Serializable]
-		public struct Controlls 
+		public class Controlls 
 		{
 			public float scrollSensitivity;
 			public Vector2 sensitivity;
@@ -188,8 +179,7 @@ namespace Minecraft
 			public KeyCodes keyCodes;
 		}
 
-		[Serializable]
-		public struct Sound 
+		public class Sound 
 		{
 			public float musicVolume;
 			public bool muteMusic;
@@ -197,8 +187,7 @@ namespace Minecraft
 			public bool muteSound;
 		}
 
-		[Serializable]
-		public struct Graphics 
+		public class Graphics 
 		{
 			public float FOV;
 			public float GUIScale;
