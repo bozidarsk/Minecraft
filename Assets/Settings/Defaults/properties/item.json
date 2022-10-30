@@ -5,51 +5,23 @@
 			"id": "air-block",
 			"description": null,
 			"descriptionSize": { "x": 0, "y": 0 },
-			"stackSize": 64,
-			"allowedEnchantments": [],
-			"enchantments": [],
-			"toolProperty": null,
-			"armourProperty": null
 		},
 		{
 			"id": "undefined-block",
 			"description": "This is an undefined block.",
-			"descriptionSize": { "x": 90, "y": 0 },
-			"stackSize": 64,
-			"allowedEnchantments": [],
-			"enchantments": [],
-			"toolProperty": null,
-			"armourProperty": null
 		},
 		{
 			"id": "undefined-item",
-			"description": "This is an undefined item.",
-			"descriptionSize": { "x": 90, "y": 0 },
-			"stackSize": 64,
-			"allowedEnchantments": [],
-			"enchantments": [],
-			"toolProperty": null,
-			"armourProperty": null
 		},
 		{
 			"id": "brick-stairs",
 			"description": "",
 			"descriptionSize": { "x": 35, "y": 0 },
-			"stackSize": 64,
-			"allowedEnchantments": [],
-			"enchantments": [],
-			"toolProperty": null,
-			"armourProperty": null
 		},
 		{
 			"id": "brick-slab",
 			"description": "",
 			"descriptionSize": { "x": 35, "y": 0 },
-			"stackSize": 64,
-			"allowedEnchantments": [],
-			"enchantments": [],
-			"toolProperty": null,
-			"armourProperty": null
 		},
 		{
 			"id": "iron-pickaxe-item",
@@ -57,7 +29,6 @@
 			"descriptionSize": { "x": 50, "y": 0 },
 			"stackSize": 1,
 			"allowedEnchantments": [],
-			"enchantments": [],
 			"toolProperty": 
 			{
 				"damage": 1.4,
