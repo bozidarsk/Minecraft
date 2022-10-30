@@ -344,6 +344,7 @@ namespace Minecraft
 		private List<string> filters;
 		private TextMeshProUGUI text;
 		private RawImage icon;
+		private RawImage durabilitySlider;
 		private int index;
 
 		public void Update() 
@@ -351,19 +352,20 @@ namespace Minecraft
 			if (item.ammount == 0) { item.id = "air-block"; }
 			text.SetText((!item.IsEmpty && item.ammount > 1) ? item.ammount.ToString() : "");
 
-			// Vector2<byte> coords = GameManager.itemProperties[GameManager.GetItemTypeById(item.id)].textureCoords;
-			// float coordsy = ((float)GameSettings.textures.item.height / 16f) - (float)coords.y - 1;
-			// float uvx = (16f * (float)coords.x) / (float)GameSettings.textures.item.width;
-			// float uvy = (16f * coordsy) / (float)GameSettings.textures.item.height;
-			// float uvsizex = 16f / (float)GameSettings.textures.item.width;
-			// float uvsizey = 16f / (float)GameSettings.textures.item.height;
-
-			// icon.uvRect = new Rect(uvx, uvy, uvsizex, uvsizey);
-
 			Texture2D texture = new Texture2D(1, 1);
 			try { ImageConversion.LoadImage(texture, File.ReadAllBytes(GameManager.FormatPath(GameSettings.path.itemTextures + "/" + item.id + ".png")), false); }
 			catch { ImageConversion.LoadImage(texture, File.ReadAllBytes(GameManager.FormatPath(GameSettings.path.itemTextures + "/undefined-" + (item.id.EndsWith("-block") ? "block" : "item") + ".png")), false); }
 			icon.texture = texture;
+
+			ItemProperty property = GameManager.GetItemPropertyById(item.id);
+			if (property == null || property.toolProperty == null) { durabilitySlider.gameObject.SetActive(false); return; }
+
+			float value = (float)item.durability / (float)property.toolProperty.maxDurability;
+			durabilitySlider.gameObject.SetActive(true);
+
+			durabilitySlider.material.SetColor("fgColor", GameSettings.player.durabilityGradient.Evaluate(value));
+			durabilitySlider.material.SetColor("bgColor", Color.black);
+			durabilitySlider.material.SetFloat("value", value);
 		}
 
 		public void ClearFilters() { filters = null; }
@@ -389,6 +391,7 @@ namespace Minecraft
 			this.filters = (filters == null) ? null : filters.ToList();
 			this.text = obj.GetComponentsInChildren<TextMeshProUGUI>()[0];
 			this.icon = obj.GetComponentsInChildren<RawImage>()[1];
+			this.durabilitySlider = obj.GetComponentsInChildren<RawImage>()[2];
 			this.gameObject = obj;
 
 			if (obj.TryGetComponent(typeof(SlotController), out Component controller)) 
@@ -401,18 +404,18 @@ namespace Minecraft
 				((SlotController)controller).onHighlight += inventory.SlotHighlighted;
 			}
 
+			this.durabilitySlider.material = new Material(Shader.Find(GameSettings.path.sliderShader));
 			this.Update();
 		}
 	}
 
-	[Serializable]
 	public class Item 
 	{
 		public string id;
 		public uint ammount;
-		public float durability; // % 0-100
+		public int durability;
 
-		public override string ToString() { return id + ", " + durability.ToString() + "%: " + ammount.ToString(); }
+		public override string ToString() { return id + "\n" + ammount.ToString() + "\n" + durability.ToString(); }
 		public override int GetHashCode() { return (int)id.GetHashCode() + (int)ammount; }
 		public bool IsEmpty { get { { return id == null || id == "air-block" || id == "air-item" || id == "" || ammount <= 0; } } }
 
@@ -420,10 +423,11 @@ namespace Minecraft
 		{
 			this.id = id;
 			this.ammount = ammount;
-			this.durability = 100f;
+			try { this.durability = (int)GameManager.GetItemPropertyById(this.id).toolProperty.maxDurability; }
+			catch { this.durability = 1; }
 		}
 
-		public Item(string id, uint ammount, float durability) 
+		public Item(string id, uint ammount, int durability) 
 		{
 			this.id = id;
 			this.ammount = ammount;

@@ -31,8 +31,8 @@
 			"allowedEnchantments": [],
 			"toolProperty": 
 			{
-				"damage": 1.4,
-				"durability": 250,
+				"damage": 4.8,
+				"maxDurability": 20,
 				"miningSpeed": 0.267,
 				"miningForce": 4.5
 			},

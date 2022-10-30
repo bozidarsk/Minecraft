@@ -6,6 +6,7 @@ using System.Threading;
 using UnityEngine;
 
 using Utils;
+using Utils.Json;
 using Utils.Collections;
 
 namespace Minecraft 
@@ -646,7 +647,8 @@ namespace Minecraft
 
 			if (!isHand) 
 			{
-				player.inventory.GetHandSlot().item.durability -= 1f / (float)toolProperty.durability;
+				if (player.inventory.GetHandSlot().item.durability > 1) { player.inventory.GetHandSlot().item.durability--; }
+				else { player.inventory.GetHandSlot().item = new Item("air-block", 0); }
 				player.inventory.GetHandSlot().Update();
 			}
 
@@ -800,83 +802,82 @@ namespace Minecraft
 			GameManager.instance.StartCoroutine(this.Update(false));
 		}
 
-		public string ToJson() 
-		{
-			SavedData data = new SavedData(this.position, this.voxels, this.matrices);
-			string json = JsonUtility.ToJson(data, true);
-			json.Remove(json.IndexOf("{"), 1);
-			json.Remove(json.LastIndexOf("}"), 1);
-			return json;
-		}
+		// public string ToJson() 
+		// {
+		// 	SavedData data = new SavedData(this.position, this.voxels, this.matrices);
+		// 	string json = JsonUtility.ToJson(data, true);
+		// 	json.Remove(json.IndexOf("{"), 1);
+		// 	json.Remove(json.LastIndexOf("}"), 1);
+		// 	return json;
+		// }
 
-		public static void Save(string[] jsons) 
-		{
-			string output = "{\n\t\"content\":\n\t[\n";
-			for (int i = 0; i < jsons.Length; i++) { output += "\t\t" + jsons[i] + ((i < jsons.Length - 1) ? ",\n" : "\n"); }
-			output += "\t]\n}";
-			File.WriteAllText(GameManager.FormatPath(GameSettings.path.savedChunks), output);
-		}
+		// public static void Save(string[] jsons) 
+		// {
+		// 	string output = "{\n\t\"content\":\n\t[\n";
+		// 	for (int i = 0; i < jsons.Length; i++) { output += "\t\t" + jsons[i] + ((i < jsons.Length - 1) ? ",\n" : "\n"); }
+		// 	output += "\t]\n}";
+		// 	File.WriteAllText(GameManager.FormatPath(GameSettings.path.savedChunks), output);
+		// }
 
-		public static void Load() 
-		{
-			SavedData[] data = JsonUtility.FromJson<ArrayWrapper<SavedData>>(File.ReadAllText(GameSettings.path.savedChunks)).content;
-			for (int i = 0; i < data.Length; i++) 
-			{
-				Chunk obj = new Chunk(data[i].position, TerrainManager.instance.gameObject.transform, data[i].voxels, SavedData.DeserializeMatrices(data[i].matrices));
-				TerrainManager.modifiedChunks.Add(obj);
-				TerrainManager.chunks.Add(obj);
-			}
-		}
+		// public static void Load() 
+		// {
+		// 	SavedData[] data = JsonUtility.FromJson<ArrayWrapper<SavedData>>(File.ReadAllText(GameSettings.path.savedChunks)).content;
+		// 	for (int i = 0; i < data.Length; i++) 
+		// 	{
+		// 		Chunk obj = new Chunk(data[i].position, TerrainManager.instance.gameObject.transform, data[i].voxels, SavedData.DeserializeMatrices(data[i].matrices));
+		// 		TerrainManager.modifiedChunks.Add(obj);
+		// 		TerrainManager.chunks.Add(obj);
+		// 	}
+		// }
 
-		[System.Serializable]
-		public class SavedData 
-		{
-			public Vector3 position;
-			public uint[] voxels;
-			public Matrix4x4[] matrices;
+		// public class SavedData 
+		// {
+		// 	public Vector3 position;
+		// 	public uint[] voxels;
+		// 	public Matrix4x4[] matrices;
 
-			public static Matrix4x4[] SerializeMatrices(Matrix4x4[,,] matrices) 
-			{
-				int index = 0;
-				Matrix4x4[] newMatrices = new Matrix4x4[ChunkSize * ChunkHeight * ChunkSize];
-				for (int y = 0; y < ChunkHeight; y++) 
-				{
-					for (int z = 0; z < ChunkSize; z++) 
-					{
-						for (int x = 0; x < ChunkSize; x++) 
-						{
-							newMatrices[index++] = matrices[x, y, z];
-						}
-					}
-				}
+		// 	public static Matrix4x4[] SerializeMatrices(Matrix4x4[,,] matrices) 
+		// 	{
+		// 		int index = 0;
+		// 		Matrix4x4[] newMatrices = new Matrix4x4[ChunkSize * ChunkHeight * ChunkSize];
+		// 		for (int y = 0; y < ChunkHeight; y++) 
+		// 		{
+		// 			for (int z = 0; z < ChunkSize; z++) 
+		// 			{
+		// 				for (int x = 0; x < ChunkSize; x++) 
+		// 				{
+		// 					newMatrices[index++] = matrices[x, y, z];
+		// 				}
+		// 			}
+		// 		}
 
-				return newMatrices;
-			}
+		// 		return newMatrices;
+		// 	}
 
-			public static Matrix4x4[,,] DeserializeMatrices(Matrix4x4[] matrices) 
-			{
-				int index = 0;
-				Matrix4x4[,,] newMatrices = new Matrix4x4[ChunkSize, ChunkHeight, ChunkSize];
-				for (int y = 0; y < ChunkHeight; y++) 
-				{
-					for (int z = 0; z < ChunkSize; z++) 
-					{
-						for (int x = 0; x < ChunkSize; x++) 
-						{
-							newMatrices[x, y, z] = matrices[index++];
-						}
-					}
-				}
+		// 	public static Matrix4x4[,,] DeserializeMatrices(Matrix4x4[] matrices) 
+		// 	{
+		// 		int index = 0;
+		// 		Matrix4x4[,,] newMatrices = new Matrix4x4[ChunkSize, ChunkHeight, ChunkSize];
+		// 		for (int y = 0; y < ChunkHeight; y++) 
+		// 		{
+		// 			for (int z = 0; z < ChunkSize; z++) 
+		// 			{
+		// 				for (int x = 0; x < ChunkSize; x++) 
+		// 				{
+		// 					newMatrices[x, y, z] = matrices[index++];
+		// 				}
+		// 			}
+		// 		}
 
-				return newMatrices;
-			}
+		// 		return newMatrices;
+		// 	}
 
-			public SavedData(Vector3 position, uint[] voxels, Matrix4x4[,,] matrices) 
-			{
-				this.position = position;
-				this.voxels = voxels;
-				this.matrices = SavedData.SerializeMatrices(matrices);
-			}
-		}
+		// 	public SavedData(Vector3 position, uint[] voxels, Matrix4x4[,,] matrices) 
+		// 	{
+		// 		this.position = position;
+		// 		this.voxels = voxels;
+		// 		this.matrices = SavedData.SerializeMatrices(matrices);
+		// 	}
+		// }
 	}
 }

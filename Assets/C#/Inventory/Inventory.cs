@@ -200,7 +200,7 @@ namespace Minecraft
 
 			for (int i = slotStartIndex["Inventory"]; i < slotStartIndex["Inventory"] + (9*3); i++) 
 			{
-				if (slots[i].item.id == item.id && slots[i].item.ammount < stackSize && slots[i].IsInFilter(item.id)) 
+				if (slots[i].item.durability == item.durability && slots[i].item.id == item.id && slots[i].item.ammount < stackSize && slots[i].IsInFilter(item.id)) 
 				{
 					if (slots[i].item.ammount + item.ammount <= stackSize) 
 					{ slots[i].item.ammount += item.ammount; slots[i].Update(); return 0; }
@@ -213,12 +213,45 @@ namespace Minecraft
 
 				if (slots[i].item.IsEmpty && slots[i].IsInFilter(item.id)) 
 				{
-					slots[i].item.id = item.id;
+					slots[i].item = item;
 
 					if (item.ammount <= stackSize) 
 					{ slots[i].item.ammount = item.ammount; slots[i].Update(); return 0; }
+					else { slots[i].item.ammount = stackSize; }
 
 					return TryAddItemInventory(new Item(item.id, item.ammount - stackSize));
+				}
+			}
+
+			return item.ammount;
+		}
+
+		public uint TryAddItemHotbar(Item item) 
+		{
+			uint stackSize = GameManager.itemProperties[GameManager.GetItemTypeById(item.id)].stackSize;
+
+			for (int i = slotStartIndex["Hotbar"]; i < slotStartIndex["Hotbar"] + 9; i++) 
+			{
+				if (slots[i].item.durability == item.durability && slots[i].item.id == item.id && slots[i].item.ammount < stackSize && slots[i].IsInFilter(item.id)) 
+				{
+					if (slots[i].item.ammount + item.ammount <= stackSize) 
+					{ slots[i].item.ammount += item.ammount; slots[i].Update(); return 0; }
+
+					item.ammount -= stackSize - slots[i].item.ammount;
+					slots[i].item.ammount = stackSize;
+					slots[i].Update();
+					return TryAddItemHotbar(new Item(item.id, item.ammount));
+				}
+
+				if (slots[i].item.IsEmpty && slots[i].IsInFilter(item.id)) 
+				{
+					slots[i].item = item;
+
+					if (item.ammount <= stackSize) 
+					{ slots[i].item.ammount = item.ammount; slots[i].Update(); return 0; }
+					else { slots[i].item.ammount = stackSize; }
+
+					return TryAddItemHotbar(new Item(item.id, item.ammount - stackSize));
 				}
 			}
 
@@ -239,42 +272,11 @@ namespace Minecraft
 			return leftover;
 		}
 
-		public uint TryAddItemHotbar(Item item) 
-		{
-			uint stackSize = GameManager.itemProperties[GameManager.GetItemTypeById(item.id)].stackSize;
-
-			for (int i = slotStartIndex["Hotbar"]; i < slotStartIndex["Hotbar"] + 9; i++) 
-			{
-				if (slots[i].item.id == item.id && slots[i].item.ammount < stackSize && slots[i].IsInFilter(item.id)) 
-				{
-					if (slots[i].item.ammount + item.ammount <= stackSize) 
-					{ slots[i].item.ammount += item.ammount; slots[i].Update(); return 0; }
-
-					item.ammount -= stackSize - slots[i].item.ammount;
-					slots[i].item.ammount = stackSize;
-					slots[i].Update();
-					return TryAddItemHotbar(new Item(item.id, item.ammount));
-				}
-
-				if (slots[i].item.IsEmpty && slots[i].IsInFilter(item.id)) 
-				{
-					slots[i].item.id = item.id;
-
-					if (item.ammount <= stackSize) 
-					{ slots[i].item.ammount = item.ammount; slots[i].Update(); return 0; }
-
-					return TryAddItemHotbar(new Item(item.id, item.ammount - stackSize));
-				}
-			}
-
-			return item.ammount;
-		}
-
 		public uint TryRemoveItem(Item item) 
 		{
 			for (int i = slotStartIndex["Inventory"]; i < slotStartIndex["Inventory"] + (9*3); i++) 
 			{
-				if (slots[i].item.id == item.id) 
+				if (slots[i].item.id == item.id && slots[i].item.durability == item.durability) 
 				{
 					if (slots[i].item.ammount > item.ammount) { slots[i].item.ammount -= item.ammount; slots[i].Update(); return 0; }
 					else 
@@ -288,7 +290,7 @@ namespace Minecraft
 
 			for (int i = slotStartIndex["Hotbar"]; i < slotStartIndex["Hotbar"] + 9; i++) 
 			{
-				if (slots[i].item.id == item.id) 
+				if (slots[i].item.id == item.id && slots[i].item.durability == item.durability) 
 				{
 					if (slots[i].item.ammount > item.ammount) { slots[i].item.ammount -= item.ammount; slots[i].Update(); return 0; }
 					else 

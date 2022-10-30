@@ -10,17 +10,22 @@
         "rotationLimit": { "x": 70, "y": 180 },
         "maxStackSize": 64,
         "queuedMessagesLength": 10,
-        "destroyStageLength": 10
+        "destroyStageLength": 10,
+        "durabilityColors": 
+        [
+            { "r": 1, "g": 0.37254902, "b": 0, "a": 1 },
+            { "r": 1, "g": 0.474509804, "b": 0, "a": 1 },
+            { "r": 1, "g": 0.607843137, "b": 0, "a": 1 },
+            { "r": 1, "g": 0.81176470588, "b": 0, "a": 1 },
+            { "r": 0.949019608, "g": 1, "b": 0, "a": 1 },
+            { "r": 0.776470588, "g": 1, "b": 0, "a": 1 },
+            { "r": 0.57254902, "g": 1, "b": 0, "a": 1 },
+            { "r": 0.270588235, "g": 1, "b": 0, "a": 1 }
+        ]
     },
     "postProcessing": 
     {
-        "fogColor": 
-        {
-            "r": 1,
-            "g": 1,
-            "b": 1,
-            "a": 1
-        },
+        "fogColor": { "r": 1, "g": 1, "b": 1, "a": 1 },
         "fogDensity": 0,
         "fogOffset": 0,
         "exposure": 1,
@@ -86,6 +91,7 @@
         "droppedItemShader": "Minecraft/DroppedItem",
         "playerShader": "Minecraft/Player",
         "liquidShader": "Minecraft/Liquid",
+        "sliderShader": "Minecraft/Slider",
         "savedChunks": "$(WorldData)/chunks.json",
         "savedPlayers": "$(WorldData)/players.json",
         "savedInteractables": "$(WorldData)/interactables.json",

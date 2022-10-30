@@ -54,6 +54,7 @@ namespace Minecraft
 			public string droppedItemShader;
 			public string playerShader;
 			public string liquidShader;
+			public string sliderShader;
 
 			[Header("Saved Data")]
 			public string savedChunks;
@@ -109,6 +110,8 @@ namespace Minecraft
 			public uint maxStackSize;
 			public uint queuedMessagesLength;
 			public uint destroyStageLength;
+			public Color[] durabilityColors;
+			[System.NonSerialized] public Gradient durabilityGradient;
 		}
 
 		public class Textures 

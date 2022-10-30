@@ -39,6 +39,19 @@ namespace Minecraft
 			GameSettings.terrain = gameSettings.terrain;
 			GameSettings.path = gameSettings.path;
 
+			int length = GameSettings.player.durabilityColors.Length;
+			GradientColorKey[] colors = new GradientColorKey[length];
+			GradientAlphaKey[] alphas = new GradientAlphaKey[length];
+			for (int i = 0; i < length; i++) 
+			{
+				float time = (float)i / (float)length;
+				colors[i] = new GradientColorKey(GameSettings.player.durabilityColors[i], time);
+				alphas[i] = new GradientAlphaKey(1f, time);
+			}
+
+			GameSettings.player.durabilityGradient = new Gradient();
+			GameSettings.player.durabilityGradient.SetKeys(colors, alphas);
+
 			GameSettings.textures = new Settings.Textures();
 			GameSettings.materials = new Settings.Materials();
 

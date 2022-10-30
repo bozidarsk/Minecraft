@@ -17,22 +17,30 @@ namespace Minecraft
 
 	public class VoxelProperty 
 	{
-		public string id;
-		public string dropItem;
-		public string preferedTool;
-		public byte light;
-		public Cull cull;
-		public int dropMultiplier;
-		public float hardness;
-		public float movementSpeedMultiplier;
-		public float xp;
-		public Vector3 offset;
-		public Vector3 scale;
-		public bool useCollision;
-		public bool indestructible;
-		public Vector3<bool> enableRotation;
-		public bool[] usingFullFace;
-		public Vector2<byte>[] textureCoords;
+		public string id = "undefined-block";
+		public string dropItem = "undefined-block";
+		public string preferedTool = null;
+		public byte light = 0;
+		public Cull cull = Cull.Back;
+		public int dropMultiplier = 1;
+		public float hardness = 1;
+		public float movementSpeedMultiplier = 1;
+		public float xp = 0;
+		public Vector3 offset = Vector3.zero;
+		public Vector3 scale = Vector3.one;
+		public bool useCollision = true;
+		public bool indestructible = false;
+		public Vector3<bool> enableRotation = new Vector3<bool>(false, false, false);
+		public bool[] usingFullFace = { true, true, true, true, true, true };
+		public Vector2<byte>[] textureCoords = 
+		{
+			new Vector2<byte>(14, 1),
+			new Vector2<byte>(14, 1),
+			new Vector2<byte>(14, 1),
+			new Vector2<byte>(14, 1),
+			new Vector2<byte>(14, 1),
+			new Vector2<byte>(14, 1)
+		};
 
 		public override string ToString() { return JsonUtility.ToJson(this); }
 	}
@@ -40,7 +48,7 @@ namespace Minecraft
 	public class ToolProperty 
 	{
 		public float damage;
-		public uint durability;
+		public uint maxDurability;
 		public float miningSpeed;
 		public float miningForce;
 
@@ -58,14 +66,14 @@ namespace Minecraft
 
 	public class ItemProperty 
 	{
-		public string id;
-		public string description;
-		public Vector2 descriptionSize;
-		public uint stackSize;
-		public string[] allowedEnchantments;
-		public Enchantment[] enchantments;
-		public ToolProperty toolProperty;
-		public ArmourProperty armourProperty;
+		public string id = "undefined-item";
+		public string description = "This is an undefined item.";
+		public Vector2 descriptionSize = new Vector2(90f, 0f);
+		public uint stackSize = 64;
+		public string[] allowedEnchantments = {};
+		public Enchantment[] enchantments = {};
+		public ToolProperty toolProperty = null;
+		public ArmourProperty armourProperty = null;
 
 		public override string ToString() { return JsonUtility.ToJson(this); }
 	}
