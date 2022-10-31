@@ -21,7 +21,6 @@ namespace Minecraft
 		public static CraftingProperty[] craftingProperties;
 		public static EnchantmentProperty[] enchantmentProperties;
 		public static List<Player> players;
-		public static System.Random random;
 
 		void Awake() { GameManager.Initialize(this); }
 		public static void Initialize(GameManager instance) 
@@ -37,7 +36,6 @@ namespace Minecraft
 
 			Console.Initialize();
 			Noise.Initialize(new System.Random(GameSettings.world.seed));
-			GameManager.random = new System.Random(GameSettings.world.seed);
 
 			GameManager.modelMeshes = new Dictionary<string, ObjectMesh>();
 			GameManager.singleTextureModelMeshes = new Dictionary<string, ObjectMesh>();
@@ -55,9 +53,9 @@ namespace Minecraft
 			string[] files = Directory.GetFiles(GameManager.FormatPath(GameSettings.path.textureEffects), "*.png");
 			for (int i = 0; i < files.Length; i++) 
 			{
-				Texture2D texture = new Texture2D(1920, 1080);
-				GameManager.InitializeTexture(ref texture);
+				Texture2D texture = new Texture2D(1, 1);
 				ImageConversion.LoadImage(texture, File.ReadAllBytes(files[i].Replace("\\", "/")), false);
+				GameManager.InitializeTexture(ref texture);
 				GameManager.textureEffects.Add(files[i].Remove(0, files[i].LastIndexOf("\\") + 1).Replace(".png", ""), texture);
 			}
 

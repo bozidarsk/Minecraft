@@ -270,7 +270,7 @@ namespace Minecraft
 			for (int i = 0; i < data.Length; i++) 
 			{
 				DroppedItem obj = new DroppedItem(data[i].item, data[i].position, true);
-				obj.gameObject.transform.eulerAngles = new Vector3(0f, (float)GameManager.random.Next(0, 180), 0f);
+				obj.gameObject.transform.eulerAngles = new Vector3(0f, (float)new System.Random(data[i].item.GetHashCode()).Next(0, 180), 0f);
 				obj.GenerateMesh();
 				obj.Update();
 			}
@@ -416,7 +416,7 @@ namespace Minecraft
 		public int durability;
 
 		public override string ToString() { return id + "\n" + ammount.ToString() + "\n" + durability.ToString(); }
-		public override int GetHashCode() { return (int)id.GetHashCode() + (int)ammount; }
+		public override int GetHashCode() { return (int)this.ToString().GetHashCode(); }
 		public bool IsEmpty { get { { return id == null || id == "air-block" || id == "air-item" || id == "" || ammount <= 0; } } }
 
 		public Item(string id, uint ammount) 
@@ -597,24 +597,6 @@ namespace Minecraft
 		public GameObject armR;
 		public GameObject legL;
 		public GameObject legR;
-	}
-
-	public class Range 
-	{
-		[Range(0f, 1f)] public float min;
-		[Range(0f, 1f)] public float max;
-	}
-
-	public class RangeInt 
-	{
-		public int min;
-		public int max;
-	}
-
-	public class RangeUInt 
-	{
-		public uint min;
-		public uint max;
 	}
 
 	public class Enchantment 

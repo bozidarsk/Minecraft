@@ -99,13 +99,13 @@ namespace Minecraft
 			for (int i = 0; i < GameSettings.terrain.biomes.Length; i++) 
 			{ if (noise >= GameSettings.terrain.biomes[i].range.min && noise <= GameSettings.terrain.biomes[i].range.max) 
 				{ return GameSettings.terrain.biomes[i]; } }
-			return default;
+			return null;
 		}
 
 		public static Settings.Biome GetBiomeById(string id) 
 		{ for (uint i = 0; i < GameSettings.terrain.biomes.Length; i++) 
 			{ if (GameSettings.terrain.biomes[i].id == id) { return GameSettings.terrain.biomes[i]; } 
-		} return default; }
+		} return null; }
 
 		private static IEnumerator GenerateChunks() 
 		{

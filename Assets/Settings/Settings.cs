@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+using Utils.Collections;
+
 namespace Minecraft 
 {
 	public static class Settings 
@@ -21,8 +23,8 @@ namespace Minecraft
 			public string id;
 			public uint seaLevel;
 			public uint surfaceDepth;
-			public RangeUInt height;
-			public Range range;
+			public Range<uint> height; // [0, chunkHeight - 1]
+			public Range<float> range; // [0, 1]
 			public PerlinNoise heightNoise;
 		}
 

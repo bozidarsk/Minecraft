@@ -34,9 +34,6 @@ namespace Minecraft
 
 		private void GenerateVoxels() 
 		{
-			System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
-			watch.Start();
-
 			for (int y = 0; y < ChunkHeight; y++) 
 			{
 				// if (y >= 10) { break; }
@@ -68,9 +65,6 @@ namespace Minecraft
 					}
 				}
 			}
-
-			watch.Stop();
-			// Console.Log(watch.ElapsedMilliseconds);
 		}
 
 		private void GenerateMesh() 
