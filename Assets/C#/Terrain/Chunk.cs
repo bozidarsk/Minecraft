@@ -669,22 +669,17 @@ namespace Minecraft
 			if (player.isInteractingWithTerrain) { return; }
 			player.isInteractingWithTerrain = true;
 
-			// int index = player.inventory.IndexOfItem(new Item(hit.property.id, 1));
-			// int index = 
-			// 	player.inventory.slots
-			// 	.Where(x => x.item.id == hit.property.id).ToArray()[0]
-			// 	.Select((x, i) => i).ToArray()[0]
-			// ;
 			int index = -1;
 			for (int i = 0; i < player.inventory.slots.Count; i++) 
 			{ if (player.inventory.slots[i].item.id == hit.property.id) { index = i; break; } }
 
-			if (index < 0) { player.isInteractingWithTerrain = false; return; }
-
-			Item handItem = player.inventory.HandItem;
-			player.inventory.HandItem = player.inventory.slots[index].item;
-			player.inventory.slots[index].item = handItem;
-			player.inventory.slots[index].Update();
+			if (index >= 0) 
+			{
+				Item handItem = new Item(player.inventory.HandItem);
+				player.inventory.HandItem = new Item(player.inventory.slots[index].item);
+				player.inventory.slots[index].item = handItem;
+				player.inventory.slots[index].Update();
+			}
 
 			player.isInteractingWithTerrain = false;
 		}
@@ -708,38 +703,17 @@ namespace Minecraft
 			slot.item.ammount--;
 			slot.Update();
 
+
+
+			/* Rotate voxel. */
 			VoxelProperty property = GameManager.voxelProperties[type];
-			Vector3 scale = property.scale;
 
-			Vector3 unitY = GetNormalFromFace(GetFaceFromNormal(hit.normal)).normalized * scale.y;
-			if (!property.enableRotation.z) { unitY.x = 0f; unitY.y = Math.Abs(++unitY.y); unitY = unitY.normalized * scale.y; }
-			if (!property.enableRotation.x) { unitY.z = 0f; unitY.y++; unitY = unitY.normalized * scale.y; }
+			matrices[position.x, position.y, position.z] = GetDefaultVoxelMatrix(position.x, position.y, position.z);
 
-			Vector3 tmp = new Vector3(unitY.y, -unitY.x, 0f).normalized;
-			Vector3[] dirs = 
-			{
-				tmp,
-				-tmp,
-				Math.Cross(tmp, unitY).normalized,
-				Math.Cross(unitY, tmp).normalized
-			};
 
-			int index = 0;
-			float dist = float.MaxValue;
-			for (int i = 0; i < dirs.Length && property.enableRotation.y; i++) 
-			{
-				float distance = Math.Distance(hit.normal, dirs[i]);
-				if (distance <= dist) { dist = distance; index = i; }
-			}
 
-			// Vector3 unitX = new Vector3(unitY.y, -unitY.x, 0f).normalized * scale.x;
-			Vector3 unitX = dirs[index] * scale.x;
-			Vector3 unitZ = Math.Cross(unitX, unitY).normalized * scale.z;
 
-			matrices[position.x, position.y, position.z].SetColumn(0, new Vector4(unitX.x, unitX.y, unitX.z, 0f));
-			matrices[position.x, position.y, position.z].SetColumn(1, new Vector4(unitY.x, unitY.y, unitY.z, 0f));
-			matrices[position.x, position.y, position.z].SetColumn(2, new Vector4(unitZ.x, unitZ.y, unitZ.z, 0f));
-			matrices[position.x, position.y, position.z].SetColumn(3, new Vector4(position.x, position.y, position.z, 1f));
+
 
 			AddVoxel(type, position.x, position.y, position.z);
 			for (int face = 0; face < 6; face++) 

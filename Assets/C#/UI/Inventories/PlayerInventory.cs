@@ -26,6 +26,15 @@ namespace Minecraft.UI
 		protected override void Update() 
 		{
 			base.Update();
+
+			int i = 0;
+			SlotGroup hotbarGroup = GetGroupByName("hotbar");
+			for (int index = hotbarGroup.index; index < hotbarGroup.length + hotbarGroup.index; index++) 
+			{
+				hotbarSlots[i++].item = new Item(slots[index].item);
+				hotbarSlots[i - 1].Update();
+			}
+
 			if (IsOpen || player.chat.IsOpen) { return; }
 
 			if (Input.mouseScrollDelta.y * 0.05f < 0) { handIndex--; }
@@ -44,8 +53,6 @@ namespace Minecraft.UI
 			hotbarSelector.transform.localPosition = new Vector3(handIndex * 14f - 64f, 0f, 0f);
 
 			SlotGroup offhandGroup = GetGroupByName("offhand");
-			SlotGroup hotbarGroup = GetGroupByName("hotbar");
-
 			if (Input.GetKeyDown(PlayerSettings.controlls.keyCodes.SwapItemWithOffhand)) 
 			{
 				Item tmp = new Item(slots[offhandGroup.index].item);
@@ -58,13 +65,6 @@ namespace Minecraft.UI
 			offhandSlot.item = new Item(slots[offhandGroup.index].item);
 			offhandSlot.gameObject.SetActive(!offhandSlot.IsEmpty);
 			offhandSlot.Update();
-
-			int i = 0;
-			for (int index = hotbarGroup.index; index < hotbarGroup.length; index++) 
-			{
-				hotbarSlots[i++].item = new Item(slots[index].item);
-				hotbarSlots[i - 1].Update();
-			}
 		}
 
 		public void InitializeSlots() 
@@ -131,7 +131,7 @@ namespace Minecraft.UI
 			if (IsOpen) { return; }
 
 			SlotGroup group = GetGroupByName("crafting");
-			for (int i = group.index; i < group.length; i++) { DropFromSlot(i); }
+			for (int i = group.index; i < group.length + group.index; i++) { DropFromSlot(i); }
 			DropFromSlot(GetGroupByName("crafting-result").index);
 		}
 

@@ -192,13 +192,13 @@ namespace Minecraft.UI
 			if (item.IsEmpty) { return 0; }
 			uint stackSize = GameManager.GetItemPropertyById(item.id).stackSize;
 
-			for (int i = group.index; i < group.length; i++) 
+			for (int i = group.index; i < group.length + group.index; i++) 
 			{
 				if (slots[i].item.id == item.id && slots[i].item.durability == item.durability && slots[i].IsInFilter(item.id)) 
 				{
 					if (item.ammount + slots[i].item.ammount <= stackSize) 
 					{
-						slots[i].item = new Item(item);
+						slots[i].item.ammount += item.ammount;
 						slots[i].Update();
 						return 0;
 					}
@@ -206,7 +206,6 @@ namespace Minecraft.UI
 					item.ammount = (item.ammount + slots[i].item.ammount) - stackSize;
 					slots[i].item.ammount = stackSize;
 					slots[i].Update();
-					// return AddItem(item, group);
 					continue;
 				}
 
@@ -223,7 +222,6 @@ namespace Minecraft.UI
 					item.ammount -= stackSize;
 					slots[i].item.ammount = stackSize;
 					slots[i].Update();
-					// return AddItem(item, group);
 					continue;
 				}
 			}
@@ -237,7 +235,7 @@ namespace Minecraft.UI
 			if (item.IsEmpty) { return 0; }
 			uint stackSize = GameManager.GetItemPropertyById(item.id).stackSize;
 
-			for (int i = group.index; i < group.length; i++) 
+			for (int i = group.index; i < group.length + group.index; i++) 
 			{
 				if (slots[i].IsEmpty || slots[i].item.id != item.id || slots[i].item.durability != item.durability) { continue; }
 				if (slots[i].item.ammount >= item.ammount) { slots[i].item.ammount -= item.ammount; slots[i].Update(); return 0; }
@@ -245,7 +243,6 @@ namespace Minecraft.UI
 				item.ammount -= slots[i].item.ammount;
 				slots[i].item = Item.EmptyItem;
 				slots[i].Update();
-				// return RemoveItem(item, group);
 				continue;
 			}
 
