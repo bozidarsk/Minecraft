@@ -4,13 +4,13 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-namespace Minecraft 
+namespace Minecraft.UI 
 {
 	public class SlotController : MonoBehaviour, IPointerClickHandler
 	{
 		[HideInInspector] public event System.Action<int> onLeftClick;
 		[HideInInspector] public event System.Action<int> onRightClick;
-		// [HideInInspector] public event System.Action<int> onDoubleClick;
+		[HideInInspector] public event System.Action<int> onDoubleClick;
 		[HideInInspector] public event System.Action<int> onHighlight;
 		[HideInInspector] public int index = -1;
 		private bool isHighlighted = false;
@@ -34,7 +34,8 @@ namespace Minecraft
 
 		public void OnPointerClick(PointerEventData data) 
 		{
-			// if (data.clickCount == 2 && onDoubleClick != null) { onDoubleClick(index); return; }
+			// When double clicked the first click is registerd as a leftclick, then the second as doubleclick.
+			if (data.clickCount == 2 && onDoubleClick != null) { onDoubleClick(index); return; }
 
 			switch (data.button) 
 			{

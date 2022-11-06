@@ -140,7 +140,7 @@ namespace Minecraft
 		public static VoxelProperty GetVoxelPropertyById(string id) 
 		{ for (uint i = 0; i < GameManager.voxelProperties.Length; i++) 
 			{ if (GameManager.voxelProperties[i].id == id) { return GameManager.voxelProperties[i]; } 
-		} return null; }
+		} return GetVoxelPropertyById("undefined-block"); }
 
 		public static uint GetItemTypeById(string id) 
 		{ for (uint i = 0; i < GameManager.itemProperties.Length; i++) 
@@ -150,7 +150,7 @@ namespace Minecraft
 		public static ItemProperty GetItemPropertyById(string id) 
 		{ for (uint i = 0; i < GameManager.itemProperties.Length; i++) 
 			{ if (GameManager.itemProperties[i].id == id) { return GameManager.itemProperties[i]; } 
-		} return null; }
+		} return GetItemPropertyById("undefined-item"); }
 
 		public static string FormatPath(string path) 
 		{

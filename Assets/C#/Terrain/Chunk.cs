@@ -4,10 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using UnityEngine;
-
 using Utils;
 using Utils.Json;
-using Utils.Collections;
+using Minecraft.UI;
 
 namespace Minecraft 
 {
@@ -107,7 +106,7 @@ namespace Minecraft
 				for (int v = 0; v < 4; v++) 
 				{ objectMesh.Add((matrix.MultiplyPoint3x4(ConstMeshData.blockVertices[face][v] + offset) - offset) + property.offset); }
 
-				Vector2<byte> coords = property.textureCoords[face];
+				Utils.Collections.Generic.Vector2<byte> coords = property.textureCoords[face];
 				float coordsy = ((float)GameSettings.textures.voxelHeight / 16f) - (float)coords.y - 1;
 				float uvx = (16f * (float)coords.x) / (float)GameSettings.textures.voxelWidth;
 				float uvy = (16f * coordsy) / (float)GameSettings.textures.voxelHeight;
@@ -137,7 +136,7 @@ namespace Minecraft
 			for (int v = 0; v < ConstMeshData.quadsVertices.Length; v++) 
 			{ objectMesh.Add((matrix.MultiplyPoint3x4(ConstMeshData.quadsVertices[v] + offset) - offset) + property.offset); }
 
-			Vector2<byte> coords = property.textureCoords[0];
+			Utils.Collections.Generic.Vector2<byte> coords = property.textureCoords[0];
 			float coordsy = ((float)GameSettings.textures.voxelHeight / 16f) - (float)coords.y - 1;
 			float uvx = (16f * (float)coords.x) / (float)GameSettings.textures.voxelWidth;
 			float uvy = (16f * coordsy) / (float)GameSettings.textures.voxelHeight;
@@ -607,7 +606,7 @@ namespace Minecraft
 
 			bool isHand = false;
 			ToolProperty toolProperty;
-			try { toolProperty = GameManager.GetItemPropertyById(player.inventory.GetHandItem().id).toolProperty; }
+			try { toolProperty = GameManager.GetItemPropertyById(player.inventory.HandItem.id).toolProperty; }
 			catch { toolProperty = null; }
 			if (toolProperty == null) 
 			{
@@ -641,9 +640,9 @@ namespace Minecraft
 
 			if (!isHand) 
 			{
-				if (player.inventory.GetHandSlot().item.durability > 1) { player.inventory.GetHandSlot().item.durability--; }
-				else { player.inventory.GetHandSlot().item = new Item("air-block", 0); }
-				player.inventory.GetHandSlot().Update();
+				if (player.inventory.HandSlot.item.durability > 1) { player.inventory.HandSlot.item.durability--; }
+				else { player.inventory.HandSlot.item = Item.EmptyItem; }
+				player.inventory.HandSlot.Update();
 			}
 
 			RemoveVoxel(position.x, position.y, position.z, false);
@@ -670,11 +669,20 @@ namespace Minecraft
 			if (player.isInteractingWithTerrain) { return; }
 			player.isInteractingWithTerrain = true;
 
-			int index = player.inventory.IndexOfItem(new Item(hit.property.id, 1));
+			// int index = player.inventory.IndexOfItem(new Item(hit.property.id, 1));
+			// int index = 
+			// 	player.inventory.slots
+			// 	.Where(x => x.item.id == hit.property.id).ToArray()[0]
+			// 	.Select((x, i) => i).ToArray()[0]
+			// ;
+			int index = -1;
+			for (int i = 0; i < player.inventory.slots.Count; i++) 
+			{ if (player.inventory.slots[i].item.id == hit.property.id) { index = i; break; } }
+
 			if (index < 0) { player.isInteractingWithTerrain = false; return; }
 
-			Item handItem = player.inventory.GetHandItem();
-			player.inventory.SetHandItem(player.inventory.slots[index].item);
+			Item handItem = player.inventory.HandItem;
+			player.inventory.HandItem = player.inventory.slots[index].item;
 			player.inventory.slots[index].item = handItem;
 			player.inventory.slots[index].Update();
 
@@ -691,9 +699,9 @@ namespace Minecraft
 			if (!ContainsInList(TerrainManager.modifiedChunks)) { TerrainManager.modifiedChunks.Add(this); }
 
 			Vector3Int position = GetVoxelPositionFromPoint(hit.previousHit.point);
-			InventorySlot slot = player.inventory.GetHandSlot();
+			InventorySlot slot = player.inventory.HandSlot;
 
-			if (slot.item.IsEmpty || IsOutOfBounds(position.x, position.y, position.z)) 
+			if (slot.IsEmpty || IsOutOfBounds(position.x, position.y, position.z)) 
 			{ player.isInteractingWithTerrain = false; return; }
 
 			uint type = GameManager.GetVoxelTypeById(slot.item.id);

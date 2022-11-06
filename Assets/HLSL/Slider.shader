@@ -72,6 +72,7 @@ Shader "Minecraft/Slider"
 
             float4 frag (v2f IN) : SV_Target
             {
+                if (value < 0) { return (0).xxxx; }
                 return (IN.uv.x < value) ? fgColor : bgColor;
             }
 

@@ -5,6 +5,7 @@ using System.Linq;
 using System.IO;
 using UnityEngine;
 using Utils;
+using Minecraft.UI;
 
 namespace Minecraft 
 {
@@ -163,7 +164,7 @@ namespace Minecraft
 					string[] tokens = collider.name.Split('\n');
 					Item item = new Item(tokens[0], uint.Parse(tokens[1]), int.Parse(tokens[2]));
 
-					item.ammount = inventory.TryAddItem(item);
+					item.ammount = inventory.AddItemAll(item);
 					if (item.ammount == 0) { Destroy(collider.gameObject); return; }
 
 					collider.name = item.ToString();

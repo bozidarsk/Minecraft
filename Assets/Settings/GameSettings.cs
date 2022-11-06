@@ -72,6 +72,7 @@ namespace Minecraft
 			GameSettings.materials.droppedItem = new Material(Shader.Find(GameSettings.path.droppedItemShader));
 			GameSettings.materials.player = new Material(Shader.Find(GameSettings.path.playerShader));
 			GameSettings.materials.liquid = new Material(Shader.Find(GameSettings.path.liquidShader));
+			GameSettings.materials.slider = new Material(Shader.Find(GameSettings.path.sliderShader));
 		}
 	}
 }

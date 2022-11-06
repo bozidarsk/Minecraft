@@ -9,7 +9,6 @@ using UnityEngine.Rendering;
 using TMPro;
 
 using Utils;
-using Utils.Collections;
 
 namespace Minecraft 
 {
@@ -132,7 +131,7 @@ namespace Minecraft
 					int index = vertexCount - 4;
 					Add(index + 0, index + 3, index + 1, index + 1, index + 3, index + 2);
 
-					Vector2<byte> coords = property.textureCoords[f];
+					Utils.Collections.Generic.Vector2<byte> coords = property.textureCoords[f];
 					float coordsy = ((float)GameSettings.textures.voxel.height / 16f) - (float)coords.y - 1;
 					float uvx = (16f * (float)coords.x) / (float)GameSettings.textures.voxel.width;
 					float uvy = (16f * coordsy) / (float)GameSettings.textures.voxel.height;
@@ -203,9 +202,9 @@ namespace Minecraft
 
 		public DroppedItem(Item item, Vector3 position, bool useCooldown) 
 		{
-			this.item = item;
-			this.gameObject = new GameObject(item.ToString());
-			this.gameObject.name = item.ToString();
+			this.item = new Item(item);
+			this.gameObject = new GameObject(this.item.ToString());
+			this.gameObject.name = this.item.ToString();
 			this.gameObject.tag = "DroppedItem";
 			this.gameObject.layer = 13;
 			this.gameObject.transform.position = position;
@@ -333,82 +332,6 @@ namespace Minecraft
 		}
 	}
 
-	public class InventorySlot 
-	{
-		public Item item { set; get; }
-		public string name { set; get; }
-		public string opositeSlot { set; get; }
-		public GameObject gameObject { get; }
-
-		private PlayerInventory inventory;
-		private List<string> filters;
-		private TextMeshProUGUI text;
-		private RawImage icon;
-		private RawImage durabilitySlider;
-		private int index;
-
-		public void Update() 
-		{
-			if (item.ammount == 0) { item.id = "air-block"; }
-			text.SetText((!item.IsEmpty && item.ammount > 1) ? item.ammount.ToString() : "");
-
-			Texture2D texture = new Texture2D(1, 1);
-			try { ImageConversion.LoadImage(texture, File.ReadAllBytes(GameManager.FormatPath(GameSettings.path.itemTextures + "/" + item.id + ".png")), false); }
-			catch { ImageConversion.LoadImage(texture, File.ReadAllBytes(GameManager.FormatPath(GameSettings.path.itemTextures + "/undefined-" + (item.id.EndsWith("-block") ? "block" : "item") + ".png")), false); }
-			icon.texture = texture;
-
-			ItemProperty property = GameManager.GetItemPropertyById(item.id);
-			if (property == null || property.toolProperty == null) { durabilitySlider.gameObject.SetActive(false); return; }
-
-			float value = (float)item.durability / (float)property.toolProperty.maxDurability;
-			durabilitySlider.gameObject.SetActive(true);
-
-			durabilitySlider.material.SetColor("fgColor", GameSettings.player.durabilityGradient.Evaluate(value));
-			durabilitySlider.material.SetColor("bgColor", Color.black);
-			durabilitySlider.material.SetFloat("value", value);
-		}
-
-		public void ClearFilters() { filters = null; }
-		public bool IsInFilter(string id) 
-		{
-			if (filters == null) { return true; }
-			for (int i = 0; i < filters.Count; i++) { if (filters[i].Contains(id)) { return true; } }
-			return false;
-		}
-
-		public void AddFilters(params string[] id) 
-		{
-			if (filters == null) { filters = new List<string>(); }
-			for (int i = 0; i < id.Length; i++) { filters.Add(id[i]); }
-		}
-
-		public InventorySlot(GameObject obj, string name, string opositeSlot, PlayerInventory inventory, params string[] filters) 
-		{
-			this.name = name;
-			this.opositeSlot = opositeSlot;
-			this.inventory = inventory;
-			this.item = new Item("air-block", 1);
-			this.filters = (filters == null) ? null : filters.ToList();
-			this.text = obj.GetComponentsInChildren<TextMeshProUGUI>()[0];
-			this.icon = obj.GetComponentsInChildren<RawImage>()[1];
-			this.durabilitySlider = obj.GetComponentsInChildren<RawImage>()[2];
-			this.gameObject = obj;
-
-			if (obj.TryGetComponent(typeof(SlotController), out Component controller)) 
-			{
-				this.index = this.inventory.buttonIndex++;
-				((SlotController)controller).index = this.index;
-				((SlotController)controller).onLeftClick += inventory.SlotLeftClicked;
-				((SlotController)controller).onRightClick += inventory.SlotRightClicked;
-				// ((SlotController)controller).onDoubleClick += inventory.SlotDoubleClicked;
-				((SlotController)controller).onHighlight += inventory.SlotHighlighted;
-			}
-
-			this.durabilitySlider.material = new Material(Shader.Find(GameSettings.path.sliderShader));
-			this.Update();
-		}
-	}
-
 	public class Item 
 	{
 		public string id;
@@ -417,7 +340,15 @@ namespace Minecraft
 
 		public override string ToString() { return id + "\n" + ammount.ToString() + "\n" + durability.ToString(); }
 		public override int GetHashCode() { return (int)this.ToString().GetHashCode(); }
+		public static Item EmptyItem { get { return new Item("air-block", 0); } }
 		public bool IsEmpty { get { { return id == null || id == "air-block" || id == "air-item" || id == "" || ammount <= 0; } } }
+
+		public Item(Item item) 
+		{
+			this.id = item.id;
+			this.ammount = item.ammount;
+			this.durability = item.durability;
+		}
 
 		public Item(string id, uint ammount) 
 		{

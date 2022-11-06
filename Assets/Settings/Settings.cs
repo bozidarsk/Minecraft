@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-using Utils.Collections;
+using Utils.Collections.Generic;
 
 namespace Minecraft 
 {
@@ -134,6 +134,7 @@ namespace Minecraft
 			public Material droppedItem;
 			public Material postProcessing;
 			public Material player;
+			public Material slider;
 		}
 
 		/*******************************************/

@@ -11,15 +11,15 @@ namespace Minecraft
 	{
 		private static List<Command> commands = new List<Command>() 
 		{
-			new Command("/clear", Commands.Collections.Clear, new string[] { "player" }, new Type[] { typeof(string) }, null, true),
-			new Command("/give", Commands.Collections.Give, new string[] { "player", "item", "ammount" }, new Type[] { typeof(string), typeof(string), typeof(uint) }, null, true),
-			new Command("/remove", Commands.Collections.Remove, new string[] { "player", "item", "ammount" }, new Type[] { typeof(string), typeof(string), typeof(uint) }, null, true),
-			new Command("/place", Commands.Collections.Place, new string[] { "voxel", "x", "y", "z" }, new Type[] { typeof(string), typeof(int), typeof(int), typeof(int) }, null, true),
-			new Command("/setTextureEffect", Commands.Collections.SetTextureEffect, new string[] { "player", "effect" }, new Type[] { typeof(string), typeof(string) }, null, false),
-			new Command("/removeTextureEffect", Commands.Collections.RemoveTextureEffect, new string[] { "player" }, new Type[] { typeof(string) }, null, false),
-			new Command("/sizeof", Commands.Collections.SizeOf, new string[] { "type" }, new Type[] { typeof(string) }, "$(result)", false),
-			new Command("/save", Commands.Collections.SaveGame, new string[] {}, new Type[] {}, "Game saved.", false),
-			new Command("/calc", Commands.Collections.Calc, new string[] { "expression" }, new Type[] { typeof(string) }, "$(result)", false)
+			new Command("/clear", Collections.Clear, new string[] { "player" }, new Type[] { typeof(string) }, null, true),
+			new Command("/give", Collections.Give, new string[] { "player", "item", "ammount" }, new Type[] { typeof(string), typeof(string), typeof(uint) }, null, true),
+			new Command("/remove", Collections.Remove, new string[] { "player", "item", "ammount" }, new Type[] { typeof(string), typeof(string), typeof(uint) }, null, true),
+			new Command("/place", Collections.Place, new string[] { "voxel", "x", "y", "z" }, new Type[] { typeof(string), typeof(int), typeof(int), typeof(int) }, null, true),
+			new Command("/setTextureEffect", Collections.SetTextureEffect, new string[] { "player", "effect" }, new Type[] { typeof(string), typeof(string) }, null, false),
+			new Command("/removeTextureEffect", Collections.RemoveTextureEffect, new string[] { "player" }, new Type[] { typeof(string) }, null, false),
+			new Command("/sizeof", Collections.SizeOf, new string[] { "type" }, new Type[] { typeof(string) }, "$(result)", false),
+			new Command("/save", Collections.SaveGame, new string[] {}, new Type[] {}, "Game saved.", false),
+			new Command("/calc", Collections.Calc, new string[] { "expression" }, new Type[] { typeof(string) }, "$(result)", false)
 		};
 
 		public static void Add(Command command) { commands.Add(command); }
@@ -121,8 +121,8 @@ namespace Minecraft
 		public static class Collections 
 		{
 			public static dynamic Clear(dynamic[] args) { GameManager.GetPlayerByName(args[0]).inventory.Clear(); return null; }
-			public static dynamic Remove(dynamic[] args) { GameManager.GetPlayerByName(args[0]).inventory.TryRemoveItem(new Item(args[1], args[2])); return null; }
-			public static dynamic Give(dynamic[] args) { GameManager.GetPlayerByName(args[0]).inventory.TryAddItem(new Item(args[1], args[2])); return null; }
+			public static dynamic Remove(dynamic[] args) { GameManager.GetPlayerByName(args[0]).inventory.RemoveItemAll(new Item(args[1], args[2])); return null; }
+			public static dynamic Give(dynamic[] args) { GameManager.GetPlayerByName(args[0]).inventory.AddItemAll(new Item(args[1], args[2])); return null; }
 			public static dynamic Place(dynamic[] args) { TerrainManager.AddVoxel(GameManager.GetVoxelTypeById(args[0]), args[1], args[2], args[3]); return null; }
 			public static dynamic SetTextureEffect(dynamic[] args) { GameManager.GetPlayerByName(args[0]).postProcessing.SetTextureEffect(GameManager.textureEffects[args[1]]); return null; }
 			public static dynamic RemoveTextureEffect(dynamic[] args) { GameManager.GetPlayerByName(args[0]).postProcessing.RemoveTextureEffect(); return null; }
