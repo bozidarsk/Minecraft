@@ -4,7 +4,6 @@
 		{
 			"id": "air-block",
 			"description": null,
-			"descriptionSize": { "x": 0, "y": 0 },
 		},
 		{
 			"id": "undefined-block",
@@ -16,19 +15,15 @@
 		{
 			"id": "brick-stairs",
 			"description": "",
-			"descriptionSize": { "x": 35, "y": 0 },
 		},
 		{
 			"id": "brick-slab",
 			"description": "",
-			"descriptionSize": { "x": 35, "y": 0 },
 		},
 		{
 			"id": "iron-pickaxe-item",
 			"description": "",
-			"descriptionSize": { "x": 50, "y": 0 },
 			"stackSize": 1,
-			"allowedEnchantments": [],
 			"toolProperty": 
 			{
 				"damage": 4.8,

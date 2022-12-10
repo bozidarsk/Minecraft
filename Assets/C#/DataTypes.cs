@@ -447,26 +447,6 @@ namespace Minecraft
 			voxelHit = null;
 			return false;
 		}
-
-		private VoxelHit() {}
-		public VoxelHit(Vector3 point, Vector3 normal, float distance, Player player, Chunk chunk, VoxelProperty property, VoxelFace face, VoxelHit previousHit) 
-		{
-			this.point = point;
-			this.normal = normal;
-			this.distance = distance;
-			this.player = player;
-			this.chunk = chunk;
-			this.property = property;
-			this.face = face;
-			this.previousHit = previousHit;
-		}
-	}
-
-	public class ErrorException : Exception 
-	{
-		public ErrorException() : base() {}
-		public ErrorException(string message) : base(message) {}
-		public ErrorException(string message, Exception inner) : base(message, inner) {}
 	}
 
 	public enum Cull 
@@ -499,12 +479,6 @@ namespace Minecraft
 		public ArrayWrapper() {}
 		public ArrayWrapper(T[] content) { this.content = content; }
 	}
-
-	// public struct StringStruct 
-	// {
-	// 	public char[] id;
-	// 	public StringStruct(string id) { this.id = id.ToCharArray(); }
-	// }
 
 	public unsafe struct SecurityAttributes 
 	{

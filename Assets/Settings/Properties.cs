@@ -68,22 +68,10 @@ namespace Minecraft
 	{
 		public string id = "undefined-item";
 		public string description = "This is an undefined item.";
-		public Vector2 descriptionSize = new Vector2(90f, 0f);
 		public uint stackSize = 64;
 		public string[] allowedEnchantments = {};
-		public Enchantment[] enchantments = {};
 		public ToolProperty toolProperty = null;
 		public ArmourProperty armourProperty = null;
-
-		public override string ToString() { return JsonUtility.ToJson(this); }
-	}
-
-	public class EnchantmentProperty 
-	{
-		public string id;
-		public string shader;
-		public uint maxLevel;
-		public string[] incompatibleEnchantments;
 
 		public override string ToString() { return JsonUtility.ToJson(this); }
 	}

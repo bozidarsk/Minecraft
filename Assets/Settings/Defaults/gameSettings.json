@@ -85,7 +85,6 @@
         "voxelProperties": "$(DefaultProperties)/voxel.json",
         "itemProperties": "$(DefaultProperties)/item.json",
         "craftingProperties": "$(DefaultProperties)/crafting.json",
-        "enchantmentProperties": "$(DefaultProperties)/enchantment.json",
         "chunkShader": "Minecraft/Chunk",
         "postProcessingShader": "Minecraft/PostProcessing",
         "droppedItemShader": "Minecraft/DroppedItem",

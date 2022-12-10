@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading;
 using UnityEngine;
 using Utils;
-using Utils.Json;
+using Utils.Files;
 using Minecraft.UI;
 
 namespace Minecraft 
@@ -707,6 +707,8 @@ namespace Minecraft
 
 			/* Rotate voxel. */
 			VoxelProperty property = GameManager.voxelProperties[type];
+
+			TestObject.position = hit.normal + position;
 
 			matrices[position.x, position.y, position.z] = GetDefaultVoxelMatrix(position.x, position.y, position.z);
 

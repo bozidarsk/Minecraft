@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 
-using Utils.Json;
+using Utils.Files;
 
 namespace Minecraft 
 {
@@ -19,7 +19,6 @@ namespace Minecraft
 		public static VoxelProperty[] voxelProperties;
 		public static ItemProperty[] itemProperties;
 		public static CraftingProperty[] craftingProperties;
-		public static EnchantmentProperty[] enchantmentProperties;
 		public static List<Player> players;
 
 		void Awake() { GameManager.Initialize(this); }
@@ -45,7 +44,6 @@ namespace Minecraft
 			GameManager.voxelProperties = Json.FromJsonFile<ArrayWrapper<VoxelProperty>>(GameManager.FormatPath(GameSettings.path.voxelProperties)).content;
 			GameManager.itemProperties = Json.FromJsonFile<ArrayWrapper<ItemProperty>>(GameManager.FormatPath(GameSettings.path.itemProperties)).content;
 			GameManager.craftingProperties = Json.FromJsonFile<ArrayWrapper<CraftingProperty>>(GameManager.FormatPath(GameSettings.path.craftingProperties)).content;
-			GameManager.enchantmentProperties = Json.FromJsonFile<ArrayWrapper<EnchantmentProperty>>(GameManager.FormatPath(GameSettings.path.enchantmentProperties)).content;
 
 			GameManager.players = new List<Player>();
 			GameManager.players = GameObject.FindGameObjectsWithTag("Player").Select(x => x.GetComponent<Player>()).ToList();
@@ -71,7 +69,7 @@ namespace Minecraft
 			for (int i = 0; i < GameManager.voxelProperties.Length; i++) 
 			{ 
 				if (GameManager.voxelProperties[i].light > 15) 
-				{ Console.Exception(new System.OverflowException("VoxelProperty.light must be less than 16. (at " + GameManager.voxelProperties[i].id + ")")); Console.Crash(); }
+				{ new System.OverflowException("VoxelProperty.light must be less than 16. (at " + GameManager.voxelProperties[i].id + ")"); }
 			}
 
 			// #if UNITY_EDITOR

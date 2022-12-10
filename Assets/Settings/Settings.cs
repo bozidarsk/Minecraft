@@ -48,7 +48,6 @@ namespace Minecraft
 			public string voxelProperties;
 			public string itemProperties;
 			public string craftingProperties;
-			public string enchantmentProperties;
 
 			[Header("Shaders")]
 			public string chunkShader;

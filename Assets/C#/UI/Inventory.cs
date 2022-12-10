@@ -37,6 +37,8 @@ namespace Minecraft.UI
 			cursorSlot = new InventorySlot(cursor, this, null);
 			description = cursorSlot.gameObject.GetComponentsInChildren<RectTransform>().Where(x => x.name == "Description").ToArray()[0];
 			descriptionText = description.gameObject.GetComponentsInChildren<TMPro.TextMeshProUGUI>().ToArray()[0];
+
+			description.gameObject.SetActive(false);
 		}
 
 		protected virtual void Update() 
@@ -51,12 +53,12 @@ namespace Minecraft.UI
 			Vector3[] corners = new Vector3[4];
 			gui.GetWorldCorners(corners);
 
-			description.gameObject.SetActive(
-				(mousePosition.x > corners[0].x && mousePosition.y > corners[0].y) && 
-				(mousePosition.x > corners[1].x && mousePosition.y < corners[1].y) && 
-				(mousePosition.x < corners[2].x && mousePosition.y < corners[2].y) && 
-				(mousePosition.x < corners[3].x && mousePosition.y > corners[3].y)
-			);
+			// description.gameObject.SetActive(
+			// 	(mousePosition.x > corners[0].x && mousePosition.y > corners[0].y) && 
+			// 	(mousePosition.x > corners[1].x && mousePosition.y < corners[1].y) && 
+			// 	(mousePosition.x < corners[2].x && mousePosition.y < corners[2].y) && 
+			// 	(mousePosition.x < corners[3].x && mousePosition.y > corners[3].y)
+			// );
 
 			cursorSlot.gameObject.transform.position = mousePosition;
 			gui.transform.localScale = Vector3.one * PlayerSettings.graphics.GUIScale;

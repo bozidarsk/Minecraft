@@ -9,8 +9,8 @@ namespace Minecraft.UnityEditor
 {
 	public static class MenuItems 
 	{
-		[MenuItem("Tools/Recompile")]
-		public static void Recompile() { AssetDatabase.Refresh(); CompilationPipeline.RequestScriptCompilation(); }
+		[MenuItem("Tools/Reload")]
+		public static void Reload() { AssetDatabase.Refresh(); CompilationPipeline.RequestScriptCompilation(); }
 	}
 }
 #endif
