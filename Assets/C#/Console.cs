@@ -1,4 +1,8 @@
-﻿using System.Collections;
+﻿#if !UNITY_EDITOR
+#define ENABLE_CONSOLE
+#endif
+
+using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -17,11 +21,21 @@ namespace Minecraft
 		[DllImport("user32.dll")] private static extern bool ShowWindow(void* hWnd, int nCmdShow);
 		[DllImport("kernel32.dll")] private static extern void* GetConsoleWindow();
 		[DllImport("kernel32.dll")] private static extern bool SetConsoleTextAttribute(void* hConsoleOutput, ushort wAttributes);
-		[DllImport("kernel32.dll")] private static extern bool SetConsoleTitle(void* lpConsoleTitle);
+		[DllImport("kernel32.dll")] private static extern bool SetConsoleTitle(byte* lpConsoleTitle);
 		[DllImport("kernel32.dll")] private static extern bool SetConsoleScreenBufferSize(void* hConsoleOutput, COORD dwSize);
 		[DllImport("kernel32.dll")] private static extern bool SetConsoleActiveScreenBuffer(void* hConsoleOutput);
 		[DllImport("kernel32.dll")] private static extern bool AllocConsole();
 		[DllImport("kernel32.dll")] private static extern bool FreeConsole();
+
+		[DllImport("kernel32.dll")] private static extern void* CreateFileA(
+			byte* lpFileName,
+			uint dwDesiredAccess,
+			uint dwShareMode,
+			SecurityAttributes* lpSecurityAttributes,
+			uint dwCreationDisposition,
+			uint dwFlagsAndAttributes,
+			void* hTemplateFile
+		);
 
 		[DllImport("kernel32.dll")] private static extern void* CreateConsoleScreenBuffer(
 			uint dwDesiredAccess,
@@ -33,14 +47,30 @@ namespace Minecraft
 
 		[DllImport("kernel32.dll")] private static extern bool WriteConsole(
 			void* hConsoleOutput,
-			void* lpBuffer,
+			byte* lpBuffer,
 			uint nNumberOfCharsToWrite,
 			out uint* lpNumberOfCharsWritten,
 			void* lpReserved
 		);
 
+		[DllImport("kernel32.dll")] private static extern bool ReadConsole(
+			void* hConsoleInput,
+			void* lpBuffer,
+			uint nNumberOfCharsToRead,
+			out uint* lpNumberOfCharsRead,
+			void* pInputControl
+		);
+
 		public static void* Handle { private set; get; }
-		public static void* Buffer { private set; get; }
+		public static void* ScreenBuffer { private set; get; }
+		public static void* InputBuffer { private set; get; }
+
+		private static string title;
+		public static string Title 
+		{
+			set { title = value; fixed (byte* chars = &Encoding.ASCII.GetBytes(value + "\0")[0]) { SetConsoleTitle(chars); } }
+			get { return title; }
+		}
 
 		private const ushort FOREGROUND_BLUE      = 0x0001;
 		private const ushort FOREGROUND_GREEN     = 0x0002;
@@ -56,20 +86,22 @@ namespace Minecraft
 			#if UNITY_EDITOR
 			EditorApplication.playModeStateChanged += (PlayModeStateChange change) => 
 			{ if (change == PlayModeStateChange.ExitingPlayMode) { Detach(); } };
-			#else
-			Application.logMessageReceived += RedirectedLogs;
 			#endif
 
 			Detach();
 			Attach();
 
-			fixed (byte* chars = &Encoding.ASCII.GetBytes("Minecraft - Debug Console\x0000")[0]) { SetConsoleTitle(chars); }
+			Console.Title = "Minecraft - Debug Console";
 
-			#if UNITY_EDITOR
-			SetActive(false);
-			#else
+			#if ENABLE_CONSOLE
+			Application.logMessageReceived += RedirectedLogs;
 			SetActive(true);
+			#else
+			SetActive(false);
 			#endif
+
+			Write("How: ");
+			// Debug.Log(ReadLine());
 		}
 
 		public static void SetActive(bool state) { ShowWindow(Handle, (state) ? 5 : 0); }
@@ -77,7 +109,8 @@ namespace Minecraft
 		public static void Detach() 
 		{
 			Handle = null;
-			Buffer = null;
+			ScreenBuffer = null;
+			InputBuffer = null;
 			FreeConsole();
 		}
 
@@ -87,23 +120,16 @@ namespace Minecraft
 
 			COORD size;
 			size.x = 120;
-			size.y = 30;
+			size.y = 9001;
 
-			Buffer = CreateConsoleScreenBuffer(0x80000000 | 0x40000000, 0, null, 1, null);
-			SetConsoleScreenBufferSize(Buffer, size);
-			SetConsoleActiveScreenBuffer(Buffer);
+			ScreenBuffer = CreateConsoleScreenBuffer(0x80000000 | 0x40000000, 0, null, 1, null);
+			SetConsoleScreenBufferSize(ScreenBuffer, size);
+			SetConsoleActiveScreenBuffer(ScreenBuffer);
+
+			fixed (byte* name = &Encoding.ASCII.GetBytes("CONIN$\0")[0]) 
+			{ InputBuffer = CreateFileA(name, 0x80000000 | 0x40000000, 0x00000001 | 0x00000002, null, 3, 0x80, null); }
 
 			Handle = GetConsoleWindow();
-		}
-
-		public static void Crash() 
-		{
-			SetActive(true);
-			#if UNITY_EDITOR
-			EditorApplication.isPlaying = false;
-			#else
-			Environment.Exit(1);
-			#endif
 		}
 
 		private static void RedirectedLogs(string input, string stackTrace, LogType type) 
@@ -120,7 +146,7 @@ namespace Minecraft
 					Error(input);
 					break;
 				case LogType.Exception:
-					Exception(new ErrorException(input));
+					Exception(input, stackTrace);
 					break;
 				default:
 					Log(input);
@@ -128,59 +154,75 @@ namespace Minecraft
 			}
 		}
 
+		public static string ReadLine() 
+		{
+			string output = "";
+			for (char c = Read(); c != '\n'; c = Read()) { output += c.ToString(); }
+			return output;
+		}
+
 		public static void Log(dynamic input) { Log(input.ToString()); }
 		private static void Log(string input) 
 		{
-			#if UNITY_EDITOR
-			Debug.Log(input);
-			#else
+			#if ENABLE_CONSOLE
 			Write(input + "\n");
+			#endif
+
+			#if !ENABLE_CONSOLE && UNITY_EDITOR
+			Debug.Log(input);
 			#endif
 		}
 
 		public static void Warning(dynamic input) { Warning(input.ToString()); }
 		private static void Warning(string input) 
 		{
-			#if UNITY_EDITOR
-			Debug.LogWarning(input);
-			#else
-			SetConsoleTextAttribute(Buffer, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			#if ENABLE_CONSOLE
+			SetConsoleTextAttribute(ScreenBuffer, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
 			Write(input + "\n");
-			SetConsoleTextAttribute(Buffer, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+			SetConsoleTextAttribute(ScreenBuffer, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+			#endif
+
+			#if !ENABLE_CONSOLE && UNITY_EDITOR
+			Debug.LogWarning(input);
 			#endif
 		}
 
 		public static void Error(dynamic input) { Error(input.ToString()); }
 		private static void Error(string input) 
 		{
-			#if UNITY_EDITOR
-			Debug.LogError(input);
-			#else
-			SetConsoleTextAttribute(Buffer, FOREGROUND_RED | FOREGROUND_INTENSITY);
+			#if ENABLE_CONSOLE
+			SetConsoleTextAttribute(ScreenBuffer, FOREGROUND_RED | FOREGROUND_INTENSITY);
 			Write(input + "\n");
-			SetConsoleTextAttribute(Buffer, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+			SetConsoleTextAttribute(ScreenBuffer, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+			#endif
+
+			#if !ENABLE_CONSOLE && UNITY_EDITOR
+			Debug.LogError(input);
 			#endif
 		}
 
-		public static void Exception(System.Exception exception) 
+		private static void Exception(string input, string stackTrace) 
 		{
-			#if UNITY_EDITOR
-			Debug.LogException(exception);
-			#else
-			string stack = "";
-			List<string> list = System.Environment.StackTrace.Split('\x000a').ToList();
-			for (int i = 2; i < list.Count; i++) { stack += list[i] + ((i < list.Count - 1) ? "\n" : ""); }
-
-			Error(exception.ToString());
-			Error(stack);
+			#if ENABLE_CONSOLE
+			Error(input);
+			Error(stackTrace);
 			#endif
+		}
+
+		private static char Read() 
+		{
+			fixed (byte* output = &(new byte[1])[0]) 
+			{
+				ReadConsole(InputBuffer, output, 1, out uint* charsRead, null);
+				return Encoding.ASCII.GetString(new byte[] { *output })[0];
+			}
 		}
 
 		private static void Write(string input) 
 		{
-			fixed (byte* chars = &Encoding.ASCII.GetBytes(input + "\x0000")[0]) 
+			fixed (byte* chars = &Encoding.ASCII.GetBytes(input + "\0")[0]) 
 			{
-				WriteConsole(Buffer, chars, (uint)input.Length, out uint* charsWritten, null);
+				WriteConsole(ScreenBuffer, chars, (uint)input.Length, out uint* charsWritten, null);
 			}
 		}
 	}
