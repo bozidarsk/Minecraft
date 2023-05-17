@@ -1,0 +1,1966 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"l",
+				"LCURLY"
+			],
+			[
+				"xor",
+				"XOREQ"
+			],
+			[
+				"xo",
+				"XOREQ"
+			],
+			[
+				"LS",
+				"LS"
+			],
+			[
+				"ACC",
+				"ACCESS_SIZE"
+			],
+			[
+				"OVE",
+				"OVERRIDE_ACCESS"
+			],
+			[
+				"STA",
+				"STATIC_ACCESS"
+			],
+			[
+				"PUB",
+				"PUBLIC_ACCESS"
+			],
+			[
+				"la",
+				"_lambda_params"
+			],
+			[
+				"EM",
+				"EMPTYSTR"
+			],
+			[
+				"para",
+				"paramdecls"
+			],
+			[
+				"stmt",
+				"stmt"
+			],
+			[
+				"string",
+				"string.h\tstandard header (deprecated)"
+			],
+			[
+				"st",
+				"strings"
+			],
+			[
+				"Get",
+				"GetEmptyString"
+			],
+			[
+				"c",
+				"c_str"
+			],
+			[
+				"C",
+				"_CSTR"
+			],
+			[
+				"_par",
+				"_paramdecls"
+			],
+			[
+				"S",
+				"JoinStrings"
+			],
+			[
+				"de",
+				"define"
+			],
+			[
+				"expr",
+				"stmt_expr"
+			],
+			[
+				"stm",
+				"stmt_op"
+			],
+			[
+				"t",
+				"this"
+			],
+			[
+				"Con",
+				"Contains"
+			],
+			[
+				"met",
+				"methods"
+			],
+			[
+				"ar",
+				"argsnew"
+			],
+			[
+				"a",
+				"argsnew"
+			],
+			[
+				"class",
+				"classes"
+			],
+			[
+				"cla",
+				"classes"
+			],
+			[
+				"I",
+				"IDisplay2"
+			],
+			[
+				"Dra",
+				"DrawSquare2"
+			],
+			[
+				"clas",
+				"classes"
+			],
+			[
+				"ep",
+				"expr_e"
+			],
+			[
+				"LSEQ",
+				"LSEQ_OP"
+			],
+			[
+				"cnse",
+				"cnst_expr"
+			],
+			[
+				"op",
+				"stmt_op"
+			],
+			[
+				"MM",
+				"MM_OP"
+			],
+			[
+				"PP",
+				"PP_OP"
+			],
+			[
+				"cn",
+				"cnst_expr"
+			],
+			[
+				"Min",
+				"MINUS"
+			],
+			[
+				"PL",
+				"PLUS"
+			],
+			[
+				"Mu",
+				"MUL"
+			],
+			[
+				"_fun",
+				"_functionAccess"
+			],
+			[
+				"fun",
+				"functionAccess"
+			],
+			[
+				"func",
+				"functions"
+			],
+			[
+				"ove",
+				"OVERRIDE_ACCESS"
+			],
+			[
+				"tra",
+				"translator"
+			],
+			[
+				"char",
+				"CHARCONST_TYPE"
+			],
+			[
+				"str",
+				"STRINGCONST_TYPE"
+			],
+			[
+				"Boo",
+				"BOOLCONST"
+			],
+			[
+				"def",
+				"defparm"
+			],
+			[
+				"com",
+				"com_stmt"
+			],
+			[
+				"var",
+				"var_defs"
+			],
+			[
+				"add",
+				"add_function"
+			],
+			[
+				"num",
+				"num_params"
+			],
+			[
+				"param",
+				"parameter"
+			],
+			[
+				"ex",
+				"expression"
+			],
+			[
+				"id",
+				"identifier"
+			],
+			[
+				"exp",
+				"expression"
+			],
+			[
+				"iden",
+				"identifier"
+			],
+			[
+				"asin",
+				"asin_"
+			],
+			[
+				"pri",
+				"printf\tprintf …"
+			],
+			[
+				"pr",
+				"printf\tprintf …"
+			],
+			[
+				"u",
+				"unsigned"
+			],
+			[
+				"Sea",
+				"SearchLoop"
+			],
+			[
+				"P",
+				"Point"
+			],
+			[
+				"obj",
+				"object"
+			],
+			[
+				"o",
+				"object"
+			],
+			[
+				"root",
+				"rootType"
+			],
+			[
+				"loca",
+				"Location"
+			],
+			[
+				"GetO",
+				"GetObjectsByName"
+			],
+			[
+				"chi",
+				"Childs"
+			],
+			[
+				"To",
+				"ToXaml"
+			],
+			[
+				"Att",
+				"Attributes"
+			],
+			[
+				"At",
+				"Attributes"
+			],
+			[
+				"sr",
+				"string"
+			],
+			[
+				"en",
+				"EndOfScope"
+			],
+			[
+				"L",
+				"Length"
+			],
+			[
+				"Sti",
+				"String2"
+			],
+			[
+				"end",
+				"endValue"
+			],
+			[
+				"nam",
+				"Name"
+			],
+			[
+				"inp",
+				"InputBuffer"
+			],
+			[
+				"Read",
+				"Read"
+			],
+			[
+				"Pos",
+				"PostMessage"
+			],
+			[
+				"stack",
+				"stackTrace"
+			],
+			[
+				"UI",
+				"UNITY_EDITOR"
+			],
+			[
+				"chr",
+				"charsWritten"
+			],
+			[
+				"file",
+				"FileName"
+			],
+			[
+				"inc",
+				"include"
+			],
+			[
+				"Mime",
+				"Mime"
+			],
+			[
+				"Ht",
+				"HTTPServer"
+			],
+			[
+				"GET",
+				"GetBytes"
+			],
+			[
+				"get",
+				"getAttribute"
+			],
+			[
+				"p",
+				"pageY"
+			],
+			[
+				"cont",
+				"context"
+			],
+			[
+				"con",
+				"context"
+			],
+			[
+				"fn",
+				"function"
+			],
+			[
+				"all",
+				"align-self\tproperty"
+			],
+			[
+				"context",
+				"contextJS"
+			],
+			[
+				"back",
+				"background-color\tproperty"
+			],
+			[
+				"sea",
+				"searchOptions"
+			],
+			[
+				"dic",
+				"dictionary"
+			],
+			[
+				"dict",
+				"dictionary"
+			],
+			[
+				"pair",
+				"pairs"
+			],
+			[
+				"Arr",
+				"Array"
+			],
+			[
+				"le",
+				"lType"
+			],
+			[
+				"Getc",
+				"GetCustomAttributes"
+			],
+			[
+				"at",
+				"attrs"
+			],
+			[
+				"fie",
+				"fields"
+			],
+			[
+				"Json",
+				"JsonNameAttribute"
+			],
+			[
+				"Jsno",
+				"JsonName"
+			],
+			[
+				"lan",
+				"lang0"
+			],
+			[
+				"Index",
+				"IdnexOf"
+			],
+			[
+				"γι",
+				"γιος"
+			],
+			[
+				"Em",
+				"EmailAddress"
+			],
+			[
+				"Mai",
+				"MailHelper"
+			],
+			[
+				"Cur",
+				"Currency"
+			],
+			[
+				"bas",
+				"baseCurrency"
+			],
+			[
+				"tab",
+				"table"
+			],
+			[
+				"Upda",
+				"UpdateList"
+			],
+			[
+				"rmo",
+				"remove"
+			],
+			[
+				"cure",
+				"currencies"
+			],
+			[
+				"ta",
+				"tables"
+			],
+			[
+				"Cu",
+				"Currency"
+			],
+			[
+				"Cure",
+				"Currency"
+			],
+			[
+				"In",
+				"Input"
+			],
+			[
+				"Exit",
+				"ExitReason"
+			],
+			[
+				"Exi",
+				"ExitReason"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "Assets/C#/Player.cs",
+			"settings":
+			{
+				"buffer_size": 8635,
+				"encoding": "UTF-8 with BOM",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "Assets/C#/Terrain/Chunk.cs",
+			"settings":
+			{
+				"buffer_size": 28838,
+				"encoding": "UTF-8 with BOM",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "Assets/C#/DataTypes.cs",
+			"settings":
+			{
+				"buffer_size": 15135,
+				"encoding": "UTF-8 with BOM",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "Assets/C#/Console.cs",
+			"settings":
+			{
+				"buffer_size": 6349,
+				"encoding": "UTF-8 with BOM",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "Assets/Settings/Defaults/gameSettings.json",
+			"settings":
+			{
+				"buffer_size": 3302,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "Assets/Settings/Defaults/playerSettings.json",
+			"settings":
+			{
+				"buffer_size": 1309,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "Assets/Settings/Defaults/properties/voxel.json",
+			"settings":
+			{
+				"buffer_size": 1955,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "Assets/Settings/Defaults/properties/item.json",
+			"settings":
+			{
+				"buffer_size": 538,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+		[
+			[
+				[
+					"Packages/C++/C++ Single File.sublime-build",
+					""
+				],
+				[
+					"Packages/C++/C++ Single File.sublime-build",
+					"Run"
+				]
+			],
+			[
+				"Packages/C++/C++ Single File.sublime-build",
+				""
+			]
+		]
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"preview in ",
+				"Markdown Preview: Preview in Browser"
+			],
+			[
+				"markdown p",
+				"Markdown Preview: Preview in Browser"
+			],
+			[
+				"Snippet: ",
+				"Snippet: #!/usr/bin/env"
+			]
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 202.0,
+		"history":
+		[
+			"print(\"AA\")",
+			"cls",
+			"clear",
+			"system(\"python3 -v\")",
+			"python3 -v",
+			"running cs main out",
+			"cs main out",
+			"exit()",
+			"print(\"a\")",
+			"print(a)",
+			"python --version",
+			"python3",
+			"python",
+			"print(5)",
+			"for i in range(0, 11): print(i)",
+			"for i in range(0, 11):",
+			"print(\"aaaa\")",
+			"print(\"aa\")",
+			"sublime.console_log(\"aa\")",
+			"console_log(\"aa\")",
+			"cd \"C:\\Users\\Bobi\\\"Google Drive\"\\Проект\\.cpp\"",
+			"cd C:\\Users\\Bobi\\Google Drive\\Проект\\.cpp"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/D/Unity Projects/Minecraft 2.0/Assets",
+		"/D/Unity Projects/Minecraft 2.0/Assets/C#",
+		"/D/Unity Projects/Minecraft 2.0/Assets/C#/EditorTools",
+		"/D/Unity Projects/Minecraft 2.0/Assets/C#/UI",
+		"/D/Unity Projects/Minecraft 2.0/Assets/Includes"
+	],
+	"file_history":
+	[
+		"/D/Projects/cs2cpp/translator.c",
+		"/D/Projects/cs2cpp/translator.h",
+		"/D/Projects/cs2cpp/lexer.l",
+		"/D/Projects/cs2cpp/parser.y",
+		"/C/Users/Bobi/Desktop/minecraft.sublime-project",
+		"/D/Projects/cs2cpp/.gitignore",
+		"/D/Projects/cs2cpp/out/y.tab.c",
+		"/D/Projects/cs2cpp/build",
+		"/D/Projects/cs2cpp/cs.l",
+		"/D/Projects/cs2cpp/cs.y",
+		"/D/Projects/llvmcs/translator.c",
+		"/D/Projects/llvmcs/translator.h",
+		"/D/Projects/llvmcs/cs.l",
+		"/D/Projects/llvmcs/cs.y",
+		"/D/Projects/llvmcs/test.cs",
+		"/C/Users/Bobi/Desktop/test3/main.cpp",
+		"/C/Users/Bobi/Google Drive/Училще/НПМГ/2022-2023/.md/filo.md",
+		"/C/Users/Bobi/Desktop/filo.md",
+		"/D/Projects/ilcs/Method.cs",
+		"/D/Projects/ilcs/Class.cs",
+		"/D/Projects/ilcs/Assemby.cs",
+		"/D/Projects/ilcs/main.cs",
+		"/C/Users/Bobi/Desktop/tmp/main.cs",
+		"/D/Projects/ilcs/Access.cs",
+		"/C/Users/Bobi/Desktop/test2/Display.cs",
+		"/D/Projects/ilcs/Field.cs",
+		"/D/Projects/Includes/.cs/Utils_Array2.cs",
+		"/C/Users/Bobi/Desktop/test2/out.res",
+		"/C/Users/Bobi/Desktop/test2/project.csproj",
+		"/C/Users/Bobi/Desktop/test2/test.c",
+		"/C/Users/Bobi/Desktop/test2/predefs.cs",
+		"/C/Users/Bobi/Desktop/tysila/global.json",
+		"/C/Users/Bobi/Desktop/test2/main.cs",
+		"/D/Unity Projects/ObektiPoGeografiq/Assets/C#/Listener.cs",
+		"/C/Users/Bobi/Desktop/test2/csobj.o",
+		"/C/Users/Bobi/Desktop/test2/csobj.map",
+		"/C/Users/Bobi/Desktop/test2/test.o",
+		"/C/Users/Bobi/Desktop/test2/obj/Release/net7.0/win10-x64/native/link.rsp",
+		"/C/Users/Bobi/Desktop/test2/Display.exe",
+		"/D/Projects/llvmcs/y.output",
+		"/D/Projects/llvmcs/conj.output",
+		"/D/Projects/llvmcs/conj.y",
+		"/C/Users/Bobi/Desktop/test2/Display_ref.exe",
+		"/C/Users/Bobi/Desktop/test2/cpp/Display.cpp",
+		"/C/Users/Bobi/Desktop/test2/cpp/Display.h",
+		"/C/Users/Bobi/Desktop/test3/System.Object.cs",
+		"/C/Users/Bobi/Desktop/test3/void.cs",
+		"/C/Users/Bobi/Desktop/test2/buffer.cs",
+		"/D/Projects/llvmcs/conj.tab.c",
+		"/C/Users/Bobi/Desktop/test2/System.Object.cs",
+		"/C/Users/Bobi/Desktop/test2/test.cs",
+		"/C/Users/Bobi/Desktop/test2/main.c",
+		"/D/Projects/CustomOS/Math/math.c",
+		"/D/Projects/CustomOS/include/math.h",
+		"/D/Unity Projects/ObektiPoGeografiq/Assets/C#/Data.cs",
+		"/D/Unity Projects/ObektiPoGeografiq/Assets/objects.json",
+		"/D/Unity Projects/ObektiPoGeografiq/Assets/C#/Pin.cs",
+		"/D/Projects/Includes/.cs/Utils_Math.cs",
+		"/C/Users/Bobi/Desktop/objects.json",
+		"/D/Projects/CustomOS/Math/set/set-sin.py",
+		"/D/Unity Projects/ObektiPoGeografiq/Assets/out.json",
+		"/D/Unity Projects/ObektiPoGeografiq/Assets/C#/Map.cs",
+		"/D/Projects/ObektiPoGeografiq/objects.json",
+		"/D/Projects/Includes/.cs/Utils.Files_Json.cs",
+		"/D/Projects/Includes/.cs/Utils.cs",
+		"/D/Projects/ObektiPoGeografiq/data.cs",
+		"/D/Projects/ObektiPoGeografiq/map.cs",
+		"/D/Projects/ObektiPoGeografiq/map.designer.cs",
+		"/C/Users/Bobi/3D Objects/Key Press/Form1.Designer.cs",
+		"/C/Users/Bobi/3D Objects/Key Press/Form1.cs",
+		"/C/Users/Bobi/3D Objects/Search/Search()/Form1.cs",
+		"/C/Users/Bobi/3D Objects/Search/Search()/Form1.Designer.cs",
+		"/C/Users/Bobi/3D Objects/Translate/Translate/Form1.Designer.cs",
+		"/D/Projects/Includes/.cs/Utils.Collections.cs",
+		"/D/Projects/ObektiPoGeografiq/settings.json",
+		"/D/Projects/Includes/.cs/Utils.Files_Xaml.cs",
+		"/C/Users/Bobi/Desktop/test/test.html",
+		"/C/Users/Bobi/Desktop/test/out.html",
+		"/D/Projects/ObektiPoGeografiq/map.elements.cs",
+		"/C/Users/Bobi/3D Objects/Translate/Translate/Form1.cs",
+		"/D/Projects/ObektiPoGeografiq/main.cs",
+		"/D/Projects/ObektiPoGeografiq/page.cs",
+		"/C/Users/Bobi/3D Objects/Translate/Translate/Program.cs",
+		"/D/Projects/CalculatorApp/CalculatorApp/CalculatorApp/Pages/PolynomialCalculatorPage.xaml",
+		"/C/Users/Bobi/Desktop/test/main.cs",
+		"/C/Users/Bobi/Desktop/test/out.json",
+		"/D/Projects/Includes/.cs/Utils_String2.cs",
+		"/D/Projects/html/index.html",
+		"/D/Projects/Framework/cs/main.cs",
+		"/D/Projects/Includes/.cs/Utils.Files.cs",
+		"/D/Unity Projects/Minecraft 2.0/Assets/C#/UI/Inventory.cs",
+		"/D/Unity Projects/Minecraft 2.0/Assets/C#/GameManager.cs",
+		"/D/Unity Projects/Minecraft 2.0/Assets/C#/UI/Inventories/PlayerInventory.cs",
+		"/D/Unity Projects/Minecraft 2.0/Assets/Settings/Settings.cs",
+		"/D/Unity Projects/Minecraft 2.0/Assets/Settings/GameSettings.cs",
+		"/D/Unity Projects/Minecraft 2.0/Assets/Settings/Properties.cs",
+		"/D/Unity Projects/Minecraft 2.0/Assets/Settings/Defaults/properties/enchantment.json",
+		"/D/Unity Projects/Minecraft 2.0/Assets/C#/CameraController.cs",
+		"/D/Unity Projects/Minecraft 2.0/Assets/C#/UI/InventorySlot.cs",
+		"/D/Unity Projects/Minecraft 2.0/Assets/C#/UI/SlotController.cs",
+		"/D/Unity Projects/Minecraft 2.0/Assets/C#/UI/SlotGroup.cs",
+		"/D/Unity Projects/Minecraft 2.0/Assets/Settings/Defaults/properties/item.json",
+		"/D/Unity Projects/Minecraft 2.0/Assets/C#/EditorTools/MenuItems.cs",
+		"/D/Unity Projects/Minecraft 2.0/Assets/C#/Tools.cs",
+		"/D/Unity Projects/Minecraft 2.0/Assets/C#/Console.cs",
+		"/D/Unity Projects/Minecraft 2.0/Assets/C#/Mono.cs",
+		"/D/Unity Projects/Minecraft 2.0/Assets/Settings/PlayerSettings.cs",
+		"/C/Users/Bobi/Desktop/tmp/tmp.py",
+		"/C/Users/Bobi/Desktop/tmp.txt",
+		"/D/Projects/CustomOS/.gitignore",
+		"/D/Projects/HLSL-Shader/main.cs",
+		"/D/Projects/HLSL-Shader/Compiler.cs",
+		"/C/Users/Bobi/Desktop/tmp/tmp.cpp",
+		"/D/Projects/HLSL-Shader/main.cpp",
+		"/D/Windows Kits/Include/10.0.20348.0/um/winnt.h",
+		"/C/Users/Bobi/Google Drive/Училще/НПМГ/2022-2023/.md/Nino Rota.md",
+		"/C/MinGW/include/excpt.h",
+		"/D/Windows Kits/Include/10.0.20348.0/shared/excpt.h",
+		"/D/Windows Kits/10/Include/10.0.19041.0/um/winbase.inl",
+		"/D/Windows Kits/Include/10.0.20348.0/shared/minwindef.h",
+		"/C/Users/Bobi/Google Drive/Училще/НПМГ/2022-2023/.md/zenon.md",
+		"/D/Projects/CLI-Tools/dictionary/main.cs",
+		"/D/Projects/Includes/.cs/Utils.Web_HTTPServer.cs",
+		"/D/Projects/CLI-Tools/dirserver/context.html",
+		"/D/Unity Projects/Minecraft 2.0/Assets/Objects/gui/SlotButton.prefab",
+		"/D/Unity Projects/Minecraft 2.0/Assets/C#.meta",
+		"/D/Projects/HLSL-Shader/bin/Debug/net6.0/project.pdb",
+		"/D/Projects/CLI-Tools/email/main.cs"
+	],
+	"find":
+	{
+		"height": 40.0
+	},
+	"find_in_files":
+	{
+		"height": 301.0,
+		"where_history":
+		[
+			"*.cs",
+			"D:\\Unity Projects\\Minecraft 2.0\\Assets\\C#\\Settings",
+			"D:\\Unity Projects\\Minecraft 2.0\\Assets\\C#",
+			"D:\\Unity Projects\\Minecraft 2.0\\Assets",
+			"D:\\Unity Projects\\Minecraft 2.0\\Assets\\C#"
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": true,
+		"find_history":
+		[
+			"$$",
+			"yylex",
+			"EMPTY_ACCESS",
+			"left",
+			"SEMICOLON",
+			"COLON",
+			"QMARK",
+			"COMMA",
+			"SEMICOLON",
+			"RSQUARE",
+			"LSQUARE",
+			"RCURLY",
+			"LCURLY",
+			"RBRACKET",
+			"LBRACKET",
+			"MOD",
+			"LAMBDA",
+			"GTEQ",
+			"GT",
+			"LTEQ",
+			"LT",
+			"MM",
+			"PP",
+			"MINUSEQ",
+			"MINUS",
+			"PLUSEQ",
+			"PLUS",
+			"DIVEQ",
+			"DIV",
+			"MULEQ",
+			"MUL",
+			"MINUS",
+			"/*EMPTY*/",
+			"XOR",
+			"MO",
+			"{",
+			"%s",
+			"s",
+			" ",
+			"printf",
+			"printf(\"%s\\n\", $$);",
+			"printf(\"%s\\\\n\", \\$\\$);",
+			"']'",
+			"'['",
+			"RCURLY",
+			"{ ",
+			"{",
+			"'?'",
+			"':'",
+			"')'",
+			"'('",
+			"'}'",
+			"'{'",
+			"';'",
+			"BRACKET",
+			"','",
+			"'='",
+			"SEMICOLON",
+			"COMMA",
+			"std::string s(yytext);",
+			"{",
+			"$$);",
+			";",
+			"previous",
+			"statement",
+			"printf",
+			"ACCESS",
+			" ",
+			"ACCESS",
+			"yyexhaustedlab",
+			"bin",
+			"cs2cpp",
+			"l",
+			"bin",
+			"paramdecl",
+			"{",
+			"IDENTIFIER IDENTIFIER",
+			"{",
+			"lambdaparams",
+			"{",
+			" + ",
+			"GTEQ",
+			"LAMBDA",
+			"GTEQ",
+			"/*TYPE*/",
+			"char",
+			"Method",
+			"methods",
+			"void",
+			"_EMPTY",
+			"HAS_FIELD",
+			"output",
+			"out",
+			"output",
+			"fieldAccess",
+			"classAccess",
+			"ctorAccess",
+			"; _",
+			"Function",
+			"f",
+			"function",
+			"to_string",
+			"char",
+			"_",
+			"char",
+			"JoinStrings\\(\\x20",
+			"_",
+			"const",
+			" _",
+			"access",
+			"\", ",
+			"видове",
+			"(",
+			" (",
+			"логическа",
+			"\\.",
+			".",
+			"=>",
+			"ААА",
+			"отрицателно",
+			"утвърдително",
+			"качествено",
+			"частни",
+			"общи",
+			"вакти",
+			"</b>",
+			"####",
+			"|"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": true,
+		"replace_history":
+		[
+			"",
+			"EMPTY",
+			"JoinStrings(",
+			"### ",
+			"); ",
+			"\\); }",
+			" \\); }",
+			"JoinStrings(",
+			"_EMPTYSTR",
+			", ",
+			"std::string s = \"\";",
+			"EM",
+			"s",
+			"$$ = _EMPTYSTR",
+			"_EMPTYSTR",
+			" std::cout <<",
+			"std::cout <<",
+			"_STR(s); s",
+			"_STR(x); s",
+			"_GSTR(s);",
+			" + ",
+			"s += ",
+			"_GSTR",
+			"$$ = _CSTR;",
+			"+",
+			" + ",
+			");",
+			"_STR(",
+			"this->",
+			"yylval",
+			"NAMESPACE",
+			"CLASS",
+			"/*EMPTY*/",
+			"/* EMPTY */",
+			"NOTEQ",
+			"MM",
+			"PP",
+			"RS",
+			"LS",
+			"LTEQ",
+			"GTEQ",
+			"EQ",
+			"OROR",
+			"ANDAND",
+			"MINUSEQ",
+			"PLUSEQ",
+			"DIVEQ",
+			"MULEQ",
+			"RSEQ",
+			"LSEQ",
+			"XOREQ",
+			"OREQ",
+			"ANDEQ",
+			"ELSE",
+			"RETURN",
+			"FOR",
+			"WHILE",
+			"IF",
+			"READONLY",
+			"CONST",
+			"SEALED",
+			"ABSTRACT",
+			"STATIC",
+			"OVERRIDE",
+			"VIRTUAL",
+			"PROTECTED",
+			"PUBLIC",
+			"PRIVATE",
+			"function",
+			"functions",
+			"method",
+			"b",
+			"float",
+			"double",
+			"float",
+			"double",
+			"b",
+			"a",
+			"n",
+			"intn",
+			"int",
+			"uint",
+			"float.Parse",
+			"y",
+			"x",
+			"'",
+			"\\\"",
+			"\"",
+			"double.Parse",
+			"using Utils.Files;",
+			"",
+			"lType",
+			"rType",
+			"lType",
+			"lTypes",
+			"rTypes",
+			"lTypes",
+			"\"lType\"",
+			"\"rType\"",
+			"\"right\"",
+			"\"left\"",
+			"\"l\"",
+			"\"r\"",
+			"r",
+			"l",
+			"lang0",
+			"wallet",
+			"Wallet",
+			"System.Console",
+			"fragmentShaderSource",
+			"vertexShaderSource",
+			"interlaced",
+			"filter",
+			"compressed",
+			"colorType",
+			"depth",
+			"height",
+			"width",
+			", ",
+			"HexToUInt",
+			"UIntToHex",
+			"{ 0x",
+			", 0x",
+			"Encoding.UTF8",
+			"greater",
+			"Int",
+			"int",
+			".HandSlot"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": false,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 3,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "Assets/C#/Player.cs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 8635,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								141,
+								141
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C#/C#.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "Assets/C#/Terrain/Chunk.cs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 28838,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								24070,
+								24070
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C#/C#.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 1.0,
+						"translation.y": 12434.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "Assets/C#/DataTypes.cs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 15135,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								13879,
+								13873
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C#/C#.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 7364.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "Assets/C#/Console.cs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6349,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								171,
+								171
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C#/C#.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				}
+			]
+		},
+		{
+			"selected": 3,
+			"sheets":
+			[
+				{
+					"buffer": 4,
+					"file": "Assets/Settings/Defaults/gameSettings.json",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3302,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2721,
+								2721
+							]
+						],
+						"settings":
+						{
+							"history_list_is_closing": true,
+							"syntax": "Packages/JavaScript/JSON.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1214.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "Assets/Settings/Defaults/playerSettings.json",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1309,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"history_list_is_closing": true,
+							"syntax": "Packages/JavaScript/JSON.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 273.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "Assets/Settings/Defaults/properties/voxel.json",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1955,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								526,
+								526
+							]
+						],
+						"settings":
+						{
+							"history_list_is_closing": true,
+							"syntax": "Packages/JavaScript/JSON.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 1002.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "Assets/Settings/Defaults/properties/item.json",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 538,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								538,
+								537
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JSON.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 56.0
+	},
+	"input":
+	{
+		"height": 103.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			],
+			[
+				1,
+				0,
+				2,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			0.933333333333,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 232.0
+	},
+	"output.find_results":
+	{
+		"height": 360.0
+	},
+	"output.unsaved_changes":
+	{
+		"height": 126.0
+	},
+	"pinned_build_system": "",
+	"project": "project.sublime-project",
+	"replace":
+	{
+		"height": 72.0
+	},
+	"save_all_on_build": false,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"inve",
+				"C#\\UI\\Inventory.cs"
+			],
+			[
+				"cons",
+				"C#\\Console.cs"
+			],
+			[
+				"plain",
+				"C#\\UI\\Inventories\\PlayerInventory.cs"
+			],
+			[
+				"set",
+				"Settings\\Settings.cs"
+			],
+			[
+				"gase",
+				"Settings\\GameSettings.cs"
+			],
+			[
+				"",
+				"C#\\CameraController.cs"
+			],
+			[
+				"en",
+				"Settings\\Defaults\\properties\\enchantment.json"
+			],
+			[
+				"pr",
+				"Settings\\Properties.cs"
+			],
+			[
+				"slo",
+				"C#\\UI\\InventorySlot.cs"
+			],
+			[
+				"tool",
+				"C#\\Tools.cs"
+			],
+			[
+				"gamss",
+				"Settings\\GameSettings.cs"
+			],
+			[
+				"conso",
+				"C#\\Console.cs"
+			],
+			[
+				"gamm",
+				"C#\\GameManager.cs"
+			],
+			[
+				"plas",
+				"Settings\\PlayerSettings.cs"
+			],
+			[
+				"prop",
+				"Settings\\Properties.cs"
+			],
+			[
+				"sett",
+				"Settings\\Settings.cs"
+			],
+			[
+				"com",
+				"C#\\Chat\\Commands.cs"
+			],
+			[
+				"comma",
+				"C#\\Chat\\Commands.cs"
+			],
+			[
+				"console",
+				"C#\\Console.cs"
+			],
+			[
+				"mon",
+				"C#\\Mono.cs"
+			],
+			[
+				"post",
+				"C#\\PostProcessing.cs"
+			],
+			[
+				"sloc",
+				"C#\\UI\\SlotController.cs"
+			],
+			[
+				"invs",
+				"C#\\UI\\InventorySlot.cs"
+			],
+			[
+				"inv",
+				"C#\\UI\\Inventories\\PlayerInventory.cs"
+			],
+			[
+				"gam",
+				"Settings\\GameSettings.cs"
+			],
+			[
+				"item",
+				"Settings\\Defaults\\properties\\item.json"
+			],
+			[
+				"cha",
+				"C#\\Chat\\ChatManager.cs"
+			],
+			[
+				"gou",
+				"C#\\UI\\SlotGroup.cs"
+			],
+			[
+				"solc",
+				"C#\\UI\\SlotController.cs"
+			],
+			[
+				"chun",
+				"C#\\Terrain\\Chunk.cs"
+			],
+			[
+				"chunk.s",
+				"C#\\Terrain\\Chunk.cs"
+			],
+			[
+				"comm",
+				"C#\\Chat\\Commands.cs"
+			],
+			[
+				"slot",
+				"C#\\Inventory\\SlotGroup.cs"
+			],
+			[
+				"in",
+				"C#\\Inventory\\InventorySlot.cs"
+			],
+			[
+				"por",
+				"Settings\\Properties.cs"
+			],
+			[
+				"dat",
+				"C#\\DataTypes.cs"
+			],
+			[
+				"chunks",
+				"C#\\Terrain\\Chunk.cs"
+			],
+			[
+				"ch",
+				"C#\\Terrain\\Chunk.cs"
+			],
+			[
+				"pro",
+				"Settings\\Properties.cs"
+			],
+			[
+				"se",
+				"Settings\\Settings.cs"
+			],
+			[
+				"chu",
+				"C#\\Terrain\\Chunk.cs"
+			],
+			[
+				"slotc",
+				"C#\\Inventory\\SlotController.cs"
+			],
+			[
+				"gas",
+				"Settings\\GameSettings.cs"
+			],
+			[
+				"gams",
+				"Settings\\GameSettings.cs"
+			],
+			[
+				"comman",
+				"C#\\Chat\\Commands.cs"
+			],
+			[
+				"chunk",
+				"C#\\Terrain\\Chunk.cs"
+			],
+			[
+				"slid",
+				"HLSL\\Slider.shader"
+			],
+			[
+				"cell",
+				"C#\\Noise\\CellularAutomata.cs"
+			],
+			[
+				"perlin",
+				"C#\\Noise\\Perlin.cs"
+			],
+			[
+				"seet",
+				"Scenes\\NoiseTest.unity"
+			],
+			[
+				"nois",
+				"C#\\Noise\\Perlin.cs"
+			],
+			[
+				"pla",
+				"C#\\Player.cs"
+			],
+			[
+				"defa",
+				"HLSL\\Default.shader"
+			],
+			[
+				"slide",
+				"HLSL\\Slider.shader"
+			],
+			[
+				"slider",
+				"HLSL\\Slider.shader"
+			],
+			[
+				"ine",
+				"C#\\Inventory\\Inventory.cs"
+			],
+			[
+				"data",
+				"C#\\DataTypes.cs"
+			],
+			[
+				"da",
+				"C#\\DataTypes.cs"
+			],
+			[
+				"terra",
+				"C#\\Terrain\\TerrainManager.cs"
+			],
+			[
+				"plaset",
+				"Settings\\PlayerSettings.cs"
+			],
+			[
+				"came",
+				"C#\\CameraController.cs"
+			],
+			[
+				"coma",
+				"C#\\Chat\\Commands.cs"
+			],
+			[
+				"chatma",
+				"C#\\Chat\\ChatManager.cs"
+			],
+			[
+				"move",
+				"C#\\MovementController.cs"
+			],
+			[
+				"camera",
+				"C#\\CameraController.cs"
+			],
+			[
+				"sett\t",
+				"Settings\\Settings.cs"
+			],
+			[
+				"porp",
+				"Settings\\Properties.cs"
+			],
+			[
+				"prope",
+				"Settings\\Properties.cs"
+			],
+			[
+				"men",
+				"C#\\EditorTools\\MenuItems.cs"
+			],
+			[
+				"ass",
+				"C#\\EditorTools\\AssetsImporter.cs"
+			],
+			[
+				"asset",
+				"C#\\AssetsImporter.cs"
+			],
+			[
+				"co",
+				"C#\\Console.cs"
+			],
+			[
+				"consol",
+				"C#\\Console.cs"
+			],
+			[
+				"utils",
+				"Includes\\Utils.cs"
+			],
+			[
+				"proper",
+				"Settings\\Properties.cs"
+			],
+			[
+				"chama",
+				"C#\\Chat\\ChatManager.cs"
+			],
+			[
+				"const",
+				"C#\\Terrain\\ConstMeshData.cs"
+			],
+			[
+				"defau",
+				"HLSL\\Default.shader"
+			],
+			[
+				"ut",
+				"Includes\\Utils.cs"
+			],
+			[
+				"ch.cs",
+				"C#\\Terrain\\Chunk.cs"
+			],
+			[
+				"gmama",
+				"C#\\GameManager.cs"
+			],
+			[
+				"plapla",
+				"Objects\\player\\Animations\\Player.controller"
+			],
+			[
+				"commad",
+				"C#\\Chat\\Commands.cs"
+			],
+			[
+				"game",
+				"C#\\GameManager.cs"
+			],
+			[
+				"commands",
+				"C#\\Chat\\Commands.cs"
+			],
+			[
+				"porsa",
+				"HLSL\\PostProcessing.shader"
+			],
+			[
+				"posp",
+				"C#\\PostProcessing.cs"
+			],
+			[
+				"ut\t",
+				"Includes\\Utils.cs"
+			],
+			[
+				"dest",
+				"C#\\DestroyStage.cs"
+			],
+			[
+				"plainv",
+				"C#\\Inventory\\PlayerInventory.cs"
+			],
+			[
+				"postpro",
+				"HLSL\\PostProcessing.shader"
+			],
+			[
+				"destro",
+				"C#\\DestroyStage.cs"
+			],
+			[
+				"terrain",
+				"C#\\Terrain\\TerrainManager.cs"
+			],
+			[
+				"uti",
+				"Includes\\Utils.cs"
+			],
+			[
+				"out",
+				"out.json"
+			],
+			[
+				"cham",
+				"C#\\Chat\\ChatManager.cs"
+			],
+			[
+				"chac",
+				"C#\\Chat\\ChatController.cs"
+			],
+			[
+				"commda",
+				"C#\\Chat\\Commands.cs"
+			],
+			[
+				"teram",
+				"C#\\Terrain\\TerrainManager.cs"
+			],
+			[
+				"item.",
+				"Settings\\Defaults\\properties\\item.json"
+			],
+			[
+				"voxl.",
+				"Settings\\Defaults\\properties\\voxel.json"
+			],
+			[
+				"plase",
+				"Settings\\Defaults\\playerSettings.json"
+			],
+			[
+				"des",
+				"C#\\DestroyStage.cs"
+			],
+			[
+				"pl",
+				"C#\\Player.cs"
+			],
+			[
+				"craf",
+				"Settings\\Defaults\\properties\\crafting.json"
+			],
+			[
+				"s",
+				"Settings\\Settings.cs"
+			],
+			[
+				"drop",
+				"HLSL\\DroppedItem.shader"
+			],
+			[
+				"impo",
+				"C#\\AssetsImporter.cs"
+			],
+			[
+				"gamse",
+				"Settings\\GameSettings.cs"
+			],
+			[
+				"noise.cs",
+				"C#\\Noise\\Noise.cs"
+			],
+			[
+				"shader",
+				"HLSL\\Chunk.shader"
+			],
+			[
+				"utl",
+				"Includes\\Utils.cs"
+			],
+			[
+				"plas.js",
+				"Settings\\Defaults\\playerSettings.json"
+			],
+			[
+				"terg",
+				"C#\\Terrain\\TerrainGenerator.cs"
+			],
+			[
+				"cahc",
+				"C#\\Chat\\ChatController.cs"
+			],
+			[
+				"plainve",
+				"C#\\Inventory\\PlayerInventory.cs"
+			],
+			[
+				"camec",
+				"C#\\CameraController.cs"
+			],
+			[
+				"commads",
+				"C#\\Chat\\Commands.cs"
+			],
+			[
+				"terram",
+				"C#\\Terrain\\TerrainManager.cs"
+			],
+			[
+				"ga",
+				"Settings\\GameSettings.cs"
+			],
+			[
+				"player.hs",
+				"HLSL\\Player.shader"
+			],
+			[
+				"chuk",
+				"HLSL\\Chunk.shader"
+			],
+			[
+				"terge",
+				"C#\\Terrain\\TerrainGenerator.cs"
+			],
+			[
+				"nose",
+				"C#\\Noise\\Noise.cs"
+			],
+			[
+				"ter",
+				"C#\\Terrain\\TerrainGenerator.cs"
+			],
+			[
+				"gamso",
+				"Settings\\GameSettings\\GameSettingsObject.cs"
+			],
+			[
+				"gamseo",
+				"Settings\\GameSettings\\GameSettingsObject.cs"
+			],
+			[
+				"noise",
+				"C#\\Terrain\\Noise.cs"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 392.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 592.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 184.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+		"max_columns": 2
+	}
+}
